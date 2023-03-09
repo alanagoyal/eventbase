@@ -27,10 +27,13 @@ export default function Document() {
           name="twitter:description"
           content="base case capital is inviting you to an event"
         />
-        <meta property="og:image" content="https://supafan.vercel.app/api/og" />
+        <meta
+          property="og:image"
+          content="https://base-case-events.vercel.app/api/og"
+        />
         <meta
           name="twitter:image"
-          content="https://supafan.vercel.app/api/og"
+          content="https://base-case-events.vercel.app/api/og"
         />
       </Head>
       <body>
