@@ -8,8 +8,8 @@ import toast, { Toaster } from "react-hot-toast";
 import Image from "next/image";
 import Balancer from "react-wrap-balancer";
 import { AddToCalendarButton } from "add-to-calendar-button-react";
-import { useStateWithDeps } from "swr/_internal";
 import { useState } from "react";
+import { Head } from "next/document";
 
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
@@ -157,6 +157,9 @@ export default function EventPage({ session }: { session: Session }) {
 
   return (
     <div className="flex">
+      <Head>
+        <title>{`You&apos;re invited to ${event.event_name}`}</title>
+      </Head>
       <div className="container">
         <Toaster />
         <div>
