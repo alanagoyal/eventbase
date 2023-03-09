@@ -17,10 +17,7 @@ export default function Document() {
           property="og:description"
           content="base case capital is inviting you to an event"
         />
-        <meta
-          property="og:title"
-          content="base case capital is inviting you to an event"
-        />
+        <meta property="og:title" content="you're invited 🤗" />
         <meta name="twitter:card" content="summary_large_image" />
         <meta
           name="twitter:title"
