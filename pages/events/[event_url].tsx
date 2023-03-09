@@ -3,13 +3,12 @@ import { useRouter } from "next/router";
 import { Database } from "../../types/supabase";
 import { supabase } from "@/lib/supabaseClient";
 import useSWR from "swr";
-
 import toast, { Toaster } from "react-hot-toast";
 import Image from "next/image";
 import Balancer from "react-wrap-balancer";
 import { AddToCalendarButton } from "add-to-calendar-button-react";
 import { useState } from "react";
-import { Head } from "next/document";
+import Head from "next/head";
 
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
