@@ -265,6 +265,17 @@ export default function EventPage({ session }: { session: Session }) {
                         <div className="py-1">
                           <button
                             className="primary button block"
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                onRsvp({
+                                  email,
+                                  full_name,
+                                  company_name,
+                                  dietary_restrictions,
+                                  comments,
+                                });
+                              }
+                            }}
                             onClick={() =>
                               onRsvp({
                                 email,
