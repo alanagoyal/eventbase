@@ -9,7 +9,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center mx-auto max-w-6xl pt-20 pb-5">
       <Head>
-        <title>You're invited 🎉</title>
+        <title>base case capital is inviting you to an event 🎉</title>
       </Head>
       <div>
         <h1 className="text-5xl text-bold px-10 pt-20 text-white">
