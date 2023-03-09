@@ -157,7 +157,7 @@ export default function EventPage({ session }: { session: Session }) {
   return (
     <div className="flex">
       <Head>
-        <title>{`You're invited to ${event.event_name}`}</title>
+        <title>{`${event.event_name}`}</title>
       </Head>
       <div className="container">
         <Toaster />
