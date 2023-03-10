@@ -26,16 +26,12 @@ export async function getServerSideProps(context: any) {
     .eq("event_url", event_url)
     .single();
 
-  //  console.log(`data is inside serverside ${JSON.stringify(data)}`);
-
   return {
     props: { eventInfo: data },
   };
 }
 
 export default function EventPage({ eventInfo }: { eventInfo: Events }) {
-  const router = useRouter();
-  const event_url = router.query.event_url?.toString();
   const [full_name, setName] = useState<Guests["full_name"]>(null);
   const [email, setEmail] = useState<Guests["email"]>(null);
   const [company_name, setCompanyName] = useState<Guests["company_name"]>(null);
@@ -135,7 +131,8 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
       let { data, error, status } = await supabase
         .from("rsvps")
         .select()
-        .eq("email", email);
+        .eq("email", email)
+        .single();
 
       if (data) {
         toast.success("Your response has been updated!");
