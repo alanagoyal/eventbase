@@ -9,13 +9,31 @@ import Balancer from "react-wrap-balancer";
 import { AddToCalendarButton } from "add-to-calendar-button-react";
 import { useState } from "react";
 import Head from "next/head";
+import { GetServerSideProps } from "next";
 
+type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function EventPage({ session }: { session: Session }) {
+export async function getServerSideProps(context: any) {
+  const { event_url } = context.params;
+  console.log(`event url inside serverside is ${event_url}`);
+  let { data, error, status } = await supabase
+    .from("events")
+    .select()
+    .eq("event_url", event_url)
+    .single();
+
+  //  console.log(`data is inside serverside ${JSON.stringify(data)}`);
+
+  return {
+    props: { eventInfo: data },
+  };
+}
+
+export default function EventPage({ eventInfo }: { eventInfo: Events }) {
   const router = useRouter();
   const event_url = router.query.event_url?.toString();
   const [full_name, setName] = useState<Guests["full_name"]>(null);
@@ -26,19 +44,15 @@ export default function EventPage({ session }: { session: Session }) {
   const [comments, setComment] = useState<Rsvps["comments"]>(null);
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
 
-  // get event data
-  const { data } = useSWR(`/api/getEvent/${event_url}`, fetcher);
-  console.log({ data });
-
-  if (!data) {
+  if (!eventInfo) {
     console.log("Error: no data");
     return null;
   }
 
-  const event = data.event;
+  const event = eventInfo;
 
   // set formatted and calendar date strings
-  const d = new Date(event.date);
+  const d = new Date(event.date!);
   const formattedDate = d.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -46,15 +60,15 @@ export default function EventPage({ session }: { session: Session }) {
     day: "numeric",
     timeZone: "UTC",
   });
-  const calDate = event.date.substring(0, 10);
+  const calDate = event.date!.substring(0, 10);
 
   // set formatted and start/end time
   const t = new Date();
-  const [hours, minutes, seconds] = event.start_time.split(":").map(Number);
+  const [hours, minutes, seconds] = event.start_time!.split(":").map(Number);
   t.setHours(hours, minutes, seconds);
   const formattedTime = t.toLocaleTimeString();
-  const startTime = event.start_time.substring(0, 5);
-  const endTime = event.end_time.substring(0, 5);
+  const startTime = event.start_time!.substring(0, 5);
+  const endTime = event.end_time!.substring(0, 5);
 
   async function onRsvp({
     email,
@@ -175,12 +189,12 @@ export default function EventPage({ session }: { session: Session }) {
                 <div className="-ml-2 mb-4">
                   {event && (
                     <AddToCalendarButton
-                      name={event.event_name}
+                      name={event.event_name!}
                       startDate={calDate}
                       startTime={startTime}
                       endTime={endTime}
                       timeZone="America/Los_Angeles"
-                      location={event.location}
+                      location={event.location!}
                       buttonStyle="date"
                       size="5"
                       lightMode="bodyScheme"
