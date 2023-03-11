@@ -97,7 +97,6 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
 
       await addGuest(guestInfo);
       await addRsvp(rsvpInfo);
-      toast.success("You're in!");
       setGuestRsvpStatus("attending");
     } catch (error) {
       toast.error("Whoops! Something went wrong...");
@@ -114,7 +113,6 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
         .single();
 
       if (data) {
-        console.log("found guest");
         let { error } = await supabase
           .from("guests")
           .upsert(guestInfo, { onConflict: "email" });
@@ -138,12 +136,17 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
         .single();
 
       if (data) {
-        toast.success("Your response has been updated!");
-        let { error } = await supabase.from("rsvps").upsert(rsvpInfo);
+        let { error } = await supabase
+          .from("rsvps")
+          .update(rsvpInfo)
+          .eq("email", email)
+          .eq("event_id", event.id);
         if (error) throw error;
+        toast.success("Your response has been updated!");
       } else {
         let { error } = await supabase.from("rsvps").insert(rsvpInfo);
         if (error) throw error;
+        toast.success("You're in!");
       }
     } catch (error) {
       throw error;
