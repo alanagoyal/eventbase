@@ -19,7 +19,6 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export async function getServerSideProps(context: any) {
   const { event_url } = context.params;
-  console.log(`event url inside serverside is ${event_url}`);
   let { data, error, status } = await supabase
     .from("events")
     .select()
@@ -98,8 +97,10 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
 
       await addGuest(guestInfo);
       await addRsvp(rsvpInfo);
+      toast.success("You're in!");
       setGuestRsvpStatus("attending");
     } catch (error) {
+      toast.error("Whoops! Something went wrong...");
       console.log(error);
     }
   }
@@ -109,7 +110,8 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
       let { data, error, status } = await supabase
         .from("guests")
         .select()
-        .eq("email", email);
+        .eq("email", email)
+        .single();
 
       if (data) {
         let { error } = await supabase
@@ -121,8 +123,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
         if (error) throw error;
       }
     } catch (error) {
-      alert("Error adding guest!");
-      console.log(error);
+      throw error;
     }
   }
 
@@ -141,13 +142,11 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
           .upsert(rsvpInfo, { onConflict: "email" });
         if (error) throw error;
       } else {
-        toast.success("You're in");
         let { error } = await supabase.from("rsvps").insert(rsvpInfo);
         if (error) throw error;
       }
     } catch (error) {
-      alert("Error adding rsvp!");
-      console.log(error);
+      throw error;
     }
   }
 
@@ -265,7 +264,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                     {guestRsvpStatus === "attending" ? (
                       <div className="py-1">
                         <button
-                          className="primary button block"
+                          className="text-custom-color border-custom-border bg-[#f2acb9] inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                           onClick={() => removeGuest({ email })}
                         >
                           Can&apos;t Make It Anymore
@@ -275,7 +274,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                       <div>
                         <div className="py-1">
                           <button
-                            className="primary button block"
+                            className="text-custom-color border-custom-border bg-[#f2acb9] inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
                                 onRsvp({

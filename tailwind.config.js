@@ -1,3 +1,5 @@
+const mirrorful = require("./.mirrorful/theme.js");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -9,7 +11,9 @@ module.exports = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: mirrorful.Tokens, // THIS LINE IS ALSO NEW! the rest of your file may look different
+    },
   },
   plugins: [],
 };
