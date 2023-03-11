@@ -114,6 +114,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
         .single();
 
       if (data) {
+        console.log("found guest");
         let { error } = await supabase
           .from("guests")
           .upsert(guestInfo, { onConflict: "email" });
@@ -133,13 +134,12 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
         .from("rsvps")
         .select()
         .eq("email", email)
+        .eq("event_id", event.id)
         .single();
 
       if (data) {
         toast.success("Your response has been updated!");
-        let { error } = await supabase
-          .from("rsvps")
-          .upsert(rsvpInfo, { onConflict: "email" });
+        let { error } = await supabase.from("rsvps").upsert(rsvpInfo);
         if (error) throw error;
       } else {
         let { error } = await supabase.from("rsvps").insert(rsvpInfo);
