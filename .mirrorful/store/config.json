@@ -5,8 +5,15 @@
 				"name": "base case pink",
 				"baseColor": "#f2acb9",
 				"variants": {
+					"200": "#fceef1",
+					"300": "#ffe5f3",
+					"400": "#f5c2cc",
 					"500": "#f2acb9",
-					"700": "#ffe5f3"
+					"600": "#ef96a6",
+					"700": "#ef96a6",
+					"800": "#e86a81",
+					"hover": "#f7ced6",
+					"border": "#ef9bab"
 				}
 			}
 		],
