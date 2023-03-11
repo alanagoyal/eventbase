@@ -264,7 +264,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                     {guestRsvpStatus === "attending" ? (
                       <div className="py-1">
                         <button
-                          className="text-custom-color border-custom-border bg-[#f2acb9] inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                           onClick={() => removeGuest({ email })}
                         >
                           Can&apos;t Make It Anymore
@@ -274,7 +274,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                       <div>
                         <div className="py-1">
                           <button
-                            className="text-custom-color border-custom-border bg-[#f2acb9] inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                            className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
                                 onRsvp({
