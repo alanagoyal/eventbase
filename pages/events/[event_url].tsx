@@ -15,8 +15,6 @@ type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 export async function getServerSideProps(context: any) {
   const { event_url } = context.params;
   let { data, error, status } = await supabase
@@ -64,6 +62,30 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
   const formattedTime = t.toLocaleTimeString();
   const startTime = event.start_time!.substring(0, 5);
   const endTime = event.end_time!.substring(0, 5);
+
+  async function sendMail(
+    email: string,
+    eventInfo: any,
+    formattedDate: string,
+    formattedTime: string
+  ) {
+    try {
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          eventInfo,
+          formattedDate,
+          formattedTime,
+        }),
+      });
+      const data = await response.json();
+      console.log("Email sent:", data);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  }
 
   async function onRsvp({
     email,
@@ -147,6 +169,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
         let { error } = await supabase.from("rsvps").insert(rsvpInfo);
         if (error) throw error;
         toast.success("You're in!");
+        sendMail(email!, eventInfo, formattedDate, formattedTime);
       }
     } catch (error) {
       throw error;
@@ -267,7 +290,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                     {guestRsvpStatus === "attending" ? (
                       <div className="py-1">
                         <button
-                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-300  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                           onClick={() => removeGuest({ email })}
                         >
                           Can&apos;t Make It Anymore
@@ -277,7 +300,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                       <div>
                         <div className="py-1">
                           <button
-                            className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-300 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                            className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                             onKeyDown={(e) => {
                               if (e.key === "Enter") {
                                 onRsvp({

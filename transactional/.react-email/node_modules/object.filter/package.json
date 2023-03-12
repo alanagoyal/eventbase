@@ -1,0 +1,72 @@
+{
+  "name": "object.filter",
+  "description": "Create a new object filtered to have only properties for which the callback returns true.",
+  "version": "0.3.0",
+  "homepage": "https://github.com/jonschlinkert/object.filter",
+  "author": {
+    "name": "Jon Schlinkert",
+    "url": "https://github.com/jonschlinkert"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jonschlinkert/object.filter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/object.filter/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/jonschlinkert/object.filter/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha -R spec"
+  },
+  "devDependencies": {
+    "verb-tag-jscomments": ">= 0.2.0",
+    "verb": ">= 0.2.6",
+    "mocha": "*"
+  },
+  "keywords": [
+    "filter",
+    "filtered",
+    "find",
+    "for",
+    "for-in",
+    "for-own",
+    "has",
+    "has-own",
+    "hasown",
+    "in",
+    "javascript",
+    "js",
+    "key",
+    "keys",
+    "loop",
+    "match",
+    "matching",
+    "node",
+    "node-js",
+    "obj",
+    "object",
+    "own",
+    "prop",
+    "properties",
+    "property",
+    "props",
+    "util",
+    "utilities",
+    "utility",
+    "utils",
+    "value"
+  ],
+  "dependencies": {
+    "for-own": "^0.1.2",
+    "make-iterator": "^0.1.0"
+  }
+}
