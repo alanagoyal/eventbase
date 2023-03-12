@@ -63,6 +63,39 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
   const startTime = event.start_time!.substring(0, 5);
   const endTime = event.end_time!.substring(0, 5);
 
+  // set image if not set
+  /*   const og_image = event.og_image;
+  if (!og_image) {
+    console.log("no og image");
+    setImage(event);
+  }
+ */
+  /*   async function setImage(eventInfo: any) {
+    console.log("inside set image");
+    try {
+      const response = await fetch("/api/imageGen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ eventInfo: event }),
+      });
+      const data = await response.json();
+
+      if (data) {
+        const { error } = await supabase
+          .from("events")
+          .update({ og_image: data.response })
+          .eq("id", event.id);
+        if (error) {
+          console.log("Error inserting image into database", error);
+        } else {
+          console.log("Inserted image into database successfully");
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  } */
+
   async function sendMail(
     email: string,
     eventInfo: any,
@@ -169,7 +202,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
         let { error } = await supabase.from("rsvps").insert(rsvpInfo);
         if (error) throw error;
         toast.success("You're in!");
-        sendMail(email!, eventInfo, formattedDate, formattedTime);
+        sendMail(email!, event, formattedDate, formattedTime);
       }
     } catch (error) {
       throw error;
