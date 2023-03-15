@@ -1,5 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import sendEmail from "@/defer/sendEmail";
+import React from "react";
+import { Resend } from "resend";
+import { defer } from "@defer/client";
+import EmailTemplate from "@/transactional/emails/confirmation";
 
 export type SendEmailRequestData = {
   email: string;
@@ -8,16 +12,24 @@ export type SendEmailRequestData = {
   formattedTime: string;
 };
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { email, eventInfo, formattedDate, formattedTime } =
       req.body as SendEmailRequestData;
     console.log(req.body);
-    const data = await sendEmail({
-      email,
-      eventInfo,
-      formattedDate,
-      formattedTime,
+    const data = await resend.sendEmail({
+      from: "hi@basecase.vc",
+      to: email,
+      subject: "You're in!",
+      react: (
+        <EmailTemplate
+          eventInfo={eventInfo}
+          formattedDate={formattedDate}
+          formattedTime={formattedTime}
+        />
+      ),
     });
     res.status(200).json(data);
   } catch (e) {

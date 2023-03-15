@@ -10,6 +10,7 @@ import { AddToCalendarButton } from "add-to-calendar-button-react";
 import { useState } from "react";
 import Head from "next/head";
 import { GetServerSideProps } from "next";
+import dynamic from "next/dynamic";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
@@ -95,6 +96,14 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
       console.error(error);
     }
   } */
+
+  const DynamicAddToCalendarButton = dynamic(
+    () =>
+      import("add-to-calendar-button-react").then(
+        (mod) => mod.AddToCalendarButton
+      ),
+    { ssr: false }
+  );
 
   async function sendMail(
     email: string,
@@ -242,21 +251,20 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                   {formattedTime}
                 </h2>
                 <div className="-ml-2 mb-4">
-                  {event && (
-                    <AddToCalendarButton
-                      name={event.event_name!}
-                      startDate={calDate}
-                      startTime={startTime}
-                      endTime={endTime}
-                      timeZone="America/Los_Angeles"
-                      location={event.location!}
-                      buttonStyle="date"
-                      size="5"
-                      lightMode="bodyScheme"
-                      options={["Google", "iCal"]}
-                    ></AddToCalendarButton>
-                  )}
+                  <DynamicAddToCalendarButton
+                    name={event.event_name!}
+                    startDate={calDate}
+                    startTime={startTime}
+                    endTime={endTime}
+                    timeZone="America/Los_Angeles"
+                    location={event.location!}
+                    buttonStyle="date"
+                    size="5"
+                    lightMode="bodyScheme"
+                    options={["Google", "iCal"]}
+                  ></DynamicAddToCalendarButton>
                 </div>
+
                 <h3 className="text-gray-600 font-space text-md">
                   <a href={`${event.location_url}`}>{event.location}</a>
                 </h3>
