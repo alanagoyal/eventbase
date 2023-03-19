@@ -1,31 +1,38 @@
+import { Database } from "@/types/supabase";
+import { useSession, useSupabaseClient } from "@supabase/auth-helpers-react";
+import { supabase } from "@/lib/supabaseClient";
+import { NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
-import { Inter } from "next/font/google";
-import styles from "@/styles/Home.module.css";
+import { useState } from "react";
+import { useRouter } from "next/router";
 
-const inter = Inter({ subsets: ["latin"] });
+const Home: NextPage = () => {
+  const router = useRouter();
 
-export default function Home() {
+  const handleSignInClick = () => {
+    router.push("/signin");
+  };
+
   return (
-    <div className="flex flex-col items-center mx-auto max-w-6xl pt-20 pb-5">
-      <Head>
-        <title>You&#x27;re invited 🎉</title>
-      </Head>
-      <div>
-        <h1 className="text-5xl text-bold px-10 pt-20 text-white">
-          {" "}
-          Welcome 👋🏼
-        </h1>
+    <div>
+      <div className="flex flex-col items-center mx-auto max-w-xl pt-20 pb-5">
+        <Head>
+          <title>You&#x27;re invited 🎉</title>
+        </Head>
+        <button
+          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSignInClick();
+            }
+          }}
+          onClick={() => handleSignInClick()}
+        >
+          Sign In
+        </button>
       </div>
-      <div>
-        <h2 className="text-xl px-2 pt-6 text-white">
-          Please navigate to your event landing page
-        </h2>
-      </div>
-      <p className="text-m py-1 text-white">
-        {" "}
-        If you don&apos;t know it, please contact the host
-      </p>
     </div>
   );
-}
+};
+
+export default Home;

@@ -11,6 +11,7 @@ import { useState } from "react";
 import Head from "next/head";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
+import { FrigadeChecklist, FrigadeProgressBadge } from "@frigade/react";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
@@ -39,7 +40,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
 
   if (!eventInfo) {
-    console.log("Error: no data");
+    console.log("Error: data not ready yet");
     return null;
   }
 
@@ -70,8 +71,8 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
     console.log("no og image");
     setImage(event);
   }
- */
-  /*   async function setImage(eventInfo: any) {
+
+  async function setImage(eventInfo: any) {
     console.log("inside set image");
     try {
       const response = await fetch("/api/imageGen", {
@@ -142,6 +143,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
     dietary_restrictions: Guests["dietary_restrictions"];
     comments: Rsvps["comments"];
   }) {
+    signInWithEmail(email!);
     try {
       const guestInfo = {
         email,
@@ -218,7 +220,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
     }
   }
 
-  async function removeGuest({ email }: { email: Guests["email"] }) {
+  async function removeGuest(email: string) {
     toast("We hope to see you next time!");
     setGuestRsvpStatus("not attending");
 
@@ -232,6 +234,15 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
     }
   }
 
+  async function signInWithEmail(email: string) {
+    const { data, error } = await supabase.auth.signInWithOtp({
+      email: email!,
+      options: {
+        emailRedirectTo: "https://base-case-events.vercel.app",
+      },
+    });
+  }
+
   return (
     <div className="flex">
       <Head>
@@ -243,6 +254,30 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
           <div>
             <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
               <div>
+                <div className=" w-full pb-6">
+                  <FrigadeProgressBadge
+                    flowId="flow_8L4q96JaRxAR3zEF"
+                    title="Welcome 👋🏼"
+                    style={{
+                      backgroundColor: "#f2acb9",
+                      borderColor: "#f2acb9",
+                      color: "#FFFFFF",
+                    }}
+                    appearance={{
+                      theme: {
+                        colorPrimary: "#ffffff",
+                      },
+                    }}
+                    textStyle={{ color: "#FFFFFF" }}
+                    hideOnFlowCompletion={true}
+                  />
+                  <FrigadeChecklist
+                    flowId="flow_8L4q96JaRxAR3zEF"
+                    title="Welcome 👋🏼"
+                    subtitle="We're glad you're here!"
+                    type="modal"
+                  />
+                </div>
                 <h1 className="text-5xl my-2 font-bold font-syne">
                   <Balancer>{event.event_name}</Balancer>
                 </h1>
@@ -264,7 +299,6 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                     options={["Google", "iCal"]}
                   ></DynamicAddToCalendarButton>
                 </div>
-
                 <h3 className="text-gray-600 font-space text-md">
                   <a href={`${event.location_url}`}>{event.location}</a>
                 </h3>
@@ -332,7 +366,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
                       <div className="py-1">
                         <button
                           className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
-                          onClick={() => removeGuest({ email })}
+                          onClick={() => removeGuest(email!)}
                         >
                           Can&apos;t Make It Anymore
                         </button>
