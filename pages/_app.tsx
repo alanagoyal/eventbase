@@ -3,6 +3,8 @@ import { SessionContextProvider, Session } from "@supabase/auth-helpers-react";
 import { useState } from "react";
 import { FrigadeProvider } from "@frigade/react";
 import { AppProps } from "next/app";
+import "@/styles/globals.css";
+import { Toaster } from "@/components/ui/toaster";
 
 function MyApp({
   Component,
@@ -20,6 +22,7 @@ function MyApp({
     >
       <FrigadeProvider publicApiKey="api_public_7TOZDQP37FZ6HI4MZNL9YEBTK1XBNQ3XFB066KF35O9LTAIJR2OV3S7RMMRJKQ91">
         <Component {...pageProps} />
+        <Toaster />
       </FrigadeProvider>
     </SessionContextProvider>
   );

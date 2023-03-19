@@ -5,13 +5,12 @@ import { NextPage } from "next";
 import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { Header } from "@/components/header";
 
 const Home: NextPage = () => {
   const router = useRouter();
-
-  const handleSignInClick = () => {
-    router.push("/signin");
-  };
+  const session = useSession();
+  const supabase = useSupabaseClient();
 
   return (
     <div>
@@ -19,17 +18,7 @@ const Home: NextPage = () => {
         <Head>
           <title>You&#x27;re invited 🎉</title>
         </Head>
-        <button
-          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              handleSignInClick();
-            }
-          }}
-          onClick={() => handleSignInClick()}
-        >
-          Sign In
-        </button>
+        {!session ? <Header /> : <div>in</div>}
       </div>
     </div>
   );
