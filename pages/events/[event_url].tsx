@@ -1,4 +1,8 @@
-import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
+import {
+  Session,
+  useSupabaseClient,
+  useUser,
+} from "@supabase/auth-helpers-react";
 import { useRouter } from "next/router";
 import { Database } from "../../types/supabase";
 import { supabase } from "@/lib/supabaseClient";
@@ -12,6 +16,7 @@ import Head from "next/head";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import { FrigadeChecklist, FrigadeProgressBadge } from "@frigade/react";
+import { Header } from "@/components/header";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
@@ -30,7 +35,13 @@ export async function getServerSideProps(context: any) {
   };
 }
 
-export default function EventPage({ eventInfo }: { eventInfo: Events }) {
+export default function EventPage({
+  eventInfo,
+  session,
+}: {
+  eventInfo: Events;
+  session: Session;
+}) {
   const [full_name, setName] = useState<Guests["full_name"]>(null);
   const [email, setEmail] = useState<Guests["email"]>(null);
   const [company_name, setCompanyName] = useState<Guests["company_name"]>(null);
@@ -38,6 +49,7 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
     useState<Guests["dietary_restrictions"]>(null);
   const [comments, setComment] = useState<Rsvps["comments"]>(null);
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
+  const user = useUser();
 
   if (!eventInfo) {
     console.log("Error: data not ready yet");
@@ -143,7 +155,6 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
     dietary_restrictions: Guests["dietary_restrictions"];
     comments: Rsvps["comments"];
   }) {
-    signInWithEmail(email!);
     try {
       const guestInfo = {
         email,
@@ -234,175 +245,170 @@ export default function EventPage({ eventInfo }: { eventInfo: Events }) {
     }
   }
 
-  async function signInWithEmail(email: string) {
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email: email!,
-      options: {
-        emailRedirectTo: "https://base-case-events.vercel.app",
-      },
-    });
-  }
-
   return (
-    <div className="flex">
-      <Head>
-        <title>{`${event.event_name}`}</title>
-      </Head>
-      <div className="container">
-        <Toaster />
-        <div>
+    <div>
+      <Header session={session} user={user} />
+
+      <div className="flex">
+        <Head>
+          <title>{`${event.event_name}`}</title>
+        </Head>
+        <div className="container">
+          <Toaster />
           <div>
-            <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
-              <div>
-                <div className=" w-full pb-6">
-                  <FrigadeProgressBadge
-                    flowId="flow_8L4q96JaRxAR3zEF"
-                    title="Welcome 👋🏼"
-                    style={{
-                      backgroundColor: "#f2acb9",
-                      borderColor: "#f2acb9",
-                      color: "#FFFFFF",
-                    }}
-                    appearance={{
-                      theme: {
-                        colorPrimary: "#ffffff",
-                      },
-                    }}
-                    textStyle={{ color: "#FFFFFF" }}
-                    hideOnFlowCompletion={true}
-                  />
-                  <FrigadeChecklist
-                    flowId="flow_8L4q96JaRxAR3zEF"
-                    title="Welcome 👋🏼"
-                    subtitle="We're glad you're here!"
-                    type="modal"
-                  />
-                </div>
-                <h1 className="text-5xl my-2 font-bold font-syne">
-                  <Balancer>{event.event_name}</Balancer>
-                </h1>
-                <h2 className="text-2xl font-syne">{formattedDate}</h2>
-                <h2 className="text-gray-600 font-syne text-xl pb-4">
-                  {formattedTime}
-                </h2>
-                <div className="-ml-2 mb-4">
-                  <DynamicAddToCalendarButton
-                    name={event.event_name!}
-                    startDate={calDate}
-                    startTime={startTime}
-                    endTime={endTime}
-                    timeZone="America/Los_Angeles"
-                    location={event.location!}
-                    buttonStyle="date"
-                    size="5"
-                    lightMode="bodyScheme"
-                    options={["Google", "iCal"]}
-                  ></DynamicAddToCalendarButton>
-                </div>
-                <h3 className="text-gray-600 font-space text-md">
-                  <a href={`${event.location_url}`}>{event.location}</a>
-                </h3>
-                <h2 className="text-gray-600 font-space text-md pb-4">
-                  Hosted By: Base Case Capital
-                </h2>
-                <p className="text-gray-600 font-space text-md">
-                  {event.description}
-                </p>
+            <div>
+              <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
                 <div>
-                  <div className="pt-2">
-                    <label htmlFor="email">Email</label>
-                    <input
-                      id="email"
-                      type="text"
-                      value={email || ""}
-                      className="h-10 p-1"
-                      onChange={(e) => setEmail(e.target.value)}
+                  <div className=" w-full pb-6">
+                    <FrigadeProgressBadge
+                      flowId="flow_8L4q96JaRxAR3zEF"
+                      title="Welcome 👋🏼"
+                      style={{
+                        backgroundColor: "#f2acb9",
+                        borderColor: "#f2acb9",
+                        color: "#FFFFFF",
+                      }}
+                      appearance={{
+                        theme: {
+                          colorPrimary: "#ffffff",
+                        },
+                      }}
+                      textStyle={{ color: "#FFFFFF" }}
+                      hideOnFlowCompletion={true}
+                    />
+                    <FrigadeChecklist
+                      flowId="flow_8L4q96JaRxAR3zEF"
+                      title="Welcome 👋🏼"
+                      subtitle="We're glad you're here!"
+                      type="modal"
                     />
                   </div>
+                  <h1 className="text-5xl my-2 font-bold font-syne">
+                    <Balancer>{event.event_name}</Balancer>
+                  </h1>
+                  <h2 className="text-2xl font-syne">{formattedDate}</h2>
+                  <h2 className="text-gray-600 font-syne text-xl pb-4">
+                    {formattedTime}
+                  </h2>
+                  <div className="-ml-2 mb-4">
+                    <DynamicAddToCalendarButton
+                      name={event.event_name!}
+                      startDate={calDate}
+                      startTime={startTime}
+                      endTime={endTime}
+                      timeZone="America/Los_Angeles"
+                      location={event.location!}
+                      buttonStyle="date"
+                      size="5"
+                      lightMode="bodyScheme"
+                      options={["Google", "iCal"]}
+                    ></DynamicAddToCalendarButton>
+                  </div>
+                  <h3 className="text-gray-600 font-space text-md">
+                    <a href={`${event.location_url}`}>{event.location}</a>
+                  </h3>
+                  <h2 className="text-gray-600 font-space text-md pb-4">
+                    Hosted By: Base Case Capital
+                  </h2>
+                  <p className="text-gray-600 font-space text-md">
+                    {event.description}
+                  </p>
                   <div>
-                    <label htmlFor="name">Name</label>
-                    <input
-                      id="name"
-                      type="text"
-                      value={full_name || ""}
-                      className="h-10 p-1"
-                      onChange={(e) => setName(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="company name">Company</label>
-                    <input
-                      id="company name"
-                      type="text"
-                      value={company_name || ""}
-                      className="h-10 p-1"
-                      onChange={(e) => setCompanyName(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="dietary restrictions">
-                      Dietary Restrictions
-                    </label>
-                    <input
-                      id="dietary restrictions"
-                      type="text"
-                      value={dietary_restrictions || ""}
-                      className="h-10 p-1"
-                      onChange={(e) => setDietaryRestrictions(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="comments">Comments</label>
-                    <input
-                      id="comments"
-                      type="text"
-                      value={comments || ""}
-                      className="h-10 p-1"
-                      onChange={(e) => setComment(e.target.value)}
-                    />
-                  </div>
-                  <div className="py-2">
-                    {guestRsvpStatus === "attending" ? (
-                      <div className="py-1">
-                        <button
-                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
-                          onClick={() => removeGuest(email!)}
-                        >
-                          Can&apos;t Make It Anymore
-                        </button>
-                      </div>
-                    ) : (
-                      <div>
+                    <div className="pt-2">
+                      <label htmlFor="email">Email</label>
+                      <input
+                        id="email"
+                        type="text"
+                        value={email || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setEmail(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="name">Name</label>
+                      <input
+                        id="name"
+                        type="text"
+                        value={full_name || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="company name">Company</label>
+                      <input
+                        id="company name"
+                        type="text"
+                        value={company_name || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setCompanyName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="dietary restrictions">
+                        Dietary Restrictions
+                      </label>
+                      <input
+                        id="dietary restrictions"
+                        type="text"
+                        value={dietary_restrictions || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setDietaryRestrictions(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="comments">Comments</label>
+                      <input
+                        id="comments"
+                        type="text"
+                        value={comments || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setComment(e.target.value)}
+                      />
+                    </div>
+                    <div className="py-2">
+                      {guestRsvpStatus === "attending" ? (
                         <div className="py-1">
                           <button
-                            className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
-                            onKeyDown={(e) => {
-                              if (e.key === "Enter") {
+                            className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                            onClick={() => removeGuest(email!)}
+                          >
+                            Can&apos;t Make It Anymore
+                          </button>
+                        </div>
+                      ) : (
+                        <div>
+                          <div className="py-1">
+                            <button
+                              className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                  onRsvp({
+                                    email,
+                                    full_name,
+                                    company_name,
+                                    dietary_restrictions,
+                                    comments,
+                                  });
+                                }
+                              }}
+                              onClick={() =>
                                 onRsvp({
                                   email,
                                   full_name,
                                   company_name,
                                   dietary_restrictions,
                                   comments,
-                                });
+                                })
                               }
-                            }}
-                            onClick={() =>
-                              onRsvp({
-                                email,
-                                full_name,
-                                company_name,
-                                dietary_restrictions,
-                                comments,
-                              })
-                            }
-                            disabled={guestRsvpStatus == "attending"}
-                          >
-                            Count Me In
-                          </button>
+                              disabled={guestRsvpStatus == "attending"}
+                            >
+                              Count Me In
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

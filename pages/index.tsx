@@ -6,9 +6,9 @@ import Head from "next/head";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { Header } from "@/components/header";
+import Account from "@/pages/account";
 
 const Home: NextPage = () => {
-  const router = useRouter();
   const session = useSession();
   const supabase = useSupabaseClient();
 
@@ -18,7 +18,6 @@ const Home: NextPage = () => {
         <Head>
           <title>You&#x27;re invited 🎉</title>
         </Head>
-        {!session ? <Header /> : <div>in</div>}
       </div>
     </div>
   );
