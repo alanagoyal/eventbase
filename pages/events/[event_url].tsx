@@ -11,7 +11,7 @@ import toast, { Toaster } from "react-hot-toast";
 import Image from "next/image";
 import Balancer from "react-wrap-balancer";
 import { AddToCalendarButton } from "add-to-calendar-button-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Head from "next/head";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
@@ -51,8 +51,30 @@ export default function EventPage({
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
   const user = useUser();
 
+  useEffect(() => {
+    getRsvpStatus();
+  }, [session, user]);
+
+  async function getRsvpStatus() {
+    try {
+      if (!user) throw new Error("Waiting for user...");
+
+      let { data, error, status } = await supabase
+        .from("rsvps")
+        .select("event_id, status")
+        .eq("event_id", eventInfo.id)
+        .eq("email", user.email);
+
+      if (data) {
+        setGuestRsvpStatus("attending");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   if (!eventInfo) {
-    console.log("Error: data not ready yet");
+    console.log("Waiting for data...");
     return null;
   }
 
@@ -248,13 +270,12 @@ export default function EventPage({
   return (
     <div>
       <Header session={session} user={user} />
-
+      <Toaster />
       <div className="flex">
         <Head>
           <title>{`${event.event_name}`}</title>
         </Head>
         <div className="container">
-          <Toaster />
           <div>
             <div>
               <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
@@ -314,60 +335,8 @@ export default function EventPage({
                     {event.description}
                   </p>
                   <div>
-                    <div className="pt-2">
-                      <label htmlFor="email">Email</label>
-                      <input
-                        id="email"
-                        type="text"
-                        value={email || ""}
-                        className="h-10 p-1"
-                        onChange={(e) => setEmail(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="name">Name</label>
-                      <input
-                        id="name"
-                        type="text"
-                        value={full_name || ""}
-                        className="h-10 p-1"
-                        onChange={(e) => setName(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="company name">Company</label>
-                      <input
-                        id="company name"
-                        type="text"
-                        value={company_name || ""}
-                        className="h-10 p-1"
-                        onChange={(e) => setCompanyName(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="dietary restrictions">
-                        Dietary Restrictions
-                      </label>
-                      <input
-                        id="dietary restrictions"
-                        type="text"
-                        value={dietary_restrictions || ""}
-                        className="h-10 p-1"
-                        onChange={(e) => setDietaryRestrictions(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor="comments">Comments</label>
-                      <input
-                        id="comments"
-                        type="text"
-                        value={comments || ""}
-                        className="h-10 p-1"
-                        onChange={(e) => setComment(e.target.value)}
-                      />
-                    </div>
-                    <div className="py-2">
-                      {guestRsvpStatus === "attending" ? (
+                    {guestRsvpStatus === "attending" ? (
+                      <div className="py-2">
                         <div className="py-1">
                           <button
                             className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
@@ -376,8 +345,64 @@ export default function EventPage({
                             Can&apos;t Make It Anymore
                           </button>
                         </div>
-                      ) : (
+                      </div>
+                    ) : (
+                      <div>
+                        <div className="pt-2">
+                          <label htmlFor="email">Email</label>
+                          <input
+                            id="email"
+                            type="text"
+                            value={email || ""}
+                            className="h-10 p-1"
+                            onChange={(e) => setEmail(e.target.value)}
+                          />
+                        </div>
                         <div>
+                          <label htmlFor="name">Name</label>
+                          <input
+                            id="name"
+                            type="text"
+                            value={full_name || ""}
+                            className="h-10 p-1"
+                            onChange={(e) => setName(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="company name">Company</label>
+                          <input
+                            id="company name"
+                            type="text"
+                            value={company_name || ""}
+                            className="h-10 p-1"
+                            onChange={(e) => setCompanyName(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="dietary restrictions">
+                            Dietary Restrictions
+                          </label>
+                          <input
+                            id="dietary restrictions"
+                            type="text"
+                            value={dietary_restrictions || ""}
+                            className="h-10 p-1"
+                            onChange={(e) =>
+                              setDietaryRestrictions(e.target.value)
+                            }
+                          />
+                        </div>
+                        <div>
+                          <label htmlFor="comments">Comments</label>
+                          <input
+                            id="comments"
+                            type="text"
+                            value={comments || ""}
+                            className="h-10 p-1"
+                            onChange={(e) => setComment(e.target.value)}
+                          />
+                        </div>
+                        <div className="py-2">
                           <div className="py-1">
                             <button
                               className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
@@ -407,8 +432,8 @@ export default function EventPage({
                             </button>
                           </div>
                         </div>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

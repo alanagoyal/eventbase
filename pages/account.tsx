@@ -5,7 +5,7 @@ import {
   Session,
 } from "@supabase/auth-helpers-react";
 import { useEffect, useState } from "react";
-import { useToast } from "@/hooks/ui/use-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { Header } from "@/components/header";
 
@@ -19,7 +19,6 @@ export default function Account({ session }: { session: Session }) {
   const [company_name, setCompanyName] = useState<Guests["company_name"]>(null);
   const [dietary_restrictions, setDietaryRestrictions] =
     useState<Guests["dietary_restrictions"]>(null);
-  const { toast } = useToast();
 
   useEffect(() => {
     getUser();
@@ -27,7 +26,7 @@ export default function Account({ session }: { session: Session }) {
 
   async function getUser() {
     try {
-      if (!user) throw new Error("Error retrieving user data!");
+      if (!user) throw new Error("Waiting for user...");
 
       let { data, error, status } = await supabase
         .from("guests")
@@ -62,7 +61,7 @@ export default function Account({ session }: { session: Session }) {
     dietary_restrictions: Guests["dietary_restrictions"];
   }) {
     try {
-      if (!user) throw new Error("no user");
+      if (!user) throw new Error("Waiting for user...");
 
       const updates = {
         email,
@@ -76,7 +75,7 @@ export default function Account({ session }: { session: Session }) {
         .from("guests")
         .upsert(updates, { onConflict: "email" });
       if (error) throw error;
-      toast({ title: "Profile updated!" });
+      toast("Profile updated!");
     } catch (error) {
       console.log(error);
     }
@@ -85,7 +84,7 @@ export default function Account({ session }: { session: Session }) {
   return (
     <div>
       <Header session={session} user={user} />
-
+      <Toaster />
       <div className="flex-col sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
         <div>
           <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">

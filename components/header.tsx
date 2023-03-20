@@ -52,48 +52,55 @@ export function Header({ session, user }: { session: Session; user: any }) {
   }
 
   return (
-    <div className="flex justify-end items-center px-5 pt-5">
+    <div className="flex flex-row justify-end px-5 pt-5">
       <div>
-        {user ? (
+        <Link href="/events">
+          <div className="flex justify-center items-center rounded-full bg-base-case-pink-700 w-20 h-10 mr-2">
+            Events
+          </div>
+        </Link>
+      </div>
+      {user ? (
+        <div>
           <Link href="/account">
-            <div className="flex justify-center items-center rounded-full bg-[#F2ACB9] w-10 h-10">
-              {name ? name.charAt(0).toLowerCase() : ""}
+            <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-10 h-10">
+              {name ? name.charAt(0) : ""}
             </div>
           </Link>
-        ) : (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Sign In</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Sign In</DialogTitle>
-                <DialogDescription>
-                  We'll send a sign in link to your email.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    value={email || ""}
-                    className="col-span-3"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
+        </div>
+      ) : (
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant="outline">Sign In</Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Sign In</DialogTitle>
+              <DialogDescription>
+                We'll send a sign in link to your email.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  value={email || ""}
+                  className="col-span-3"
+                  onChange={(e) => setEmail(e.target.value)}
+                />
               </div>
-              <DialogFooter>
-                <Button type="submit" onClick={() => signInWithEmail(email!)}>
-                  Sign In
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-      </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit" onClick={() => signInWithEmail(email!)}>
+                Sign In
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   );
 }
