@@ -4,7 +4,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { eventInfo } = req.body;
+  const { description } = req.body;
 
   console.log(req.body);
   let pyq: string;
@@ -21,7 +21,7 @@ export default async function handler(
     model: 152,
     version: 497,
     account: 162,
-    input_sequence: `${eventInfo.description} colorful trending on artstation 4k hd sharp features`,
+    input_sequence: `${description} colorful trending on artstation 4k hd sharp features`,
     negative_prompt:
       "grotesque, malformed, ugly, disfigured, text, human, person",
   });

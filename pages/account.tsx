@@ -85,7 +85,7 @@ export default function Account({ session }: { session: Session }) {
     <div>
       <Header session={session} user={user} />
       <Toaster />
-      <div className="flex-col sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
+      <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
         <div>
           <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
             {full_name ? `Welcome, ${full_name} 👋🏼` : `Welcome 👋🏼`}
