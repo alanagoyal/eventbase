@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { Header } from "@/components/header";
+import Head from "next/head";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
@@ -50,12 +51,10 @@ export default function Account({ session }: { session: Session }) {
   }
 
   async function updateProfile({
-    email,
     full_name,
     company_name,
     dietary_restrictions,
   }: {
-    email: Guests["email"];
     full_name: Guests["full_name"];
     company_name: Guests["company_name"];
     dietary_restrictions: Guests["dietary_restrictions"];
@@ -64,7 +63,7 @@ export default function Account({ session }: { session: Session }) {
       if (!user) throw new Error("Waiting for user...");
 
       const updates = {
-        email,
+        email: user.email!,
         full_name,
         company_name,
         dietary_restrictions,
@@ -85,6 +84,9 @@ export default function Account({ session }: { session: Session }) {
     <div>
       <Header session={session} user={user} />
       <Toaster />
+      <Head>
+        <title>Account</title>
+      </Head>
       <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
         <div>
           <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
@@ -98,7 +100,7 @@ export default function Account({ session }: { session: Session }) {
             <input
               id="email"
               type="text"
-              value={email || ""}
+              value={user ? user!.email : email || ""}
               className="h-10 p-1"
               disabled
             />
@@ -140,7 +142,6 @@ export default function Account({ session }: { session: Session }) {
                 className="button primary block"
                 onClick={() =>
                   updateProfile({
-                    email,
                     full_name,
                     company_name,
                     dietary_restrictions,

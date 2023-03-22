@@ -3,6 +3,7 @@ import { Database } from "@/types/supabase";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -18,7 +19,7 @@ export default function NewEvent({ session }: { session: Session }) {
   const [start_time, setStartTime] = useState<Events["start_time"]>(null);
   const [end_time, setEndTime] = useState<Events["end_time"]>(null);
   const [og_image, setOgImage] = useState<Events["og_image"]>(null);
-
+  const router = useRouter();
   const slugify = require("slugify");
 
   async function getImage() {
@@ -52,7 +53,7 @@ export default function NewEvent({ session }: { session: Session }) {
     start_time: Events["start_time"];
     end_time: Events["end_time"];
   }) {
-    toast("Generating an image for your event...");
+    toast("One minute while we generate an image for your event...");
     try {
       if (!user) throw new Error("No user...");
 
@@ -73,6 +74,7 @@ export default function NewEvent({ session }: { session: Session }) {
       let { error } = await supabase.from("events").insert(updates);
       if (error) throw error;
       toast.success("Event created!");
+      router.push(`/events/${updates.event_url}`);
     } catch (error) {
       console.log(error);
     }
@@ -82,94 +84,82 @@ export default function NewEvent({ session }: { session: Session }) {
     <div>
       <Header session={session} user={user} />
       <Toaster />
-      <div className="flex">
-        <Head>
-          <title>New Event</title>
-        </Head>
-        <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-2">
+      <Head>
+        <title>New Event</title>
+      </Head>
+      <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-2">
+        <div>
+          <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
+            Let&apos;s Party 🎉{" "}
+          </h1>
+        </div>{" "}
+        <div className="flex-col justify-between items-center mx-auto w-full pb-2">
+          <div className="pt-2">
+            <label htmlFor="name">Event Name</label>
+            <input
+              id="name"
+              type="text"
+              value={event_name || ""}
+              className="h-10 p-1"
+              onChange={(e) => setEventName(e.target.value)}
+            />
+          </div>
           <div>
-            <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
-              New Event{" "}
-            </h1>
-          </div>{" "}
-          <div className="flex-col justify-between items-center mx-auto w-full pb-2">
-            <div className="pt-2">
-              <label htmlFor="name">Event Name</label>
-              <input
-                id="name"
-                type="text"
-                value={event_name || ""}
-                className="h-10 p-1"
-                onChange={(e) => setEventName(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="description">Description</label>
-              <input
-                id="description"
-                type="text"
-                value={description || ""}
-                className="h-10 p-1"
-                onChange={(e) => setDescription(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="location">Location</label>
-              <input
-                id="location"
-                type="text"
-                value={location || ""}
-                className="h-10 p-1"
-                onChange={(e) => setLocation(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="date">Date</label>
-              <input
-                id="date"
-                type="date"
-                value={date || ""}
-                className="h-10 p-1"
-                onChange={(e) => setDate(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="start time">Start Time</label>
-              <input
-                id="start time"
-                type="time"
-                value={start_time || ""}
-                className="h-10 p-1"
-                onChange={(e) => setStartTime(e.target.value)}
-              />
-            </div>
-            <div>
-              <label htmlFor="end time">End Time</label>
-              <input
-                id="end time"
-                type="time"
-                value={end_time || ""}
-                className="h-10 p-1"
-                onChange={(e) => setEndTime(e.target.value)}
-              />
-            </div>
-            <div className="py-2">
-              <div className="py-1">
-                <button
-                  className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      saveEvent({
-                        event_name,
-                        description,
-                        location,
-                        date,
-                        start_time,
-                        end_time,
-                      });
-                    }
-                  }}
-                  onClick={() =>
+            <label htmlFor="description">Description</label>
+            <input
+              id="description"
+              type="text"
+              value={description || ""}
+              className="h-10 p-1"
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="location">Location</label>
+            <input
+              id="location"
+              type="text"
+              value={location || ""}
+              className="h-10 p-1"
+              onChange={(e) => setLocation(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="date">Date</label>
+            <input
+              id="date"
+              type="date"
+              value={date || ""}
+              className="h-10 p-1"
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="start time">Start Time</label>
+            <input
+              id="start time"
+              type="time"
+              value={start_time || ""}
+              className="h-10 p-1"
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+          </div>
+          <div>
+            <label htmlFor="end time">End Time</label>
+            <input
+              id="end time"
+              type="time"
+              value={end_time || ""}
+              className="h-10 p-1"
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </div>
+          <div className="py-2">
+            <div className="py-1">
+              <button
+                className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
                     saveEvent({
                       event_name,
                       description,
@@ -177,12 +167,22 @@ export default function NewEvent({ session }: { session: Session }) {
                       date,
                       start_time,
                       end_time,
-                    })
+                    });
                   }
-                >
-                  Count Me In
-                </button>
-              </div>
+                }}
+                onClick={() =>
+                  saveEvent({
+                    event_name,
+                    description,
+                    location,
+                    date,
+                    start_time,
+                    end_time,
+                  })
+                }
+              >
+                Count Me In
+              </button>
             </div>
           </div>
         </div>

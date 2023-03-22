@@ -50,10 +50,38 @@ export default function EventPage({
   const [comments, setComment] = useState<Rsvps["comments"]>(null);
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
   const user = useUser();
+  const [allRsvps, setAllRsvps] = useState<any>(null);
 
   useEffect(() => {
-    getRsvpStatus();
+    getUser();
+    getGuests();
   }, [session, user]);
+
+  async function getUser() {
+    try {
+      if (!user) throw new Error("Waiting for user...");
+      getRsvpStatus();
+
+      let { data, error, status } = await supabase
+        .from("guests")
+        .select()
+        .eq("email", user.email)
+        .single();
+
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setName(data.full_name);
+        setEmail(data.email);
+        setCompanyName(data.company_name);
+        setDietaryRestrictions(data.dietary_restrictions);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function getRsvpStatus() {
     try {
@@ -65,7 +93,7 @@ export default function EventPage({
         .eq("event_id", eventInfo.id)
         .eq("email", user.email);
 
-      if (data) {
+      if (data!.length !== 0) {
         setGuestRsvpStatus("attending");
       }
     } catch (error) {
@@ -78,9 +106,22 @@ export default function EventPage({
     return null;
   }
 
-  const event = eventInfo;
+  async function getGuests() {
+    try {
+      let { data, error, status } = await supabase
+        .from("rsvps")
+        .select(
+          "email (id, full_name, company_name, dietary_restrictions), comments"
+        )
+        .eq("event_id", event.id);
+      setAllRsvps(data);
+      console.log(data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-  // set formatted and calendar date strings
+  const event = eventInfo;
   const d = new Date(event.date!);
   const formattedDate = d.toLocaleDateString("en-US", {
     weekday: "long",
@@ -91,46 +132,12 @@ export default function EventPage({
   });
   const calDate = event.date!.substring(0, 10);
 
-  // set formatted and start/end time
   const t = new Date();
   const [hours, minutes, seconds] = event.start_time!.split(":").map(Number);
   t.setHours(hours, minutes, seconds);
   const formattedTime = t.toLocaleTimeString();
   const startTime = event.start_time!.substring(0, 5);
   const endTime = event.end_time!.substring(0, 5);
-
-  // set image if not set
-  /*   const og_image = event.og_image;
-  if (!og_image) {
-    console.log("no og image");
-    setImage(event);
-  }
-
-  async function setImage(eventInfo: any) {
-    console.log("inside set image");
-    try {
-      const response = await fetch("/api/imageGen", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ eventInfo: event }),
-      });
-      const data = await response.json();
-
-      if (data) {
-        const { error } = await supabase
-          .from("events")
-          .update({ og_image: data.response })
-          .eq("id", event.id);
-        if (error) {
-          console.log("Error inserting image into database", error);
-        } else {
-          console.log("Inserted image into database successfully");
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  } */
 
   const DynamicAddToCalendarButton = dynamic(
     () =>
@@ -256,11 +263,11 @@ export default function EventPage({
   async function removeGuest(email: string) {
     toast("We hope to see you next time!");
     setGuestRsvpStatus("not attending");
-
     let { data, error, status } = await supabase
       .from("rsvps")
       .delete()
-      .eq("email", email);
+      .eq("email", email)
+      .eq("event_id", event.id);
 
     if (error && status !== 406) {
       throw error;
@@ -271,173 +278,183 @@ export default function EventPage({
     <div>
       <Header session={session} user={user} />
       <Toaster />
-      <div className="flex">
-        <Head>
-          <title>{`${event.event_name}`}</title>
-        </Head>
-        <div className="container">
+      <Head>
+        <title>{`${event.event_name}`}</title>
+      </Head>
+      <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
+        <div>
+          <div className=" w-full pb-6">
+            <FrigadeProgressBadge
+              flowId="flow_8L4q96JaRxAR3zEF"
+              title="Welcome 👋🏼"
+              style={{
+                backgroundColor: "#f2acb9",
+                borderColor: "#f2acb9",
+                color: "#FFFFFF",
+              }}
+              appearance={{
+                theme: {
+                  colorPrimary: "#ffffff",
+                },
+              }}
+              textStyle={{ color: "#FFFFFF" }}
+              hideOnFlowCompletion={true}
+            />
+            <FrigadeChecklist
+              flowId="flow_8L4q96JaRxAR3zEF"
+              title="Welcome 👋🏼"
+              subtitle="We're glad you're here!"
+              type="modal"
+            />
+          </div>
+          <h1 className="text-5xl my-2 font-bold font-syne">
+            <Balancer>{event.event_name}</Balancer>
+          </h1>
+          <h2 className="text-2xl font-syne">{formattedDate}</h2>
+          <h2 className="text-gray-600 font-syne text-xl pb-4">
+            {formattedTime}
+          </h2>
+          <div className="-ml-2 mb-4">
+            <DynamicAddToCalendarButton
+              name={event.event_name!}
+              startDate={calDate}
+              startTime={startTime}
+              endTime={endTime}
+              timeZone="America/Los_Angeles"
+              location={event.location!}
+              buttonStyle="date"
+              size="5"
+              lightMode="bodyScheme"
+              options={["Google", "iCal"]}
+            ></DynamicAddToCalendarButton>
+          </div>
+          <h3 className="text-gray-600 font-space text-md">
+            <a href={`${event.location_url}`}>{event.location}</a>
+          </h3>
+          <h2 className="text-gray-600 font-space text-md pb-4">
+            Hosted By: Base Case Capital
+          </h2>
+          <p className="text-gray-600 font-space text-md">
+            {event.description}
+          </p>
           <div>
-            <div>
-              <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
-                <div>
-                  <div className=" w-full pb-6">
-                    <FrigadeProgressBadge
-                      flowId="flow_8L4q96JaRxAR3zEF"
-                      title="Welcome 👋🏼"
-                      style={{
-                        backgroundColor: "#f2acb9",
-                        borderColor: "#f2acb9",
-                        color: "#FFFFFF",
-                      }}
-                      appearance={{
-                        theme: {
-                          colorPrimary: "#ffffff",
-                        },
-                      }}
-                      textStyle={{ color: "#FFFFFF" }}
-                      hideOnFlowCompletion={true}
-                    />
-                    <FrigadeChecklist
-                      flowId="flow_8L4q96JaRxAR3zEF"
-                      title="Welcome 👋🏼"
-                      subtitle="We're glad you're here!"
-                      type="modal"
-                    />
-                  </div>
-                  <h1 className="text-5xl my-2 font-bold font-syne">
-                    <Balancer>{event.event_name}</Balancer>
-                  </h1>
-                  <h2 className="text-2xl font-syne">{formattedDate}</h2>
-                  <h2 className="text-gray-600 font-syne text-xl pb-4">
-                    {formattedTime}
-                  </h2>
-                  <div className="-ml-2 mb-4">
-                    <DynamicAddToCalendarButton
-                      name={event.event_name!}
-                      startDate={calDate}
-                      startTime={startTime}
-                      endTime={endTime}
-                      timeZone="America/Los_Angeles"
-                      location={event.location!}
-                      buttonStyle="date"
-                      size="5"
-                      lightMode="bodyScheme"
-                      options={["Google", "iCal"]}
-                    ></DynamicAddToCalendarButton>
-                  </div>
-                  <h3 className="text-gray-600 font-space text-md">
-                    <a href={`${event.location_url}`}>{event.location}</a>
-                  </h3>
-                  <h2 className="text-gray-600 font-space text-md pb-4">
-                    Hosted By: Base Case Capital
-                  </h2>
-                  <p className="text-gray-600 font-space text-md">
-                    {event.description}
-                  </p>
-                  <div>
-                    {guestRsvpStatus === "attending" ? (
-                      <div className="py-2">
-                        <div className="py-1">
-                          <button
-                            className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
-                            onClick={() => removeGuest(email!)}
-                          >
-                            Can&apos;t Make It Anymore
-                          </button>
-                        </div>
-                      </div>
-                    ) : (
-                      <div>
-                        <div className="pt-2">
-                          <label htmlFor="email">Email</label>
-                          <input
-                            id="email"
-                            type="text"
-                            value={email || ""}
-                            className="h-10 p-1"
-                            onChange={(e) => setEmail(e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="name">Name</label>
-                          <input
-                            id="name"
-                            type="text"
-                            value={full_name || ""}
-                            className="h-10 p-1"
-                            onChange={(e) => setName(e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="company name">Company</label>
-                          <input
-                            id="company name"
-                            type="text"
-                            value={company_name || ""}
-                            className="h-10 p-1"
-                            onChange={(e) => setCompanyName(e.target.value)}
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="dietary restrictions">
-                            Dietary Restrictions
-                          </label>
-                          <input
-                            id="dietary restrictions"
-                            type="text"
-                            value={dietary_restrictions || ""}
-                            className="h-10 p-1"
-                            onChange={(e) =>
-                              setDietaryRestrictions(e.target.value)
-                            }
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="comments">Comments</label>
-                          <input
-                            id="comments"
-                            type="text"
-                            value={comments || ""}
-                            className="h-10 p-1"
-                            onChange={(e) => setComment(e.target.value)}
-                          />
-                        </div>
-                        <div className="py-2">
-                          <div className="py-1">
-                            <button
-                              className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  onRsvp({
-                                    email,
-                                    full_name,
-                                    company_name,
-                                    dietary_restrictions,
-                                    comments,
-                                  });
-                                }
-                              }}
-                              onClick={() =>
-                                onRsvp({
-                                  email,
-                                  full_name,
-                                  company_name,
-                                  dietary_restrictions,
-                                  comments,
-                                })
-                              }
-                              disabled={guestRsvpStatus == "attending"}
-                            >
-                              Count Me In
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
+            {user?.id === event.created_by ? (
+              <div>
+                <h2 className="text-2xl font-syne pt-4">Confirmed Guests</h2>
+                <ol>
+                  {allRsvps &&
+                    allRsvps.map((guest: any) => (
+                      <li
+                        className="text-gray-600 font-space text-md"
+                        key={guest.email.id}
+                      >
+                        {guest.email.full_name} ({guest.email.company_name})
+                      </li>
+                    ))}
+                </ol>
               </div>
-            </div>
+            ) : (
+              <div>
+                {guestRsvpStatus === "attending" ? (
+                  <div className="py-2">
+                    <div className="py-1">
+                      <button
+                        className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                        onClick={() => removeGuest(email!)}
+                      >
+                        Can&apos;t Make It Anymore
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="pt-2">
+                      <label htmlFor="email">Email</label>
+                      <input
+                        id="email"
+                        type="text"
+                        value={email || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setEmail(e.target.value)}
+                        disabled
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="name">Name</label>
+                      <input
+                        id="name"
+                        type="text"
+                        value={full_name || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="company name">Company</label>
+                      <input
+                        id="company name"
+                        type="text"
+                        value={company_name || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setCompanyName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="dietary restrictions">
+                        Dietary Restrictions
+                      </label>
+                      <input
+                        id="dietary restrictions"
+                        type="text"
+                        value={dietary_restrictions || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setDietaryRestrictions(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="comments">Comments</label>
+                      <input
+                        id="comments"
+                        type="text"
+                        value={comments || ""}
+                        className="h-10 p-1"
+                        onChange={(e) => setComment(e.target.value)}
+                      />
+                    </div>
+                    <div className="py-2">
+                      <div className="py-1">
+                        <button
+                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              onRsvp({
+                                email,
+                                full_name,
+                                company_name,
+                                dietary_restrictions,
+                                comments,
+                              });
+                            }
+                          }}
+                          onClick={() =>
+                            onRsvp({
+                              email,
+                              full_name,
+                              company_name,
+                              dietary_restrictions,
+                              comments,
+                            })
+                          }
+                          disabled={guestRsvpStatus == "attending"}
+                        >
+                          Count Me In
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
