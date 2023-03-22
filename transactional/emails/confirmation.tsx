@@ -47,10 +47,20 @@ export default function EmailTemplate({
             <Text className="text-black text-[16px] font-normal text-center p-0 my-[5px] mx-0">
               At {formattedTime} on {formattedDate}
             </Text>
+            <Text className="text-blue-600 text-[16px] font-normal text-center p-0 my-[5px] mx-0">
+              <Link
+                href={eventInfo.location_url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {eventInfo.location}
+              </Link>
+            </Text>
+
             <Text className="text-black text-[12px] font-normal text-center p-0 my-5px] mx-0">
               Can't make it anymore?{" "}
               <Link
-                href={`${baseUrl}/events/${eventInfo.event_url}`}
+                href={`${baseUrl}`}
                 className="text-blue-600 no-underline  mx-auto"
               >
                 Please let us know.
