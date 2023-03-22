@@ -48,7 +48,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
     const { data, error } = await supabase.auth.signInWithOtp({
       email: email!,
       options: {
-        emailRedirectTo: "http://localhost:3000/account",
+        emailRedirectTo: "https://base-case-events.vercel.app/account",
       },
     });
   }
