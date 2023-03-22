@@ -64,7 +64,8 @@ export function Header({ session, user }: { session: Session; user: any }) {
             <DialogHeader>
               <DialogTitle>Sign In</DialogTitle>
               <DialogDescription>
-                No password needed. We'll send a sign in link to your email.
+                No password needed. We&apos;ll send a sign in link to your
+                email.
               </DialogDescription>
             </DialogHeader>
             <div className="grid gap-4 py-4">
