@@ -376,7 +376,7 @@ export default function EventPage({
                         value={email || ""}
                         className="h-10 p-1"
                         onChange={(e) => setEmail(e.target.value)}
-                        disabled
+                        disabled={user ? true : false}
                       />
                     </div>
                     <div>
