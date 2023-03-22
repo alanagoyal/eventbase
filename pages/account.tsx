@@ -15,6 +15,7 @@ type Guests = Database["public"]["Tables"]["guests"]["Row"];
 export default function Account({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>();
   const user = useUser();
+  const router = useRouter();
   const [full_name, setName] = useState<Guests["full_name"]>(null);
   const [email, setEmail] = useState<Guests["email"]>(null);
   const [company_name, setCompanyName] = useState<Guests["company_name"]>(null);
@@ -80,6 +81,10 @@ export default function Account({ session }: { session: Session }) {
     }
   }
 
+  async function SignOut() {
+    supabase.auth.signOut();
+    router.push("/");
+  }
   return (
     <div>
       <Header session={session} user={user} />
@@ -153,10 +158,7 @@ export default function Account({ session }: { session: Session }) {
             </div>
 
             <div className="py-1">
-              <button
-                className="button block"
-                onClick={() => supabase.auth.signOut()}
-              >
+              <button className="button block" onClick={() => SignOut()}>
                 Sign Out
               </button>
             </div>

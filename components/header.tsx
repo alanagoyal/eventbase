@@ -55,34 +55,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
 
   return (
     <div className="flex flex-row justify-end px-5 pt-5">
-      {router.pathname === "/events" ? (
-        <div>
-          {" "}
-          <Link href="/new_event">
-            <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-32 h-10 mr-2">
-              New Event
-            </div>
-          </Link>
-        </div>
-      ) : (
-        <div></div>
-      )}
-      <div>
-        <Link href="/events">
-          <div className="flex justify-center items-center rounded-full bg-base-case-pink-700 w-24 h-10 mr-2">
-            Events
-          </div>
-        </Link>
-      </div>
-      {user ? (
-        <div>
-          <Link href="/account">
-            <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-10 h-10">
-              {name ? name.charAt(0) : ""}
-            </div>
-          </Link>
-        </div>
-      ) : (
+      {!user ? (
         <Dialog>
           <DialogTrigger asChild>
             <Button variant="outline">Sign In</Button>
@@ -114,6 +87,32 @@ export function Header({ session, user }: { session: Session; user: any }) {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+      ) : (
+        <>
+          {router.pathname === "/events" && (
+            <div>
+              <Link href="/new_event">
+                <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-32 h-10 mr-2">
+                  New Event
+                </div>
+              </Link>
+            </div>
+          )}
+          <div>
+            <Link href="/events">
+              <div className="flex justify-center items-center rounded-full bg-base-case-pink-700 w-24 h-10 mr-2">
+                Events
+              </div>
+            </Link>
+          </div>
+          <div>
+            <Link href="/account">
+              <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-10 h-10">
+                {name ? name.charAt(0) : ""}
+              </div>
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );
