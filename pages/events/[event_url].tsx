@@ -283,30 +283,6 @@ export default function EventPage({
       </Head>
       <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
         <div>
-          <div className=" w-full pb-6">
-            <FrigadeProgressBadge
-              flowId="flow_8L4q96JaRxAR3zEF"
-              title="Welcome 👋🏼"
-              style={{
-                backgroundColor: "#f2acb9",
-                borderColor: "#f2acb9",
-                color: "#FFFFFF",
-              }}
-              appearance={{
-                theme: {
-                  colorPrimary: "#ffffff",
-                },
-              }}
-              textStyle={{ color: "#FFFFFF" }}
-              hideOnFlowCompletion={true}
-            />
-            <FrigadeChecklist
-              flowId="flow_8L4q96JaRxAR3zEF"
-              title="Welcome 👋🏼"
-              subtitle="We're glad you're here!"
-              type="modal"
-            />
-          </div>
           <h1 className="text-5xl my-2 font-bold font-syne">
             <Balancer>{event.event_name}</Balancer>
           </h1>

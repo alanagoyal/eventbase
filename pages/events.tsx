@@ -2,6 +2,7 @@ import { Header } from "@/components/header";
 import { Database } from "@/types/supabase";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -35,6 +36,9 @@ export default function Events({ session }: { session: Session }) {
   return (
     <div>
       <Header session={session} user={user} />
+      <Head>
+        <title>New Event</title>
+      </Head>
       <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
         <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
           {allData && allData.length
