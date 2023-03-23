@@ -56,7 +56,6 @@ export default function EmailTemplate({
                 {eventInfo.location}
               </Link>
             </Text>
-
             <Text className="text-black text-[12px] font-normal text-center p-0 my-5px] mx-0">
               Can't make it anymore?{" "}
               <Link

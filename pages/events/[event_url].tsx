@@ -15,7 +15,11 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
-import { FrigadeChecklist, FrigadeProgressBadge } from "@frigade/react";
+import {
+  FrigadeChecklist,
+  FrigadeProgressBadge,
+  FrigadeTour,
+} from "@frigade/react";
 import { Header } from "@/components/header";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
@@ -281,11 +285,16 @@ export default function EventPage({
       <Head>
         <title>{`${event.event_name}`}</title>
       </Head>
+      <FrigadeTour flowId="flow_is5fTYIviWExwRjW" tooltipPosition="right" />
+
       <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
         <div>
-          <h1 className="text-5xl my-2 font-bold font-syne">
-            <Balancer>{event.event_name}</Balancer>
-          </h1>
+          <span id="#tooltip-select-0">
+            <h1 className="text-5xl my-2 font-bold font-syne">
+              <Balancer>{event.event_name}</Balancer>
+            </h1>
+          </span>
+
           <h2 className="text-2xl font-syne">{formattedDate}</h2>
           <h2 className="text-gray-600 font-syne text-xl pb-4">
             {formattedTime}

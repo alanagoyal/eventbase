@@ -117,7 +117,8 @@ export default function NewEvent({ session }: { session: Session }) {
           <div>
             <label htmlFor="location">Location</label>
             <input
-              id="location"
+              id="autocomplete"
+              placeholder="Enter your location"
               type="text"
               value={location || ""}
               className="h-10 p-1"
@@ -181,7 +182,7 @@ export default function NewEvent({ session }: { session: Session }) {
                   })
                 }
               >
-                Count Me In
+                Create Event
               </button>
             </div>
           </div>

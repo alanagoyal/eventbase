@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Database } from "@/types/supabase";
+import { FrigadeTour } from "@frigade/react";
 import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -54,67 +55,76 @@ export function Header({ session, user }: { session: Session; user: any }) {
   }
 
   return (
-    <div className="flex flex-row justify-end px-5 pt-5">
-      {!user ? (
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="outline">Sign In</Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>Sign In</DialogTitle>
-              <DialogDescription>
-                No password needed. We&apos;ll send a sign in link to your
-                email.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  value={email || ""}
-                  className="col-span-3"
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button type="submit" onClick={() => signInWithEmail(email!)}>
-                Sign In
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      ) : (
-        <>
-          {router.pathname === "/events" && (
-            <div>
-              <Link href="/new_event">
-                <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-32 h-10 mr-2">
-                  New Event
+    <div>
+      <FrigadeTour flowId="flow_is5fTYIviWExwRjW" tooltipPosition="left" />
+      <div className="flex flex-row justify-end px-5 pt-5">
+        {!user ? (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">Sign In</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Sign In</DialogTitle>
+                <DialogDescription>
+                  No password needed. We&apos;ll send a sign in link to your
+                  email.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <Label htmlFor="name" className="text-right">
+                    Email
+                  </Label>
+                  <Input
+                    id="email"
+                    value={email || ""}
+                    className="col-span-3"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
-              </Link>
+              </div>
+              <DialogFooter>
+                <Button type="submit" onClick={() => signInWithEmail(email!)}>
+                  Sign In
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        ) : (
+          <>
+            {router.pathname === "/events" && (
+              <div>
+                <span id="tooltip-select-3">
+                  <Link href="/new_event">
+                    <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-32 h-10 mr-2">
+                      New Event
+                    </div>
+                  </Link>
+                </span>
+              </div>
+            )}
+            <div>
+              <span id="tooltip-select-2">
+                <Link href="/events">
+                  <div className="flex justify-center items-center rounded-full bg-base-case-pink-700 w-24 h-10 mr-2">
+                    Events
+                  </div>
+                </Link>
+              </span>
             </div>
-          )}
-          <div>
-            <Link href="/events">
-              <div className="flex justify-center items-center rounded-full bg-base-case-pink-700 w-24 h-10 mr-2">
-                Events
-              </div>
-            </Link>
-          </div>
-          <div>
-            <Link href="/account">
-              <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-10 h-10">
-                {name ? name.charAt(0) : ""}
-              </div>
-            </Link>
-          </div>
-        </>
-      )}
+            <div>
+              <span id="tooltip-select-1">
+                <Link href="/account">
+                  <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-10 h-10">
+                    {name ? name.charAt(0) : ""}
+                  </div>
+                </Link>
+              </span>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
