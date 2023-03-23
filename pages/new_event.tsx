@@ -6,6 +6,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
+import LocationAutocomplete from "@/components/location";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 
@@ -15,6 +16,7 @@ export default function NewEvent({ session }: { session: Session }) {
   const [event_name, setEventName] = useState<Events["event_name"]>(null);
   const [description, setDescription] = useState<Events["description"]>(null);
   const [location, setLocation] = useState<Events["location"]>(null);
+  const [location_url, setLocationUrl] = useState<Events["location_url"]>(null);
   const [date, setDate] = useState<Events["date"]>(null);
   const [start_time, setStartTime] = useState<Events["start_time"]>(null);
   const [end_time, setEndTime] = useState<Events["end_time"]>(null);
@@ -42,6 +44,7 @@ export default function NewEvent({ session }: { session: Session }) {
     event_name,
     description,
     location,
+    location_url,
     date,
     start_time,
     end_time,
@@ -49,6 +52,7 @@ export default function NewEvent({ session }: { session: Session }) {
     event_name: Events["event_name"];
     description: Events["description"];
     location: Events["location"];
+    location_url: Events["location_url"];
     date: Events["date"];
     start_time: Events["start_time"];
     end_time: Events["end_time"];
@@ -63,6 +67,7 @@ export default function NewEvent({ session }: { session: Session }) {
         event_name,
         description,
         location,
+        location_url,
         date,
         start_time,
         end_time,
@@ -116,13 +121,10 @@ export default function NewEvent({ session }: { session: Session }) {
           </div>
           <div>
             <label htmlFor="location">Location</label>
-            <input
-              id="autocomplete"
-              placeholder="Enter your location"
-              type="text"
+            <LocationAutocomplete
+              setLocation={setLocation}
+              setLocationUrl={setLocationUrl}
               value={location || ""}
-              className="h-10 p-1"
-              onChange={(e) => setLocation(e.target.value)}
             />
           </div>
           <div>
@@ -165,6 +167,7 @@ export default function NewEvent({ session }: { session: Session }) {
                       event_name,
                       description,
                       location,
+                      location_url,
                       date,
                       start_time,
                       end_time,
@@ -176,6 +179,7 @@ export default function NewEvent({ session }: { session: Session }) {
                     event_name,
                     description,
                     location,
+                    location_url,
                     date,
                     start_time,
                     end_time,

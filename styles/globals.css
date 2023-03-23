@@ -257,6 +257,20 @@ button.primary,
   border: 1px solid var(--custom-color-brand);
 }
 
+.pac-container {
+  z-index: 1000;
+}
+
+/* Change the text color of dropdown items */
+.pac-item {
+  color: black !important;
+}
+
+/* Change the text color of matched portion of the suggestion */
+.pac-matched {
+  color: black !important;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
