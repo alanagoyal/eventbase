@@ -65,7 +65,7 @@ export default function Events({ session }: { session: Session }) {
       {allRsvps && allRsvps.length ? (
         <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
           <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
-            You're attending ✨
+            You&apos;re attending ✨
           </h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
             {allRsvps &&
@@ -98,7 +98,7 @@ export default function Events({ session }: { session: Session }) {
       {allHostings && allHostings.length ? (
         <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
           <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
-            You're hosting
+            You&apos;re hosting
           </h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
             {allHostings &&
