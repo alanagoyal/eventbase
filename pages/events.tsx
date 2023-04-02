@@ -1,4 +1,3 @@
-import Footer from "@/components/footer";
 import { Header } from "@/components/header";
 import { Database } from "@/types/supabase";
 import { Session } from "@supabase/auth-helpers-nextjs";
