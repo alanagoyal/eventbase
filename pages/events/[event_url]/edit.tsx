@@ -1,18 +1,21 @@
 import { Header } from "@/components/header";
+import LocationAutocomplete from "@/components/location";
 import { Database } from "@/types/supabase";
-import { Session } from "@supabase/auth-helpers-nextjs";
-import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useUser } from "@frigade/react";
+import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import LocationAutocomplete from "@/components/location";
+import slugify from "slugify";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 
-export default function NewEvent({ session }: { session: Session }) {
+export default function EditEventPage({ session }: { session: Session }) {
   const supabase = useSupabaseClient<Database>();
+  const router = useRouter();
   const user = useUser();
+  const [eventId, setEventId] = useState<Events["id"]>();
   const [event_name, setEventName] = useState<Events["event_name"]>(null);
   const [description, setDescription] = useState<Events["description"]>(null);
   const [location, setLocation] = useState<Events["location"]>(null);
@@ -21,8 +24,39 @@ export default function NewEvent({ session }: { session: Session }) {
   const [start_time, setStartTime] = useState<Events["start_time"]>(null);
   const [end_time, setEndTime] = useState<Events["end_time"]>(null);
   const [og_image, setOgImage] = useState<Events["og_image"]>(null);
-  const router = useRouter();
-  const slugify = require("slugify");
+  const { event_url } = router.query;
+
+  useEffect(() => {
+    getEvent();
+  }, []);
+
+  async function getEvent() {
+    try {
+      let { data, error, status } = await supabase
+        .from("events")
+        .select()
+        .eq("event_url", event_url)
+        .single();
+
+      if (error && status !== 406) {
+        throw error;
+      }
+
+      if (data) {
+        setEventId(data.id);
+        setEventName(data.event_name);
+        setDescription(data.description);
+        setLocation(data.location);
+        setLocationUrl(data.location_url);
+        setStartTime(data.start_time);
+        setEndTime(data.end_time);
+        setOgImage(data.og_image);
+        setDate(data.date!.substring(0, 10));
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async function getImage() {
     try {
@@ -40,7 +74,7 @@ export default function NewEvent({ session }: { session: Session }) {
     }
   }
 
-  async function saveEvent({
+  async function updateEvent({
     event_name,
     description,
     location,
@@ -57,13 +91,10 @@ export default function NewEvent({ session }: { session: Session }) {
     start_time: Events["start_time"];
     end_time: Events["end_time"];
   }) {
-    toast("One minute while we generate an image for your event...");
     try {
       if (!user) throw new Error("No user...");
 
       const updates = {
-        created_at: new Date().toISOString(),
-
         event_name,
         description,
         location,
@@ -71,14 +102,16 @@ export default function NewEvent({ session }: { session: Session }) {
         date,
         start_time,
         end_time,
-        created_by: user.id,
-        event_url: slugify(event_name, { lower: true, strict: true }),
-        og_image: await getImage(),
+        event_url: slugify(event_name!, { lower: true, strict: true }),
+        // og_image: await getImage(),
       };
 
-      let { error } = await supabase.from("events").insert(updates);
+      let { error } = await supabase
+        .from("events")
+        .update(updates)
+        .eq("id", eventId);
       if (error) throw error;
-      toast.success("Event created!");
+      toast.success("Event updated!");
       router.push(`/events/${updates.event_url}`);
     } catch (error) {
       console.log(error);
@@ -90,12 +123,12 @@ export default function NewEvent({ session }: { session: Session }) {
       <Header session={session} user={user} />
       <Toaster />
       <Head>
-        <title>New Event</title>
+        <title>Update Event</title>
       </Head>
       <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-2">
         <div>
           <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
-            Let&apos;s party 🎉{" "}
+            {event_name}
           </h1>
         </div>{" "}
         <div className="flex-col justify-between items-center mx-auto w-full pb-2">
@@ -163,7 +196,7 @@ export default function NewEvent({ session }: { session: Session }) {
                 className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
-                    saveEvent({
+                    updateEvent({
                       event_name,
                       description,
                       location,
@@ -175,7 +208,7 @@ export default function NewEvent({ session }: { session: Session }) {
                   }
                 }}
                 onClick={() =>
-                  saveEvent({
+                  updateEvent({
                     event_name,
                     description,
                     location,
@@ -186,7 +219,7 @@ export default function NewEvent({ session }: { session: Session }) {
                   })
                 }
               >
-                Create Event
+                Update Event
               </button>
             </div>
           </div>

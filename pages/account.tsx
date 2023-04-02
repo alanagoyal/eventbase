@@ -9,6 +9,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/router";
 import { Header } from "@/components/header";
 import Head from "next/head";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@radix-ui/react-label";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
@@ -17,7 +20,7 @@ export default function Account({ session }: { session: Session }) {
   const user = useUser();
   const router = useRouter();
   const [full_name, setName] = useState<Guests["full_name"]>(null);
-  const [email, setEmail] = useState<Guests["email"]>(null);
+  const [email, setEmail] = useState<Guests["email"]>("");
   const [company_name, setCompanyName] = useState<Guests["company_name"]>(null);
   const [dietary_restrictions, setDietaryRestrictions] =
     useState<Guests["dietary_restrictions"]>(null);
@@ -73,7 +76,8 @@ export default function Account({ session }: { session: Session }) {
 
       let { error } = await supabase
         .from("guests")
-        .upsert(updates, { onConflict: "email" });
+        .update(updates)
+        .eq("email", user.email);
       if (error) throw error;
       toast("Profile updated!");
     } catch (error) {
@@ -101,8 +105,8 @@ export default function Account({ session }: { session: Session }) {
 
         <div className="flex-col justify-between items-center mx-auto w-full pb-2">
           <div>
-            <label htmlFor="email">Email</label>
-            <input
+            <Label htmlFor="email">Email</Label>
+            <Input
               id="email"
               type="text"
               value={user ? user!.email : email || ""}
@@ -111,8 +115,8 @@ export default function Account({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="name">Name</label>
-            <input
+            <Label htmlFor="name">Name</Label>
+            <Input
               id="name"
               type="text"
               value={full_name || ""}
@@ -121,8 +125,8 @@ export default function Account({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="company name">Company</label>
-            <input
+            <Label htmlFor="company name">Company</Label>
+            <Input
               id="company name"
               type="text"
               value={company_name || ""}
@@ -131,8 +135,8 @@ export default function Account({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="dietary restrictions">Dietary Restrictions</label>
-            <input
+            <Label htmlFor="dietary restrictions">Dietary Restrictions</Label>
+            <Input
               id="dietary restrictions"
               type="text"
               value={dietary_restrictions || ""}
@@ -143,7 +147,7 @@ export default function Account({ session }: { session: Session }) {
 
           <div className="pt-1">
             <div className="py-1">
-              <button
+              <Button
                 className="button primary block"
                 onClick={() =>
                   updateProfile({
@@ -154,13 +158,13 @@ export default function Account({ session }: { session: Session }) {
                 }
               >
                 Update
-              </button>
+              </Button>
             </div>
 
             <div className="py-1">
-              <button className="button block" onClick={() => SignOut()}>
+              <Button className="button block" onClick={() => SignOut()}>
                 Sign Out
-              </button>
+              </Button>
             </div>
           </div>
         </div>

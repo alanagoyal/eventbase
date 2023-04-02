@@ -40,7 +40,7 @@ export default function Document() {
           defer
         ></script>
       </Head>
-      <body>
+      <body className="px-2">
         <Main />
         <NextScript />
       </body>

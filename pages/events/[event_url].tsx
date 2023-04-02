@@ -1,25 +1,14 @@
-import {
-  Session,
-  useSupabaseClient,
-  useUser,
-} from "@supabase/auth-helpers-react";
-import { useRouter } from "next/router";
+import { Session, useUser } from "@supabase/auth-helpers-react";
 import { Database } from "../../types/supabase";
 import { supabase } from "@/lib/supabaseClient";
-import useSWR from "swr";
 import toast, { Toaster } from "react-hot-toast";
-import Image from "next/image";
 import Balancer from "react-wrap-balancer";
 import { AddToCalendarButton } from "add-to-calendar-button-react";
 import { useEffect, useState } from "react";
 import Head from "next/head";
 import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
-import {
-  FrigadeChecklist,
-  FrigadeProgressBadge,
-  FrigadeTour,
-} from "@frigade/react";
+import { FrigadeTour } from "@frigade/react";
 import { Header } from "@/components/header";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
@@ -47,7 +36,7 @@ export default function EventPage({
   session: Session;
 }) {
   const [full_name, setName] = useState<Guests["full_name"]>(null);
-  const [email, setEmail] = useState<Guests["email"]>(null);
+  const [email, setEmail] = useState<Guests["email"]>("");
   const [company_name, setCompanyName] = useState<Guests["company_name"]>(null);
   const [dietary_restrictions, setDietaryRestrictions] =
     useState<Guests["dietary_restrictions"]>(null);
@@ -60,6 +49,37 @@ export default function EventPage({
     getUser();
     getGuests();
   }, [session, user]);
+
+  if (!eventInfo) {
+    console.log("Waiting for data...");
+    return null;
+  }
+
+  const event = eventInfo;
+  const d = new Date(event.date!);
+  const formattedDate = d.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    timeZone: "PST",
+  });
+  const calDate = event.date!.substring(0, 10);
+
+  const t = new Date();
+  const [hours, minutes, seconds] = event.start_time!.split(":").map(Number);
+  t.setHours(hours, minutes, seconds);
+  const formattedTime = t.toLocaleTimeString();
+  const startTime = event.start_time!.substring(0, 5);
+  const endTime = event.end_time!.substring(0, 5);
+
+  const DynamicAddToCalendarButton = dynamic(
+    () =>
+      import("add-to-calendar-button-react").then(
+        (mod) => mod.AddToCalendarButton
+      ),
+    { ssr: false }
+  );
 
   async function getUser() {
     try {
@@ -105,11 +125,6 @@ export default function EventPage({
     }
   }
 
-  if (!eventInfo) {
-    console.log("Waiting for data...");
-    return null;
-  }
-
   async function getGuests() {
     try {
       let { data, error, status } = await supabase
@@ -117,39 +132,12 @@ export default function EventPage({
         .select(
           "email (id, full_name, company_name, dietary_restrictions), comments"
         )
-        .eq("event_id", event.id);
+        .eq("event_id", eventInfo.id);
       setAllRsvps(data);
-      console.log(data);
     } catch (error) {
       console.log(error);
     }
   }
-
-  const event = eventInfo;
-  const d = new Date(event.date!);
-  const formattedDate = d.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  });
-  const calDate = event.date!.substring(0, 10);
-
-  const t = new Date();
-  const [hours, minutes, seconds] = event.start_time!.split(":").map(Number);
-  t.setHours(hours, minutes, seconds);
-  const formattedTime = t.toLocaleTimeString();
-  const startTime = event.start_time!.substring(0, 5);
-  const endTime = event.end_time!.substring(0, 5);
-
-  const DynamicAddToCalendarButton = dynamic(
-    () =>
-      import("add-to-calendar-button-react").then(
-        (mod) => mod.AddToCalendarButton
-      ),
-    { ssr: false }
-  );
 
   async function sendMail(
     email: string,
@@ -289,11 +277,9 @@ export default function EventPage({
 
       <div className="flex-row sm:flex justify-between items-center mx-auto max-w-6xl pt-20 pb-5">
         <div>
-          <span id="#tooltip-select-0">
-            <h1 className="text-5xl my-2 font-bold font-syne">
-              <Balancer>{event.event_name}</Balancer>
-            </h1>
-          </span>
+          <h1 className="text-5xl my-2 font-bold font-syne">
+            <Balancer>{event.event_name}</Balancer>
+          </h1>
 
           <h2 className="text-2xl font-syne">{formattedDate}</h2>
           <h2 className="text-gray-600 font-syne text-xl pb-4">
@@ -344,7 +330,7 @@ export default function EventPage({
                   <div className="py-2">
                     <div className="py-1">
                       <button
-                        className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                        className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
                         onClick={() => removeGuest(email!)}
                       >
                         Can&apos;t Make It Anymore
@@ -359,7 +345,7 @@ export default function EventPage({
                         id="email"
                         type="text"
                         value={email || ""}
-                        className="h-10 p-1"
+                        className="h-10 p-1 w-96"
                         onChange={(e) => setEmail(e.target.value)}
                         disabled={user ? true : false}
                       />
@@ -370,7 +356,7 @@ export default function EventPage({
                         id="name"
                         type="text"
                         value={full_name || ""}
-                        className="h-10 p-1"
+                        className="h-10 p-1 w-96"
                         onChange={(e) => setName(e.target.value)}
                       />
                     </div>
@@ -380,7 +366,7 @@ export default function EventPage({
                         id="company name"
                         type="text"
                         value={company_name || ""}
-                        className="h-10 p-1"
+                        className="h-10 p-1 w-96"
                         onChange={(e) => setCompanyName(e.target.value)}
                       />
                     </div>
@@ -392,7 +378,7 @@ export default function EventPage({
                         id="dietary restrictions"
                         type="text"
                         value={dietary_restrictions || ""}
-                        className="h-10 p-1"
+                        className="h-10 p-1 w-96"
                         onChange={(e) => setDietaryRestrictions(e.target.value)}
                       />
                     </div>
@@ -402,14 +388,14 @@ export default function EventPage({
                         id="comments"
                         type="text"
                         value={comments || ""}
-                        className="h-10 p-1"
+                        className="h-10 p-1 w-96"
                         onChange={(e) => setComment(e.target.value)}
                       />
                     </div>
                     <div className="py-2">
                       <div className="py-1">
                         <button
-                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               onRsvp({
