@@ -19,6 +19,19 @@ import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuIndicator,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuViewport,
+} from "@/components/ui/navigation-menu";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
@@ -28,6 +41,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
   const [name, setName] = useState<Guests["full_name"]>(null);
   const [createdBy, setCreatedBy] = useState<any>(null);
   const router = useRouter();
+  const supabaseClient = useSupabaseClient();
 
   useEffect(() => {
     if (user) {
@@ -60,12 +74,9 @@ export function Header({ session, user }: { session: Session; user: any }) {
     }
   }
 
-  async function signInWithEmail(email: string) {
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email: email!,
-      options: {
-        emailRedirectTo: "https://base-case-events.vercel.app/account",
-      },
+  async function signInWithGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
     });
   }
 
@@ -74,58 +85,27 @@ export function Header({ session, user }: { session: Session; user: any }) {
       <FrigadeTour flowId="flow_is5fTYIviWExwRjW" tooltipPosition="left" />
       <div className="flex flex-row justify-end px-5 pt-5">
         {!user ? (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant="outline">Sign In</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Sign In</DialogTitle>
-                <DialogDescription>
-                  No password needed. We&apos;ll send a sign in link to your
-                  email.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="name" className="text-right">
-                    Email
-                  </Label>
-                  <Input
-                    id="email"
-                    value={email || ""}
-                    className="col-span-3"
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button type="submit" onClick={() => signInWithEmail(email!)}>
-                  Sign In
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <Button type="submit" onClick={() => signInWithGoogle()}>
+            Sign In
+          </Button>
         ) : (
           <>
             {router.pathname === "/events" && (
               <div>
                 <span id="tooltip-select-3">
                   <Link href="/new_event">
-                    <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-32 h-10 mr-2">
+                    <div className="flex justify-center items-center  bg-base-case-pink-500 w-32 h-10 mr-2">
                       New Event
                     </div>
                   </Link>
                 </span>
               </div>
             )}
-
-            {/* Add a condition to show the "Edit Event" button */}
             {createdBy && (
               <div>
                 <span id="tooltip-edit-event">
                   <Link href={`${router.asPath}/edit`}>
-                    <div className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-32 h-10 mr-2">
+                    <div className="flex justify-center items-center  bg-base-case-pink-500 w-32 h-10 mr-2">
                       Edit Event
                     </div>
                   </Link>
@@ -136,7 +116,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
             <div>
               <span id="tooltip-select-2">
                 <Link href="/events">
-                  <div className="flex justify-center items-center rounded-full bg-base-case-pink-700 w-24 h-10 mr-2">
+                  <div className="flex justify-center items-center bg-base-case-pink-700 w-24 h-10 mr-2">
                     Events
                   </div>
                 </Link>

@@ -1,8 +1,14 @@
 import { Header } from "@/components/header";
 import LocationAutocomplete from "@/components/location";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Database } from "@/types/supabase";
-import { useUser } from "@frigade/react";
-import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
+import {
+  Session,
+  useSupabaseClient,
+  useUser,
+} from "@supabase/auth-helpers-react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -26,9 +32,12 @@ export default function EditEventPage({ session }: { session: Session }) {
   const [og_image, setOgImage] = useState<Events["og_image"]>(null);
   const { event_url } = router.query;
 
+  console.log({ event_url });
+  console.log({ user });
+
   useEffect(() => {
     getEvent();
-  }, []);
+  }, [event_url, session]);
 
   async function getEvent() {
     try {
@@ -94,6 +103,15 @@ export default function EditEventPage({ session }: { session: Session }) {
     try {
       if (!user) throw new Error("No user...");
 
+      const datetime_str = `${date} ${start_time}:00`;
+      const tz_offset_minutes = new Date().getTimezoneOffset();
+      const tz_offset_hours = Math.abs(tz_offset_minutes) / 60;
+      const tz_sign = tz_offset_minutes >= 0 ? "-" : "+";
+      const tz_offset_str = `00${tz_offset_hours}:00`;
+      const tz_str = `UTC${tz_sign}${tz_offset_str.slice(-6)}`;
+      const dt = new Date(datetime_str);
+      const dt_utc_str = dt.toISOString().replace("Z", `+${tz_offset_str}`);
+
       const updates = {
         event_name,
         description,
@@ -102,6 +120,7 @@ export default function EditEventPage({ session }: { session: Session }) {
         date,
         start_time,
         end_time,
+        date_time: dt_utc_str,
         event_url: slugify(event_name!, { lower: true, strict: true }),
         // og_image: await getImage(),
       };
@@ -133,8 +152,8 @@ export default function EditEventPage({ session }: { session: Session }) {
         </div>{" "}
         <div className="flex-col justify-between items-center mx-auto w-full pb-2">
           <div className="pt-2">
-            <label htmlFor="name">Event Name</label>
-            <input
+            <Label htmlFor="name">Event Name</Label>
+            <Input
               id="name"
               type="text"
               value={event_name || ""}
@@ -143,8 +162,8 @@ export default function EditEventPage({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="description">Description</label>
-            <input
+            <Label htmlFor="description">Description</Label>
+            <Input
               id="description"
               type="text"
               value={description || ""}
@@ -153,7 +172,7 @@ export default function EditEventPage({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="location">Location</label>
+            <Label htmlFor="location">Location</Label>
             <LocationAutocomplete
               setLocation={setLocation}
               setLocationUrl={setLocationUrl}
@@ -161,8 +180,8 @@ export default function EditEventPage({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="date">Date</label>
-            <input
+            <Label htmlFor="date">Date</Label>
+            <Input
               id="date"
               type="date"
               value={date || ""}
@@ -171,8 +190,8 @@ export default function EditEventPage({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="start time">Start Time</label>
-            <input
+            <Label htmlFor="start time">Start Time</Label>
+            <Input
               id="start time"
               type="time"
               value={start_time || ""}
@@ -181,8 +200,8 @@ export default function EditEventPage({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <label htmlFor="end time">End Time</label>
-            <input
+            <Label htmlFor="end time">End Time</Label>
+            <Input
               id="end time"
               type="time"
               value={end_time || ""}
@@ -192,7 +211,7 @@ export default function EditEventPage({ session }: { session: Session }) {
           </div>
           <div className="py-2">
             <div className="py-1">
-              <button
+              <Button
                 className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
@@ -220,7 +239,7 @@ export default function EditEventPage({ session }: { session: Session }) {
                 }
               >
                 Update Event
-              </button>
+              </Button>
             </div>
           </div>
         </div>

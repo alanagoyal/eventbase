@@ -14,6 +14,7 @@ export interface Database {
           created_at: string | null
           created_by: string | null
           date: string | null
+          date_time: string | null
           description: string | null
           end_time: string | null
           event_name: string | null
@@ -28,6 +29,7 @@ export interface Database {
           created_at?: string | null
           created_by?: string | null
           date?: string | null
+          date_time?: string | null
           description?: string | null
           end_time?: string | null
           event_name?: string | null
@@ -42,6 +44,7 @@ export interface Database {
           created_at?: string | null
           created_by?: string | null
           date?: string | null
+          date_time?: string | null
           description?: string | null
           end_time?: string | null
           event_name?: string | null

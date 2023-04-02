@@ -22,13 +22,10 @@ export default function Events({ session }: { session: Session }) {
     try {
       if (!user) throw new Error("Waiting for user...");
 
-      const currentDate = new Date();
-
       let { data, error, status } = await supabase
         .from("rsvps")
         .select("event_id (id, event_name, event_url, og_image, date)")
-        .eq("email", user.email)
-        .eq("event_id (date)", currentDate);
+        .eq("email", user.email);
 
       setAllRsvps(data);
 
@@ -46,11 +43,9 @@ export default function Events({ session }: { session: Session }) {
         .from("events")
         .select()
         .eq("created_by", user.id)
-        .gt("date", new Date().toISOString());
+        .gte("date", new Date().toISOString());
 
       setAllHostings(data);
-
-      console.log({ data });
     } catch (error) {
       console.log(error);
     }
@@ -73,13 +68,13 @@ export default function Events({ session }: { session: Session }) {
                 return (
                   <div
                     className="flex flex-col items-center text-center font-syne"
-                    key={event.event_id.id}
+                    key={event.event_id?.id}
                   >
-                    <Link href={`/events/${event.event_id.event_url}`}>
+                    <Link href={`/events/${event.event_id?.event_url}`}>
                       <div>
                         <img
-                          src={event.event_id.og_image}
-                          alt={event.event_id.event_name}
+                          src={event.event_id?.og_image}
+                          alt={event.event_id?.event_name}
                           className="w-full mb-2"
                           width="200"
                           height="200"
@@ -87,7 +82,7 @@ export default function Events({ session }: { session: Session }) {
                       </div>
                     </Link>
                     <div className="text-lg font-bold">
-                      {event.event_id.event_name}
+                      {event.event_id?.event_name}
                     </div>
                   </div>
                 );

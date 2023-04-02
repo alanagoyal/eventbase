@@ -30,12 +30,9 @@ const Home: NextPage = () => {
   const supabase = useSupabaseClient();
   const [email, setEmail] = useState<Guests["email"]>("");
 
-  async function signInWithEmail(email: string) {
-    const { data, error } = await supabase.auth.signInWithOtp({
-      email: email!,
-      options: {
-        emailRedirectTo: "https://base-case-events.vercel.app/account",
-      },
+  async function signInWithGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
     });
   }
 
@@ -46,37 +43,9 @@ const Home: NextPage = () => {
       </Head>
       <h2 className="mb-4 text-4xl">Welcome</h2>
       <h3 className="mb-4 text-2xl">Please sign in to continue</h3>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="outline">Sign In</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Sign In</DialogTitle>
-            <DialogDescription>
-              No password needed. We&apos;ll send a sign in link to your email.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                Email
-              </Label>
-              <Input
-                id="email"
-                value={email || ""}
-                className="col-span-3"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" onClick={() => signInWithEmail(email!)}>
-              Sign In
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <Button type="submit" onClick={() => signInWithGoogle()}>
+        Sign In
+      </Button>
     </div>
   );
 };

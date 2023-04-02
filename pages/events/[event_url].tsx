@@ -10,6 +10,9 @@ import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import { FrigadeTour } from "@frigade/react";
 import { Header } from "@/components/header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
@@ -45,6 +48,8 @@ export default function EventPage({
   const user = useUser();
   const [allRsvps, setAllRsvps] = useState<any>(null);
 
+  console.log({ user });
+
   useEffect(() => {
     getUser();
     getGuests();
@@ -56,7 +61,9 @@ export default function EventPage({
   }
 
   const event = eventInfo;
-  const d = new Date(event.date!);
+  console.log(event.date, event.start_time, event.end_time);
+  const d = new Date(event.date_time!);
+  console.log({ d });
   const formattedDate = d.toLocaleDateString("en-US", {
     weekday: "long",
     year: "numeric",
@@ -64,12 +71,19 @@ export default function EventPage({
     day: "numeric",
     timeZone: "PST",
   });
+  console.log(formattedDate);
   const calDate = event.date!.substring(0, 10);
 
   const t = new Date();
   const [hours, minutes, seconds] = event.start_time!.split(":").map(Number);
   t.setHours(hours, minutes, seconds);
-  const formattedTime = t.toLocaleTimeString();
+
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "numeric",
+    minute: "numeric",
+    timeZoneName: "short",
+  };
+  const formattedTime = t.toLocaleTimeString("en-US", options);
   const startTime = event.start_time!.substring(0, 5);
   const endTime = event.end_time!.substring(0, 5);
 
@@ -311,37 +325,44 @@ export default function EventPage({
           <div>
             {user?.id === event.created_by ? (
               <div>
-                <h2 className="text-2xl font-syne pt-4">Confirmed Guests</h2>
-                <ol>
-                  {allRsvps &&
-                    allRsvps.map((guest: any) => (
-                      <li
-                        className="text-gray-600 font-space text-md"
-                        key={guest.email.id}
-                      >
-                        {guest.email.full_name} ({guest.email.company_name})
-                      </li>
-                    ))}
-                </ol>
+                {allRsvps && allRsvps.length ? (
+                  <div>
+                    {" "}
+                    <h2 className="text-2xl font-syne pt-4">
+                      Confirmed Guests
+                    </h2>
+                    <ol className="list-decimal list-inside pl-5">
+                      {allRsvps &&
+                        allRsvps.map((guest: any) => (
+                          <li
+                            className="text-gray-600 font-space text-md"
+                            key={guest.email.id}
+                          >
+                            {guest.email.full_name} ({guest.email.company_name})
+                          </li>
+                        ))}
+                    </ol>
+                  </div>
+                ) : null}
               </div>
             ) : (
               <div>
                 {guestRsvpStatus === "attending" ? (
                   <div className="py-2">
                     <div className="py-1">
-                      <button
+                      <Button
                         className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
                         onClick={() => removeGuest(email!)}
                       >
                         Can&apos;t Make It Anymore
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 ) : (
                   <div>
                     <div className="pt-2">
-                      <label htmlFor="email">Email</label>
-                      <input
+                      <Label htmlFor="email">Email</Label>
+                      <Input
                         id="email"
                         type="text"
                         value={email || ""}
@@ -351,8 +372,8 @@ export default function EventPage({
                       />
                     </div>
                     <div>
-                      <label htmlFor="name">Name</label>
-                      <input
+                      <Label htmlFor="name">Name</Label>
+                      <Input
                         id="name"
                         type="text"
                         value={full_name || ""}
@@ -361,8 +382,8 @@ export default function EventPage({
                       />
                     </div>
                     <div>
-                      <label htmlFor="company name">Company</label>
-                      <input
+                      <Label htmlFor="company name">Company</Label>
+                      <Input
                         id="company name"
                         type="text"
                         value={company_name || ""}
@@ -371,10 +392,10 @@ export default function EventPage({
                       />
                     </div>
                     <div>
-                      <label htmlFor="dietary restrictions">
+                      <Label htmlFor="dietary restrictions">
                         Dietary Restrictions
-                      </label>
-                      <input
+                      </Label>
+                      <Input
                         id="dietary restrictions"
                         type="text"
                         value={dietary_restrictions || ""}
@@ -383,8 +404,8 @@ export default function EventPage({
                       />
                     </div>
                     <div>
-                      <label htmlFor="comments">Comments</label>
-                      <input
+                      <Label htmlFor="comments">Comments</Label>
+                      <Input
                         id="comments"
                         type="text"
                         value={comments || ""}
@@ -394,7 +415,7 @@ export default function EventPage({
                     </div>
                     <div className="py-2">
                       <div className="py-1">
-                        <button
+                        <Button
                           className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
@@ -419,7 +440,7 @@ export default function EventPage({
                           disabled={guestRsvpStatus == "attending"}
                         >
                           Count Me In
-                        </button>
+                        </Button>
                       </div>
                     </div>
                   </div>

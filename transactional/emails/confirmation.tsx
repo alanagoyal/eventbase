@@ -45,7 +45,7 @@ export default function EmailTemplate({
               <strong>{eventInfo.event_name}</strong>
             </Heading>
             <Text className="text-black text-[16px] font-normal text-center p-0 my-[5px] mx-0">
-              At {formattedTime} on {formattedDate}
+              At {formattedTime} PST on {formattedDate}
             </Text>
             <Text className="text-blue-600 text-[16px] font-normal text-center p-0 my-[5px] mx-0">
               <Link
