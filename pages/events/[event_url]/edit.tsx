@@ -29,7 +29,6 @@ export default function EditEventPage({ session }: { session: Session }) {
   const [date, setDate] = useState<Events["date"]>(null);
   const [start_time, setStartTime] = useState<Events["start_time"]>(null);
   const [end_time, setEndTime] = useState<Events["end_time"]>(null);
-  const [og_image, setOgImage] = useState<Events["og_image"]>(null);
   const { event_url } = router.query;
 
   console.log({ event_url });
@@ -59,7 +58,6 @@ export default function EditEventPage({ session }: { session: Session }) {
         setLocationUrl(data.location_url);
         setStartTime(data.start_time);
         setEndTime(data.end_time);
-        setOgImage(data.og_image);
         setDate(data.date_time!.substring(0, 10));
       }
     } catch (error) {

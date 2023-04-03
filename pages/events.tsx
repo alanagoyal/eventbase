@@ -24,7 +24,9 @@ export default function Events({ session }: { session: Session }) {
 
       let { data, error, status } = await supabase
         .from("rsvps")
-        .select("event_id (id, event_name, event_url, og_image, date)")
+        .select(
+          "event_id (id, event_name, event_url, og_image, start_timestampz)"
+        )
         .eq("email", user.email);
 
       setAllRsvps(data);
@@ -43,7 +45,7 @@ export default function Events({ session }: { session: Session }) {
         .from("events")
         .select()
         .eq("created_by", user.id)
-        .gte("date", new Date().toISOString());
+        .gte("start_timestampz", new Date().toISOString());
 
       setAllHostings(data);
     } catch (error) {

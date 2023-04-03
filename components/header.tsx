@@ -1,17 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Database } from "@/types/supabase";
 import { FrigadeTour } from "@frigade/react";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
@@ -19,33 +7,23 @@ import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { navigationMenuTriggerStyle } from "@/components/ui/navigation-menu";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
-} from "@/components/ui/navigation-menu";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { Button } from "./ui/button";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 export function Header({ session, user }: { session: Session; user: any }) {
   const supabase = useSupabaseClient<Database>();
-  const [email, setEmail] = useState<Guests["email"]>("");
   const [name, setName] = useState<Guests["full_name"]>(null);
   const [createdBy, setCreatedBy] = useState<any>(null);
   const router = useRouter();
-  const supabaseClient = useSupabaseClient();
+  const event_url = router.query;
 
   useEffect(() => {
     if (user) {
       getUser();
+    }
+
+    if (event_url.event_url) {
       getEvent();
     }
   }, [session, user]);
