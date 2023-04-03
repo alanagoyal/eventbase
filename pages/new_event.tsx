@@ -40,7 +40,7 @@ export default function NewEvent({ session }: { session: Session }) {
       return {
         response: {
           response:
-            "https://storage.googleapis.com/stablediffusionpyq/Colorful%20c-1679360772.7144525.png",
+            "https://storage.googleapis.com/stablediffusionpyq/best%20dinne-1680492531.8617933.png",
         },
       };
     }
