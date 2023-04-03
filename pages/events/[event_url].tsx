@@ -13,7 +13,6 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Footer from "@/components/footer";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
