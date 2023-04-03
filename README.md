@@ -1,5 +1,7 @@
 ## Getting Started
 
+hi
+
 ### Set up your database
 
 [Create a new Supabase project](https://app.supabase.com/), enter your project details, and wait for the database to launch. Navigate to the [SQL editor](https://app.supabase.com/project/_/sql) in the dashboard, paste the SQL below, and run it.
