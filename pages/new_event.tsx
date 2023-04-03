@@ -37,7 +37,6 @@ export default function NewEvent({ session }: { session: Session }) {
       return Promise.resolve(data.response);
     } catch (error) {
       console.error(error);
-      console.log("add url");
       return {
         response: {
           response:
