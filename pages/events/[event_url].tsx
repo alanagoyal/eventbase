@@ -61,31 +61,48 @@ export default function EventPage({
   }
 
   const event = eventInfo;
-  console.log(event.date, event.start_time, event.end_time);
-  const d = new Date(event.date_time!);
-  console.log({ d });
-  const formattedDate = d.toLocaleDateString("en-US", {
+
+  console.log({ eventInfo });
+  const startTimestampz = new Date(event.start_timestampz!);
+  const endTimestampz = new Date(event.end_timestampz!);
+  const formattedDate = startTimestampz.toLocaleDateString("en-US", {
     weekday: "long",
-    year: "numeric",
     month: "long",
     day: "numeric",
-    timeZone: "PST",
+    year: "numeric",
   });
-  console.log(formattedDate);
-  const calDate = event.date!.substring(0, 10);
 
-  const t = new Date();
-  const [hours, minutes, seconds] = event.start_time!.split(":").map(Number);
-  t.setHours(hours, minutes, seconds);
+  const calDate = startTimestampz
+    .toLocaleString("en-US", {
+      timeZone: "America/Los_Angeles",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+    .replace(/\//g, "-");
 
-  const options: Intl.DateTimeFormatOptions = {
+  const formattedTime = startTimestampz.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "numeric",
     timeZoneName: "short",
-  };
-  const formattedTime = t.toLocaleTimeString("en-US", options);
-  const startTime = event.start_time!.substring(0, 5);
-  const endTime = event.end_time!.substring(0, 5);
+  });
+
+  const startTime = startTimestampz.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+
+  const endTime = endTimestampz.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  console.log(`Formatted date: ${formattedDate}`);
+  console.log(`Formatted time: ${formattedTime}`);
+  console.log(`Cal date: ${calDate}`);
+  console.log(`Start time: ${startTime}`);
+  console.log(`End time: ${endTime}`);
 
   const DynamicAddToCalendarButton = dynamic(
     () =>

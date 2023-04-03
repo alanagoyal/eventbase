@@ -17,6 +17,7 @@ export interface Database {
           date_time: string | null
           description: string | null
           end_time: string | null
+          end_timestampz: string | null
           event_name: string | null
           event_url: string
           id: string
@@ -24,6 +25,7 @@ export interface Database {
           location_url: string | null
           og_image: string | null
           start_time: string | null
+          start_timestampz: string | null
         }
         Insert: {
           created_at?: string | null
@@ -32,6 +34,7 @@ export interface Database {
           date_time?: string | null
           description?: string | null
           end_time?: string | null
+          end_timestampz?: string | null
           event_name?: string | null
           event_url: string
           id?: string
@@ -39,6 +42,7 @@ export interface Database {
           location_url?: string | null
           og_image?: string | null
           start_time?: string | null
+          start_timestampz?: string | null
         }
         Update: {
           created_at?: string | null
@@ -47,6 +51,7 @@ export interface Database {
           date_time?: string | null
           description?: string | null
           end_time?: string | null
+          end_timestampz?: string | null
           event_name?: string | null
           event_url?: string
           id?: string
@@ -54,6 +59,7 @@ export interface Database {
           location_url?: string | null
           og_image?: string | null
           start_time?: string | null
+          start_timestampz?: string | null
         }
       }
       guests: {

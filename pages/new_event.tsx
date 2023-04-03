@@ -20,10 +20,8 @@ export default function NewEvent({ session }: { session: Session }) {
   const [description, setDescription] = useState<Events["description"]>(null);
   const [location, setLocation] = useState<Events["location"]>(null);
   const [location_url, setLocationUrl] = useState<Events["location_url"]>(null);
-  const [date, setDate] = useState<Events["date"]>(null);
-  const [start_time, setStartTime] = useState<Events["start_time"]>(null);
-  const [end_time, setEndTime] = useState<Events["end_time"]>(null);
-  const [og_image, setOgImage] = useState<Events["og_image"]>(null);
+  const [start_time, setStartTime] = useState<Events["start_timestampz"]>(null);
+  const [end_time, setEndTime] = useState<Events["end_timestampz"]>(null);
   const router = useRouter();
   const slugify = require("slugify");
 
@@ -48,7 +46,6 @@ export default function NewEvent({ session }: { session: Session }) {
     description,
     location,
     location_url,
-    date,
     start_time,
     end_time,
   }: {
@@ -56,7 +53,6 @@ export default function NewEvent({ session }: { session: Session }) {
     description: Events["description"];
     location: Events["location"];
     location_url: Events["location_url"];
-    date: Events["date"];
     start_time: Events["start_time"];
     end_time: Events["end_time"];
   }) {
@@ -64,33 +60,26 @@ export default function NewEvent({ session }: { session: Session }) {
     try {
       if (!user) throw new Error("No user...");
 
-      const datetime_str = `${date} ${start_time}:00`;
-      const tz_offset_minutes = new Date().getTimezoneOffset();
-      const tz_offset_hours = Math.abs(tz_offset_minutes) / 60;
-      const tz_sign = tz_offset_minutes >= 0 ? "-" : "+";
-      const tz_offset_str = `00${tz_offset_hours}:00`;
-      const tz_str = `UTC${tz_sign}${tz_offset_str.slice(-6)}`;
-      const dt = new Date(datetime_str);
-      const dt_utc_str = dt.toISOString().replace("Z", `+${tz_offset_str}`);
+      const startParsed = new Date(start_time!).toISOString();
+      const endParsed = new Date(end_time!).toISOString();
+
       const updates = {
         created_at: new Date().toISOString(),
         event_name,
         description,
         location,
         location_url,
-        date,
-        start_time,
-        end_time,
+        start_timestampz: startParsed,
+        end_timestampz: endParsed,
         created_by: user.id,
         event_url: slugify(event_name, { lower: true, strict: true }),
-        date_time: dt_utc_str,
         og_image: await getImage(),
       };
 
       let { error } = await supabase.from("events").insert(updates);
       if (error) throw error;
-      toast.success("Event created!");
       router.push(`/events/${updates.event_url}`);
+      toast.success("Event created!");
     } catch (error) {
       console.log(error);
     }
@@ -139,20 +128,10 @@ export default function NewEvent({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={date || ""}
-              className="h-10 p-1"
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-          <div>
             <Label htmlFor="start time">Start Time</Label>
             <Input
               id="start time"
-              type="time"
+              type="datetime-local"
               value={start_time || ""}
               className="h-10 p-1"
               onChange={(e) => setStartTime(e.target.value)}
@@ -162,7 +141,7 @@ export default function NewEvent({ session }: { session: Session }) {
             <Label htmlFor="end time">End Time</Label>
             <Input
               id="end time"
-              type="time"
+              type="datetime-local"
               value={end_time || ""}
               className="h-10 p-1"
               onChange={(e) => setEndTime(e.target.value)}
@@ -179,7 +158,6 @@ export default function NewEvent({ session }: { session: Session }) {
                       description,
                       location,
                       location_url,
-                      date,
                       start_time,
                       end_time,
                     });
@@ -191,7 +169,6 @@ export default function NewEvent({ session }: { session: Session }) {
                     description,
                     location,
                     location_url,
-                    date,
                     start_time,
                     end_time,
                   })

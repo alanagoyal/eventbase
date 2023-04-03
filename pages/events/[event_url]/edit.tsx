@@ -60,26 +60,10 @@ export default function EditEventPage({ session }: { session: Session }) {
         setStartTime(data.start_time);
         setEndTime(data.end_time);
         setOgImage(data.og_image);
-        setDate(data.date!.substring(0, 10));
+        setDate(data.date_time!.substring(0, 10));
       }
     } catch (error) {
       console.log(error);
-    }
-  }
-
-  async function getImage() {
-    try {
-      const response = await fetch("/api/imageGen", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description }),
-      });
-      const data = await response.json();
-
-      return Promise.resolve(data.response);
-    } catch (error) {
-      console.error(error);
-      return Promise.reject(error);
     }
   }
 
@@ -103,14 +87,8 @@ export default function EditEventPage({ session }: { session: Session }) {
     try {
       if (!user) throw new Error("No user...");
 
-      const datetime_str = `${date} ${start_time}:00`;
-      const tz_offset_minutes = new Date().getTimezoneOffset();
-      const tz_offset_hours = Math.abs(tz_offset_minutes) / 60;
-      const tz_sign = tz_offset_minutes >= 0 ? "-" : "+";
-      const tz_offset_str = `00${tz_offset_hours}:00`;
-      const tz_str = `UTC${tz_sign}${tz_offset_str.slice(-6)}`;
-      const dt = new Date(datetime_str);
-      const dt_utc_str = dt.toISOString().replace("Z", `+${tz_offset_str}`);
+      const startParsed = new Date(start_time!).toISOString();
+      const endParsed = new Date(end_time!).toISOString();
 
       const updates = {
         event_name,
@@ -118,11 +96,9 @@ export default function EditEventPage({ session }: { session: Session }) {
         location,
         location_url,
         date,
-        start_time,
-        end_time,
-        date_time: dt_utc_str,
+        start_timestampz: startParsed,
+        end_timestampz: endParsed,
         event_url: slugify(event_name!, { lower: true, strict: true }),
-        // og_image: await getImage(),
       };
 
       let { error } = await supabase
@@ -130,8 +106,8 @@ export default function EditEventPage({ session }: { session: Session }) {
         .update(updates)
         .eq("id", eventId);
       if (error) throw error;
-      toast.success("Event updated!");
       router.push(`/events/${updates.event_url}`);
+      toast.success("Event updated!");
     } catch (error) {
       console.log(error);
     }
@@ -180,20 +156,10 @@ export default function EditEventPage({ session }: { session: Session }) {
             />
           </div>
           <div>
-            <Label htmlFor="date">Date</Label>
-            <Input
-              id="date"
-              type="date"
-              value={date || ""}
-              className="h-10 p-1"
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </div>
-          <div>
             <Label htmlFor="start time">Start Time</Label>
             <Input
               id="start time"
-              type="time"
+              type="datetime-local"
               value={start_time || ""}
               className="h-10 p-1"
               onChange={(e) => setStartTime(e.target.value)}
@@ -203,7 +169,7 @@ export default function EditEventPage({ session }: { session: Session }) {
             <Label htmlFor="end time">End Time</Label>
             <Input
               id="end time"
-              type="time"
+              type="datetime-local"
               value={end_time || ""}
               className="h-10 p-1"
               onChange={(e) => setEndTime(e.target.value)}
