@@ -27,8 +27,8 @@ export default function EditEventPage({ session }: { session: Session }) {
   const [location, setLocation] = useState<Events["location"]>(null);
   const [location_url, setLocationUrl] = useState<Events["location_url"]>(null);
   const [date, setDate] = useState<Events["date"]>(null);
-  const [start_time, setStartTime] = useState<Events["start_time"]>(null);
-  const [end_time, setEndTime] = useState<Events["end_time"]>(null);
+  const [start_time, setStartTime] = useState<any>(null);
+  const [end_time, setEndTime] = useState<any>(null);
   const { event_url } = router.query;
 
   console.log({ event_url });
@@ -79,8 +79,8 @@ export default function EditEventPage({ session }: { session: Session }) {
     location: Events["location"];
     location_url: Events["location_url"];
     date: Events["date"];
-    start_time: Events["start_time"];
-    end_time: Events["end_time"];
+    start_time: any;
+    end_time: any;
   }) {
     try {
       if (!user) throw new Error("No user...");

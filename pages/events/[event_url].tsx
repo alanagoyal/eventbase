@@ -61,8 +61,6 @@ export default function EventPage({
   }
 
   const event = eventInfo;
-
-  console.log({ eventInfo });
   const startTimestampz = new Date(event.start_timestampz!);
   const endTimestampz = new Date(event.end_timestampz!);
   const formattedDate = startTimestampz.toLocaleDateString("en-US", {
@@ -144,7 +142,7 @@ export default function EventPage({
 
       let { data, error, status } = await supabase
         .from("rsvps")
-        .select("event_id, status")
+        .select()
         .eq("event_id", eventInfo.id)
         .eq("email", user.email);
 
@@ -221,7 +219,6 @@ export default function EventPage({
         event_id: event.id,
         created_at: new Date().toISOString(),
         comments,
-        status: "attending",
       };
 
       await addGuest(guestInfo);
