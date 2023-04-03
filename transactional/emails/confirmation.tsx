@@ -60,6 +60,8 @@ export default function EmailTemplate({
               Can't make it anymore?{" "}
               <Link
                 href={`${baseUrl}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-600 no-underline  mx-auto"
               >
                 Please let us know.

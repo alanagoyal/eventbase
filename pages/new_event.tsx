@@ -37,7 +37,12 @@ export default function NewEvent({ session }: { session: Session }) {
       return Promise.resolve(data.response);
     } catch (error) {
       console.error(error);
-      return Promise.reject(error);
+      return {
+        response: {
+          response:
+            "https://storage.googleapis.com/stablediffusionpyq/Colorful%20c-1679360772.7144525.png",
+        },
+      };
     }
   }
 
