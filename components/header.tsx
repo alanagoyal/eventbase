@@ -69,48 +69,51 @@ export function Header({ session, user }: { session: Session; user: any }) {
         ) : (
           <>
             {router.pathname === "/events" && (
-              <div>
-                <span id="tooltip-select-3">
-                  <Link href="/new_event">
-                    <div className="flex justify-center items-center  bg-base-case-pink-500 w-32 h-10 mr-2">
-                      New Event
-                    </div>
-                  </Link>
-                </span>
-              </div>
+              <Button
+                className="bg-base-case-pink-500 w-32 h-10 mr-2 rounded-md"
+                onClick={() => router.push("/new_event")}
+                id="tooltip-select-3"
+              >
+                New Event
+              </Button>
             )}
-            {createdBy && (
-              <div>
-                <span id="tooltip-edit-event">
-                  <Link href={`${router.asPath}/edit`}>
-                    <div className="flex justify-center items-center  bg-base-case-pink-500 w-32 h-10 mr-2">
-                      Edit Event
-                    </div>
-                  </Link>
-                </span>
-              </div>
+            {createdBy && !router.asPath.endsWith("/edit") && (
+              <Button
+                className="bg-base-case-pink-500 w-32 h-10 mr-2 rounded-md"
+                onClick={() => router.push(`${router.asPath}/edit`)}
+                id="tooltip-edit-event"
+              >
+                Edit Event
+              </Button>
             )}
 
-            <div>
-              <span id="tooltip-select-2">
-                <Link href="/events">
-                  <div className="flex justify-center items-center bg-base-case-pink-700 w-24 h-10 mr-2">
-                    Events
-                  </div>
-                </Link>
-              </span>
-            </div>
-            <div>
-              <span id="tooltip-select-1">
-                <Link href="/account">
-                  <Avatar>
-                    <AvatarFallback className="flex justify-center items-center rounded-full bg-base-case-pink-500 w-10 h-10">
-                      {name ? name.charAt(0) : ""}
-                    </AvatarFallback>
-                  </Avatar>
-                </Link>
-              </span>
-            </div>
+            {router.pathname !== "/events" && (
+              <Button
+                className="bg-base-case-pink-500 w-24 h-10 mr-2 rounded-md"
+                onClick={() => router.push("/events")}
+                id="tooltip-select-2"
+              >
+                Events
+              </Button>
+            )}
+
+            <Button
+              className="rounded-full w-10 h-10"
+              onClick={() => router.push("/account")}
+              id="tooltip-select-1"
+            >
+              <Avatar>
+                <AvatarFallback
+                  className="flex justify-center items-center rounded-full w-10 h-10"
+                  style={{
+                    background:
+                      "linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)",
+                  }}
+                >
+                  {name ? name.charAt(0) : ""}
+                </AvatarFallback>
+              </Avatar>
+            </Button>
           </>
         )}
       </div>

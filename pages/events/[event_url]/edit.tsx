@@ -70,7 +70,6 @@ export default function EditEventPage({ session }: { session: Session }) {
     description,
     location,
     location_url,
-    date,
     start_time,
     end_time,
   }: {
@@ -78,7 +77,6 @@ export default function EditEventPage({ session }: { session: Session }) {
     description: Events["description"];
     location: Events["location"];
     location_url: Events["location_url"];
-    date: Events["date"];
     start_time: any;
     end_time: any;
   }) {
@@ -93,7 +91,6 @@ export default function EditEventPage({ session }: { session: Session }) {
         description,
         location,
         location_url,
-        date,
         start_timestampz: startParsed,
         end_timestampz: endParsed,
         event_url: slugify(event_name!, { lower: true, strict: true }),
@@ -184,7 +181,6 @@ export default function EditEventPage({ session }: { session: Session }) {
                       description,
                       location,
                       location_url,
-                      date,
                       start_time,
                       end_time,
                     });
@@ -196,7 +192,6 @@ export default function EditEventPage({ session }: { session: Session }) {
                     description,
                     location,
                     location_url,
-                    date,
                     start_time,
                     end_time,
                   })
