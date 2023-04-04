@@ -113,7 +113,7 @@ export default function EditEventPage({ session }: { session: Session }) {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <Header session={session} user={user} />
       <Toaster />
       <Head>

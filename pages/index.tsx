@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Head from "next/head";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
@@ -49,8 +50,12 @@ const Home: React.FC = () => {
       <header className="p-4">
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
-            <div className="text-xl font-semibold">
-              <span className="text-base-case-pink-800">Event</span>base
+            <div className="text-xl font-semibold ml-0">
+              <Link href="/">
+                <div>
+                  <span className="text-base-case-pink-800">Event</span>base
+                </div>
+              </Link>
             </div>
             <nav>
               {!user ? (

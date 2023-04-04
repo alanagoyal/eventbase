@@ -52,7 +52,7 @@ export default function Events({ session }: { session: Session }) {
   }
 
   return (
-    <div>
+    <div className="p-4">
       <Header session={session} user={user} />
       <Head>
         <title>Events</title>

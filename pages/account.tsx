@@ -90,7 +90,7 @@ export default function Account({ session }: { session: Session }) {
     router.push("/");
   }
   return (
-    <div>
+    <div className="p-4">
       <Header session={session} user={user} />
       <Toaster />
       <Head>
