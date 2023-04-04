@@ -20,14 +20,12 @@ export default async function handler() {
           alignItems: "center",
         }}
       >
-        <span style={{ font: "e86a81" }}>Event</span>base 🎉
+        <span style={{ color: "#f687b3" }}>Event</span>base 🎉
       </div>
     ),
     {
       width: 1200,
       height: 630,
-      // Supported options: 'twemoji', 'blobmoji', 'noto', 'openmoji', 'fluent' and 'fluentFlat'
-      // Default to 'twemoji'
       emoji: "twemoji",
     }
   );
