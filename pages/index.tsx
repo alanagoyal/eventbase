@@ -89,7 +89,7 @@ const Home: React.FC = () => {
         </div>
       </header>
 
-      <main className="container mx-auto my-20 flex-grow">
+      <main className="container mx-auto my-48 flex-grow">
         <section className="text-center">
           <h1 className="text-5xl font-bold">
             Create and manage in-person events

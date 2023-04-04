@@ -79,7 +79,7 @@ export default function Account({ session }: { session: Session }) {
         .update(updates)
         .eq("email", user.email);
       if (error) throw error;
-      toast("Profile updated!");
+      toast.success("Profile updated!");
     } catch (error) {
       console.log(error);
     }
