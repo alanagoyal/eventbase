@@ -26,7 +26,6 @@ export default function EditEventPage({ session }: { session: Session }) {
   const [description, setDescription] = useState<Events["description"]>(null);
   const [location, setLocation] = useState<Events["location"]>(null);
   const [location_url, setLocationUrl] = useState<Events["location_url"]>(null);
-  const [date, setDate] = useState<Events["date"]>(null);
   const [start_time, setStartTime] = useState<any>(null);
   const [end_time, setEndTime] = useState<any>(null);
   const { event_url } = router.query;
@@ -53,9 +52,8 @@ export default function EditEventPage({ session }: { session: Session }) {
         setDescription(data.description);
         setLocation(data.location);
         setLocationUrl(data.location_url);
-        setStartTime(data.start_time);
-        setEndTime(data.end_time);
-        setDate(data.date_time!.substring(0, 10));
+        setStartTime(data.start_timestampz);
+        setEndTime(data.end_timestampz);
       }
     } catch (error) {
       console.log(error);
@@ -161,7 +159,7 @@ export default function EditEventPage({ session }: { session: Session }) {
             <Input
               id="start time"
               type="datetime-local"
-              value={start_time || ""}
+              value={new Date(start_time).toISOString().slice(0, -8) || ""}
               className="h-10 p-1"
               onChange={(e) => setStartTime(e.target.value)}
             />
@@ -171,7 +169,7 @@ export default function EditEventPage({ session }: { session: Session }) {
             <Input
               id="end time"
               type="datetime-local"
-              value={end_time || ""}
+              value={new Date(end_time).toISOString().slice(0, -8) || ""}
               className="h-10 p-1"
               onChange={(e) => setEndTime(e.target.value)}
             />
