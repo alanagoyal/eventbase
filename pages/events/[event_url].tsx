@@ -46,7 +46,6 @@ export default function EventPage({
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
   const user = useUser();
   const [allRsvps, setAllRsvps] = useState<any>(null);
-  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
   useEffect(() => {
     getUser();

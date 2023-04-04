@@ -35,7 +35,7 @@ const Home: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${process.env.APP_URL}/account`,
+        redirectTo: `https://eventbase.vercel.app/account/`,
       },
     });
   }
@@ -99,14 +99,14 @@ const Home: React.FC = () => {
           </p>
           <div className="mt-8">
             <Button
-              className="bg-base-case-pink-500 text-white px-8 py-4 rounded-md text-xl"
+              className="bg-base-case-pink-500 text-white h-15 w-64 px-8 py-4 rounded-md text-xl"
               onClick={signInWithGoogle}
               style={{
                 background:
                   "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
               }}
             >
-              Get Started for Free
+              Get Started Today
             </Button>
           </div>
         </section>
