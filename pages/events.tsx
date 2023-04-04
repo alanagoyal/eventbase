@@ -46,6 +46,7 @@ export default function Events({ session }: { session: Session }) {
         .gte("start_timestampz", new Date().toISOString());
 
       setAllHostings(data);
+      console.log({ data });
     } catch (error) {
       console.log(error);
     }
@@ -59,7 +60,7 @@ export default function Events({ session }: { session: Session }) {
       </Head>
       {allRsvps && allRsvps.length ? (
         <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
-          <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold font-syne py-2">
+          <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold pt-4">
             You&apos;re attending ✨
           </h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
@@ -67,7 +68,7 @@ export default function Events({ session }: { session: Session }) {
               allRsvps.map((event: any) => {
                 return (
                   <div
-                    className="flex flex-col items-center text-center font-syne"
+                    className="flex flex-col items-center text-center"
                     key={event.event_id?.id}
                   >
                     <Link href={`/events/${event.event_id?.event_url}`}>
@@ -92,14 +93,14 @@ export default function Events({ session }: { session: Session }) {
       ) : null}
       {allHostings && allHostings.length ? (
         <div className="flex-col sm:flex  mx-auto max-w-6xl pt-5 pb-5">
-          <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold font-syne py-2">
+          <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold pt-4">
             You&apos;re hosting
           </h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
             {allHostings &&
               allHostings.map((event: any) => (
                 <div
-                  className="flex flex-col items-center text-center font-syne"
+                  className="flex flex-col items-center text-center"
                   key={event.id}
                 >
                   <Link href={`/events/${event.event_url}`}>
@@ -120,7 +121,7 @@ export default function Events({ session }: { session: Session }) {
         </div>
       ) : null}
       {!allRsvps?.length && !allHostings?.length ? (
-        <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold font-syne py-2">
+        <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold pt-4">
           No upcoming events
         </h1>
       ) : null}
