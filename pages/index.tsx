@@ -34,7 +34,7 @@ const Home: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://eventbase.vercell.app/events",
+        redirectTo: "http://eventbase.vercel.app/events",
       },
     });
   }
@@ -50,12 +50,12 @@ const Home: React.FC = () => {
         <div className="container mx-auto">
           <div className="flex items-center justify-between">
             <div className="text-xl font-semibold">
-              <span className="text-base-case-pink-500">Event</span>base
+              <span className="text-base-case-pink-800">Event</span>base
             </div>
             <nav>
               {!user ? (
                 <Button
-                  className="bg-base-case-pink-500 text-white px-4 py-2 rounded-md"
+                  className="bg-base-case-pink-800 text-white px-4 py-2 rounded-md"
                   onClick={signInWithGoogle}
                 >
                   Sign In

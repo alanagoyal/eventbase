@@ -59,7 +59,7 @@ export default function Events({ session }: { session: Session }) {
       </Head>
       {allRsvps && allRsvps.length ? (
         <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
-          <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
+          <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold font-syne py-2">
             You&apos;re attending ✨
           </h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
@@ -91,8 +91,8 @@ export default function Events({ session }: { session: Session }) {
         </div>
       ) : null}
       {allHostings && allHostings.length ? (
-        <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
-          <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
+        <div className="flex-col sm:flex  mx-auto max-w-6xl pt-5 pb-5">
+          <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold font-syne py-2">
             You&apos;re hosting
           </h1>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6">
@@ -120,7 +120,7 @@ export default function Events({ session }: { session: Session }) {
         </div>
       ) : null}
       {!allRsvps?.length && !allHostings?.length ? (
-        <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
+        <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold font-syne py-2">
           No upcoming events
         </h1>
       ) : null}

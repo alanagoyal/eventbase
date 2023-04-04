@@ -62,6 +62,15 @@ export default function EditEventPage({ session }: { session: Session }) {
     }
   }
 
+  async function deleteEvent() {
+    const { event_url } = router.query;
+    let { data, status, error } = await supabase
+      .from("events")
+      .delete()
+      .eq("event_url", event_url);
+    router.push("/events");
+  }
+
   async function updateEvent({
     event_name,
     description,
@@ -170,7 +179,7 @@ export default function EditEventPage({ session }: { session: Session }) {
           <div className="py-2">
             <div className="py-1">
               <Button
-                className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     updateEvent({
@@ -195,6 +204,15 @@ export default function EditEventPage({ session }: { session: Session }) {
                 }
               >
                 Update Event
+              </Button>
+            </div>
+            <div className="py-1">
+              <Button
+                className="text-custom-color border-custom-border inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                variant="subtle"
+                onClick={deleteEvent}
+              >
+                Delete Event
               </Button>
             </div>
           </div>

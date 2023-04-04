@@ -46,18 +46,9 @@ export function Header({ session, user }: { session: Session; user: any }) {
       .select()
       .eq("event_url", event_url)
       .single();
-    if (data?.created_by === user.id) {
+    if (data?.created_by === user?.id) {
       setCreatedBy(true);
     }
-  }
-
-  async function deleteEvent() {
-    const { event_url } = router.query;
-    let { data, status, error } = await supabase
-      .from("events")
-      .delete()
-      .eq("event_url", event_url);
-    router.push("/events");
   }
 
   async function signInWithGoogle() {
@@ -95,18 +86,6 @@ export function Header({ session, user }: { session: Session; user: any }) {
                 Edit Event
               </Button>
             )}
-
-            {router.asPath.endsWith("/edit") && (
-              <Button
-                className="w-32 h-10 mr-2 rounded-md"
-                variant="subtle"
-                onClick={deleteEvent}
-                id="tooltip-delete-event"
-              >
-                Delete Event
-              </Button>
-            )}
-
             {router.pathname !== "/events" && (
               <Button
                 className="bg-base-case-pink-800 w-24 h-10 mr-2 rounded-md"

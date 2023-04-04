@@ -148,7 +148,7 @@ export default function Account({ session }: { session: Session }) {
           <div className="pt-1">
             <div className="py-1">
               <Button
-                className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-500  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-full"
+                className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-full"
                 onClick={() =>
                   updateProfile({
                     full_name,
