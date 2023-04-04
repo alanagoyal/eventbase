@@ -11,7 +11,6 @@ const Home: React.FC = () => {
   const user = useUser();
   const [name, setName] = useState<any>(null);
   const router = useRouter();
-  const event_url = router.query;
 
   useEffect(() => {
     if (user) {

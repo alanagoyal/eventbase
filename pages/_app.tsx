@@ -6,7 +6,7 @@ import { AppProps } from "next/app";
 import "@/styles/globals.css";
 import { H } from "highlight.run";
 
-H.init("kevn77g3", {
+H.init(process.env.HIGHLIGHT_API_KEY, {
   tracingOrigins: true,
   networkRecording: {
     enabled: true,
@@ -28,7 +28,7 @@ function MyApp({
       supabaseClient={supabaseClient}
       initialSession={pageProps.initialSession}
     >
-      <FrigadeProvider publicApiKey="api_public_7TOZDQP37FZ6HI4MZNL9YEBTK1XBNQ3XFB066KF35O9LTAIJR2OV3S7RMMRJKQ91">
+      <FrigadeProvider publicApiKey={process.env.FRIGADE_API_KEY!}>
         <Component {...pageProps} />
       </FrigadeProvider>
     </SessionContextProvider>
