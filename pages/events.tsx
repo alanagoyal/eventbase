@@ -30,8 +30,6 @@ export default function Events({ session }: { session: Session }) {
         .eq("email", user.email);
 
       setAllRsvps(data);
-
-      console.log({ data });
     } catch (error) {
       console.log(error);
     }

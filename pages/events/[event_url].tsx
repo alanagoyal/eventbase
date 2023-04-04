@@ -3,10 +3,8 @@ import { Database } from "../../types/supabase";
 import { supabase } from "@/lib/supabaseClient";
 import toast, { Toaster } from "react-hot-toast";
 import Balancer from "react-wrap-balancer";
-import { AddToCalendarButton } from "add-to-calendar-button-react";
 import { useEffect, useState } from "react";
 import Head from "next/head";
-import { GetServerSideProps } from "next";
 import dynamic from "next/dynamic";
 import { FrigadeTour } from "@frigade/react";
 import { Header } from "@/components/header";
@@ -47,8 +45,6 @@ export default function EventPage({
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
   const user = useUser();
   const [allRsvps, setAllRsvps] = useState<any>(null);
-
-  console.log({ user });
 
   useEffect(() => {
     getUser();
@@ -96,11 +92,6 @@ export default function EventPage({
     minute: "2-digit",
     hour12: false,
   });
-  console.log(`Formatted date: ${formattedDate}`);
-  console.log(`Formatted time: ${formattedTime}`);
-  console.log(`Cal date: ${calDate}`);
-  console.log(`Start time: ${startTime}`);
-  console.log(`End time: ${endTime}`);
 
   const DynamicAddToCalendarButton = dynamic(
     () =>
@@ -365,7 +356,7 @@ export default function EventPage({
                   <div className="py-2">
                     <div className="py-1">
                       <Button
-                        className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
+                        className="text-custom-color border-custom-border bg-base-case-pink-700 hover:bg-base-case-pink-500  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
                         onClick={() => removeGuest(email!)}
                       >
                         Can&apos;t Make It Anymore
@@ -430,7 +421,7 @@ export default function EventPage({
                     <div className="py-2">
                       <div className="py-1">
                         <Button
-                          className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
+                          className="text-custom-color border-custom-border bg-base-case-pink-700 hover:bg-base-case-pink-500 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               onRsvp({

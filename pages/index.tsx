@@ -34,7 +34,7 @@ const Home: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://localhost:3000/events",
+        redirectTo: "http://eventbase.vercell.app/events",
       },
     });
   }
@@ -71,10 +71,10 @@ const Home: React.FC = () => {
                       className="flex justify-center items-center rounded-full w-10 h-10"
                       style={{
                         background:
-                          "linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)",
+                          "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
                       }}
                     >
-                      {name ? name.charAt(0) : ""}
+                      {name && name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -98,7 +98,7 @@ const Home: React.FC = () => {
               onClick={signInWithGoogle}
               style={{
                 background:
-                  "linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)",
+                  "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
               }}
             >
               Get Started for Free

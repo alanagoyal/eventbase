@@ -34,7 +34,10 @@ export default async function handler(
   };
 
   try {
-    const response = await fetch("https://predict.pyqai.com", requestOptions);
+    const response = await fetch(
+      "https://partyimages.pyqai.com/",
+      requestOptions
+    );
     console.log(`response is: ${{ response }}`);
     const result = await response.text();
     console.log(`result is: ${result}`);

@@ -148,7 +148,7 @@ export default function Account({ session }: { session: Session }) {
           <div className="pt-1">
             <div className="py-1">
               <Button
-                className="button primary block"
+                className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-500  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-full"
                 onClick={() =>
                   updateProfile({
                     full_name,
@@ -162,7 +162,11 @@ export default function Account({ session }: { session: Session }) {
             </div>
 
             <div className="py-1">
-              <Button className="button block" onClick={() => SignOut()}>
+              <Button
+                variant="subtle"
+                className="text-custom-color border-custom-borderinline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-full"
+                onClick={() => SignOut()}
+              >
                 Sign Out
               </Button>
             </div>

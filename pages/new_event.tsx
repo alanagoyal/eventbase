@@ -155,7 +155,7 @@ export default function NewEvent({ session }: { session: Session }) {
           <div className="py-2">
             <div className="py-1">
               <Button
-                className="text-custom-color border-custom-border bg-base-case-pink-500 hover:bg-base-case-pink-700 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-500 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     saveEvent({

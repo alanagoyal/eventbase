@@ -31,9 +31,6 @@ export default function EditEventPage({ session }: { session: Session }) {
   const [end_time, setEndTime] = useState<any>(null);
   const { event_url } = router.query;
 
-  console.log({ event_url });
-  console.log({ user });
-
   useEffect(() => {
     getEvent();
   }, [event_url, session]);

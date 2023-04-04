@@ -4,7 +4,6 @@ import { Database } from "@/types/supabase";
 import { FrigadeTour } from "@frigade/react";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
 import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
-import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
@@ -16,14 +15,14 @@ export function Header({ session, user }: { session: Session; user: any }) {
   const [name, setName] = useState<Guests["full_name"]>(null);
   const [createdBy, setCreatedBy] = useState<any>(null);
   const router = useRouter();
-  const event_url = router.query;
+  const { event_url } = router.query;
 
   useEffect(() => {
     if (user) {
       getUser();
     }
 
-    if (event_url.event_url) {
+    if (event_url) {
       getEvent();
     }
   }, [session, user]);
@@ -52,6 +51,15 @@ export function Header({ session, user }: { session: Session; user: any }) {
     }
   }
 
+  async function deleteEvent() {
+    const { event_url } = router.query;
+    let { data, status, error } = await supabase
+      .from("events")
+      .delete()
+      .eq("event_url", event_url);
+    router.push("/events");
+  }
+
   async function signInWithGoogle() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -70,7 +78,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
           <>
             {router.pathname === "/events" && (
               <Button
-                className="bg-base-case-pink-500 w-32 h-10 mr-2 rounded-md"
+                className="bg-base-case-pink-800 w-32 h-10 mr-2 rounded-md"
                 onClick={() => router.push("/new_event")}
                 id="tooltip-select-3"
               >
@@ -79,7 +87,8 @@ export function Header({ session, user }: { session: Session; user: any }) {
             )}
             {createdBy && !router.asPath.endsWith("/edit") && (
               <Button
-                className="bg-base-case-pink-500 w-32 h-10 mr-2 rounded-md"
+                className="w-32 h-10 mr-2 rounded-md"
+                variant="subtle"
                 onClick={() => router.push(`${router.asPath}/edit`)}
                 id="tooltip-edit-event"
               >
@@ -87,9 +96,20 @@ export function Header({ session, user }: { session: Session; user: any }) {
               </Button>
             )}
 
+            {router.asPath.endsWith("/edit") && (
+              <Button
+                className="w-32 h-10 mr-2 rounded-md"
+                variant="subtle"
+                onClick={deleteEvent}
+                id="tooltip-delete-event"
+              >
+                Delete Event
+              </Button>
+            )}
+
             {router.pathname !== "/events" && (
               <Button
-                className="bg-base-case-pink-500 w-24 h-10 mr-2 rounded-md"
+                className="bg-base-case-pink-800 w-24 h-10 mr-2 rounded-md"
                 onClick={() => router.push("/events")}
                 id="tooltip-select-2"
               >
@@ -107,10 +127,10 @@ export function Header({ session, user }: { session: Session; user: any }) {
                   className="flex justify-center items-center rounded-full w-10 h-10"
                   style={{
                     background:
-                      "linear-gradient(90deg, #FF9A8B 0%, #FF6A88 55%, #FF99AC 100%)",
+                      "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
                   }}
                 >
-                  {name ? name.charAt(0) : ""}
+                  {name && name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
             </Button>
