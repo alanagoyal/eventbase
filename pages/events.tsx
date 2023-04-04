@@ -46,7 +46,6 @@ export default function Events({ session }: { session: Session }) {
         .gte("start_timestampz", new Date().toISOString());
 
       setAllHostings(data);
-      console.log({ data });
     } catch (error) {
       console.log(error);
     }

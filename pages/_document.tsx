@@ -27,14 +27,8 @@ export default function Document() {
           name="twitter:description"
           content="base case capital is inviting you to an event"
         />
-        <meta
-          property="og:image"
-          content="https://base-case-events.vercel.app/api/og"
-        />
-        <meta
-          name="twitter:image"
-          content="https://base-case-events.vercel.app/api/og"
-        />
+        <meta property="og:image" content={`${process.env.APP_URL}/api/og`} />
+        <meta name="twitter:image" content={`${process.env.APP_URL}/api/og`} />
         <script
           src={`https://maps.googleapis.com/maps/api/js?key=${process.env.MAPS_API_KEY}&libraries=places`}
           defer
