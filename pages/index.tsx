@@ -34,7 +34,7 @@ const Home: React.FC = () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "http://eventbase.vercel.app/events",
+        redirectTo: "https://eventbase.vercel.app/account",
       },
     });
   }

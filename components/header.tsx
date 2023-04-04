@@ -54,6 +54,9 @@ export function Header({ session, user }: { session: Session; user: any }) {
   async function signInWithGoogle() {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
+      options: {
+        redirectTo: "https://eventbase.vercel.app/account",
+      },
     });
   }
 
@@ -62,7 +65,11 @@ export function Header({ session, user }: { session: Session; user: any }) {
       <FrigadeTour flowId="flow_is5fTYIviWExwRjW" tooltipPosition="left" />
       <div className="flex flex-row justify-end px-5 pt-5">
         {!user ? (
-          <Button type="submit" onClick={() => signInWithGoogle()}>
+          <Button
+            type="submit"
+            className="bg-base-case-pink-800 w-32 h-10 mr-2 rounded-md"
+            onClick={() => signInWithGoogle()}
+          >
             Sign In
           </Button>
         ) : (
