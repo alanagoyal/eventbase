@@ -105,8 +105,10 @@ export default function EditEventPage({ session }: { session: Session }) {
         .update(updates)
         .eq("id", eventId);
       if (error) throw error;
-      router.push(`/events/${updates.event_url}`);
-      setTimeout(toast.success("Event updated!"), 3000);
+      toast.success("Event updated!");
+      setTimeout(() => {
+        router.push(`/events/${updates.event_url}`);
+      }, 3000);
     } catch (error) {
       console.log(error);
     }

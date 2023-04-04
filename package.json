@@ -42,6 +42,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.4.0",
+    "react-responsive": "^9.0.2",
     "react-wrap-balancer": "^0.4.0",
     "resend": "^0.11.0",
     "slugify": "^1.6.5",

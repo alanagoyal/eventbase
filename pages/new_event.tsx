@@ -83,8 +83,10 @@ export default function NewEvent({ session }: { session: Session }) {
 
       let { error } = await supabase.from("events").insert(updates);
       if (error) throw error;
-      router.push(`/events/${updates.event_url}`);
-      setTimeout(toast.success("Event created!"), 3000);
+      toast.success("Event created!");
+      setTimeout(() => {
+        router.push(`/events/${updates.event_url}`);
+      }, 3000);
     } catch (error) {
       console.log(error);
     }

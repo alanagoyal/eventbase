@@ -11,6 +11,7 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useMediaQuery } from "react-responsive";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
@@ -45,6 +46,7 @@ export default function EventPage({
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
   const user = useUser();
   const [allRsvps, setAllRsvps] = useState<any>(null);
+  const isMobile = useMediaQuery({ query: "(max-width: 767px)" });
 
   useEffect(() => {
     getUser();
@@ -356,7 +358,7 @@ export default function EventPage({
                   <div className="py-2">
                     <div className="py-1">
                       <Button
-                        className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
+                        className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-half"
                         onClick={() => removeGuest(email!)}
                       >
                         Can&apos;t Make It Anymore
@@ -371,7 +373,7 @@ export default function EventPage({
                         id="email"
                         type="text"
                         value={email || ""}
-                        className="h-10 p-1 w-96"
+                        className="h-10 p-1 w-half"
                         onChange={(e) => setEmail(e.target.value)}
                         disabled={user ? true : false}
                       />
@@ -382,7 +384,7 @@ export default function EventPage({
                         id="name"
                         type="text"
                         value={full_name || ""}
-                        className="h-10 p-1 w-96"
+                        className="h-10 p-1 w-half"
                         onChange={(e) => setName(e.target.value)}
                       />
                     </div>
@@ -392,7 +394,7 @@ export default function EventPage({
                         id="company name"
                         type="text"
                         value={company_name || ""}
-                        className="h-10 p-1 w-96"
+                        className="h-10 p-1 w-half"
                         onChange={(e) => setCompanyName(e.target.value)}
                       />
                     </div>
@@ -404,7 +406,7 @@ export default function EventPage({
                         id="dietary restrictions"
                         type="text"
                         value={dietary_restrictions || ""}
-                        className="h-10 p-1 w-96"
+                        className="h-10 p-1 w-half"
                         onChange={(e) => setDietaryRestrictions(e.target.value)}
                       />
                     </div>
@@ -414,14 +416,14 @@ export default function EventPage({
                         id="comments"
                         type="text"
                         value={comments || ""}
-                        className="h-10 p-1 w-96"
+                        className="h-10 p-1 w-half"
                         onChange={(e) => setComment(e.target.value)}
                       />
                     </div>
                     <div className="py-2">
                       <div className="py-1">
                         <Button
-                          className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-96"
+                          className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-half"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               onRsvp({
