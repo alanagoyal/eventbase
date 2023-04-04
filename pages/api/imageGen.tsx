@@ -26,12 +26,20 @@ export default async function handler(
       "grotesque, malformed, ugly, disfigured, text, human, person",
   });
 
+  const controller = new AbortController();
+  const signal = controller.signal;
+
   const requestOptions: RequestInit = {
     method: "POST",
     headers: myHeaders,
     body: raw,
     redirect: "follow",
+    signal,
   };
+
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, 15000);
 
   try {
     const response = await fetch(
@@ -43,8 +51,15 @@ export default async function handler(
     console.log(`result is: ${result}`);
     res.status(200).json({ response: JSON.parse(result).response.response });
     console.log(JSON.parse(result).response.response);
-  } catch (error) {
-    console.log("error", error);
-    res.status(500).json({ message: "Internal server error" });
+  } catch (error: any) {
+    if (error.name === "AbortError") {
+      console.log("Request timed out");
+      res.status(500).json({ message: "Request timed out" });
+    } else {
+      console.log("error", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
