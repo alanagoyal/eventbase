@@ -20,7 +20,7 @@ export default async function handler() {
           alignItems: "center",
         }}
       >
-        <span style={{ color: "#f687b3" }}>Event</span>base 🎉
+        Eventbase 🎉
       </div>
     ),
     {
