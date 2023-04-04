@@ -4,6 +4,16 @@ import { useState } from "react";
 import { FrigadeProvider } from "@frigade/react";
 import { AppProps } from "next/app";
 import "@/styles/globals.css";
+import { H } from "highlight.run";
+
+H.init("kevn77g3", {
+  tracingOrigins: true,
+  networkRecording: {
+    enabled: true,
+    recordHeadersAndBody: true,
+    urlBlocklist: [],
+  },
+});
 
 function MyApp({
   Component,
