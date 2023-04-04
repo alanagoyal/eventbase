@@ -20,7 +20,7 @@ export default async function handler() {
           alignItems: "center",
         }}
       >
-        <span className="text-base-case-pink-800">Event</span>base 🎉
+        <span tw="text-base-case-pink-800">Event</span>base 🎉
       </div>
     ),
     {
