@@ -81,7 +81,7 @@ export default function NewEvent({ session }: { session: Session }) {
       toast.success("Event created!");
       setTimeout(() => {
         router.push(`/events/${updates.event_url}`);
-      }, 1000);
+      }, 2000);
     } catch (error) {
       console.log(error);
     }
