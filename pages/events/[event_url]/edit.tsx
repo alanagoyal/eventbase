@@ -69,6 +69,29 @@ export default function EditEventPage({ session }: { session: Session }) {
     router.push("/events");
   }
 
+  const toISOStringWithTimezone = (date: Date) => {
+    const tzOffset = -date.getTimezoneOffset();
+    const diff = tzOffset >= 0 ? "+" : "-";
+    const pad = (n: number) => `${Math.floor(Math.abs(n))}`.padStart(2, "0");
+    return (
+      date.getFullYear() +
+      "-" +
+      pad(date.getMonth() + 1) +
+      "-" +
+      pad(date.getDate()) +
+      "T" +
+      pad(date.getHours()) +
+      ":" +
+      pad(date.getMinutes()) +
+      ":" +
+      pad(date.getSeconds()) +
+      diff +
+      pad(tzOffset / 60) +
+      ":" +
+      pad(tzOffset % 60)
+    );
+  };
+
   async function updateEvent({
     event_name,
     description,
@@ -161,7 +184,7 @@ export default function EditEventPage({ session }: { session: Session }) {
             <Input
               id="start time"
               type="datetime-local"
-              value={new Date(start_time).toISOString().slice(0, -8) || ""}
+              value={toISOStringWithTimezone(new Date(start_time)).slice(0, 16)}
               className="h-10 p-1"
               onChange={(e) => setStartTime(e.target.value)}
             />
@@ -171,11 +194,12 @@ export default function EditEventPage({ session }: { session: Session }) {
             <Input
               id="end time"
               type="datetime-local"
-              value={new Date(end_time).toISOString().slice(0, -8) || ""}
+              value={toISOStringWithTimezone(new Date(end_time)).slice(0, 16)}
               className="h-10 p-1"
               onChange={(e) => setEndTime(e.target.value)}
             />
           </div>
+
           <div className="py-2">
             <div className="py-1">
               <Button
