@@ -120,7 +120,7 @@ export default function Events({ session }: { session: Session }) {
         </div>
       ) : null}
       {!allRsvps?.length && !allHostings?.length ? (
-        <h1 className="sm:text-5xl text-5xl max-w-2xl font-bold pt-20">
+        <h1 className="sm:text-4xl text-4xl max-w-2xl font-bold pt-20 text-center flex justify-center items-center h-screen">
           Create an event to get started!
         </h1>
       ) : null}
