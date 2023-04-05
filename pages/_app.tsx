@@ -5,6 +5,7 @@ import { FrigadeProvider } from "@frigade/react";
 import { AppProps } from "next/app";
 import "@/styles/globals.css";
 import { H } from "highlight.run";
+import { Analytics } from "@vercel/analytics/react";
 
 H.init(process.env.HIGHLIGHT_API_KEY, {
   tracingOrigins: true,
@@ -30,6 +31,7 @@ function MyApp({
     >
       <FrigadeProvider publicApiKey={process.env.FRIGADE_API_KEY!}>
         <Component {...pageProps} />
+        <Analytics />
       </FrigadeProvider>
     </SessionContextProvider>
   );
