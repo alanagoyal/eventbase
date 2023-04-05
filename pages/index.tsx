@@ -67,7 +67,7 @@ const Home: React.FC = () => {
               ) : (
                 <Button
                   className="rounded-full w-10 h-10"
-                  onClick={() => router.push("/account")}
+                  onClick={() => router.push("/account/")}
                   id="tooltip-select-1"
                 >
                   <Avatar>
