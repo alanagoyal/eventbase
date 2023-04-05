@@ -1,9 +1,9 @@
 import { Header } from "@/components/header";
+import { Button } from "@/components/ui/button";
 import { Database } from "@/types/supabase";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Head from "next/head";
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -120,9 +120,24 @@ export default function Events({ session }: { session: Session }) {
         </div>
       ) : null}
       {!allRsvps?.length && !allHostings?.length ? (
-        <h1 className="sm:text-4xl text-4xl max-w-2xl font-bold pt-20 text-center flex justify-center items-center h-screen">
-          Create an event to get started!
-        </h1>
+        <main className="container mx-auto my-48 flex-grow">
+          <section className="text-center">
+            <div className="mt-8">
+              <Link href="/new_event">
+                <Button
+                  className="bg-base-case-pink-500 text-white h-12 w-64 px-8 py-4 rounded-md text-xl"
+                  style={{
+                    background:
+                      "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
+                  }}
+                >
+                  Create an event
+                </Button>
+              </Link>
+            </div>
+          </section>
+          <section className="mt-24 flex justify-center"></section>
+        </main>
       ) : null}
     </div>
   );
