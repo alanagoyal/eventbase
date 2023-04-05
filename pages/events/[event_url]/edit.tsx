@@ -108,7 +108,7 @@ export default function EditEventPage({ session }: { session: Session }) {
       toast.success("Event updated!");
       setTimeout(() => {
         router.push(`/events/${updates.event_url}`);
-      }, 3000);
+      }, 2000);
     } catch (error) {
       console.log(error);
     }

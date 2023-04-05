@@ -37,12 +37,7 @@ export default function NewEvent({ session }: { session: Session }) {
       return Promise.resolve(data.response);
     } catch (error) {
       console.error(error);
-      return {
-        response: {
-          response:
-            "https://storage.googleapis.com/stablediffusionpyq/best%20dinne-1680492531.8617933.png",
-        },
-      };
+      return "https://storage.googleapis.com/stablediffusionpyq/best%20dinne-1680492531.8617933.png";
     }
   }
 
@@ -86,7 +81,7 @@ export default function NewEvent({ session }: { session: Session }) {
       toast.success("Event created!");
       setTimeout(() => {
         router.push(`/events/${updates.event_url}`);
-      }, 3000);
+      }, 1000);
     } catch (error) {
       console.log(error);
     }
