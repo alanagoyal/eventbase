@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Database } from "@/types/supabase";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
+import { useFeature } from "@unrevealed/react";
 import Head from "next/head";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -12,6 +14,9 @@ export default function Events({ session }: { session: Session }) {
   const user = useUser();
   const [allRsvps, setAllRsvps] = useState<any>(null);
   const [allHostings, setAllHostings] = useState<any>(null);
+
+  // For demo purposes, don't enable in production unless you want to give Unrevealed free advertising 😁
+  const unrevealedEvent = useFeature("unrevealed-event");
 
   useEffect(() => {
     getRsvps();
@@ -139,6 +144,28 @@ export default function Events({ session }: { session: Session }) {
           <section className="mt-24 flex justify-center"></section>
         </main>
       ) : null}
+      {unrevealedEvent.enabled && (
+        <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
+          <h1 className="sm:text-3xl text-3xl max-w-2xl font-bold pt-4">
+            Unrevealed events
+          </h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-6"></div>
+          <div className="flex flex-col items-center text-center">
+            <Link href="https://unrevealed.tech" target="_blank">
+              <div>
+                <Image
+                  src="https://www.unrevealed.tech/logo-dark.svg"
+                  alt="Unrevealed demo"
+                  className="w-full mb-2"
+                  width="200"
+                  height="200"
+                />
+              </div>
+            </Link>
+            <div className="text-lg font-bold">Book a demo</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
