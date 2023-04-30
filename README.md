@@ -78,6 +78,7 @@ You'll need API keys for the following:
 - [Pyq](https://www.pyqai.com/) makes it easy for non-ML engineers to add ML features into their applications. I used it to generate an image based on the title of the event.
 - [Resend](https://resend.com/) is a new email API for developers. I used it to send guests a beautiful confirmation email when they RSVP to an event.
 - [Google Maps](https://developers.google.com/maps) is an API for places. I used it to autocomplete the location when a user is creating an event.
+- [Unrevealed](https://unrevealed.tech) is a workflow based feature flag solution that facilitates the process of releasing new features.
 
 Put them in a `.env` file as shown in the `.env.example`.
 
