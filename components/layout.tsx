@@ -20,8 +20,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       .eq("email", user.email)
       .single();
 
-    console.log(data, error);
-
     if (error && status !== 406) {
       throw error;
     }
