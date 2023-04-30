@@ -6,6 +6,8 @@ import { AppProps } from "next/app";
 import "@/styles/globals.css";
 import { H } from "highlight.run";
 import { Analytics } from "@vercel/analytics/react";
+import { FeatureToggler, UnrevealedProvider } from "@unrevealed/react";
+import { Layout } from "@/components/layout";
 
 H.init(process.env.HIGHLIGHT_API_KEY, {
   tracingOrigins: true,
@@ -30,7 +32,14 @@ function MyApp({
       initialSession={pageProps.initialSession}
     >
       <FrigadeProvider publicApiKey={process.env.FRIGADE_API_KEY!}>
-        <Component {...pageProps} />
+        <UnrevealedProvider
+          clientKey={process.env.NEXT_PUBLIC_UNREVEALED_CLIENT_KEY!}
+        >
+          <Layout>
+            {process.env.NODE_ENV === "development" && <FeatureToggler />}
+            <Component {...pageProps} />
+          </Layout>
+        </UnrevealedProvider>
         <Analytics />
       </FrigadeProvider>
     </SessionContextProvider>
