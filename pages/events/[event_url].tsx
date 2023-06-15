@@ -45,7 +45,7 @@ export default function EventPage({
   const [discussion_topics, setDiscussionTopics] =
     useState<Rsvps["discussion_topics"]>(null);
   const [comments, setComment] = useState<Rsvps["comments"]>(null);
-  const [rsvpType, setRsvpType] = useState<Rsvps["rsvp_type"]>("yes");
+  const [rsvp_type, setRsvpType] = useState<Rsvps["rsvp_type"]>("yes");
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
 
   const user = useUser();
@@ -128,6 +128,7 @@ export default function EventPage({
         setDietaryRestrictions(data.dietary_restrictions);
         setDiscussionTopics(data.discussion_topics);
         setComment(data.comments);
+        setRsvpType(data.rsvp_type);
       }
     } catch (error) {
       console.log(error);
@@ -197,6 +198,7 @@ export default function EventPage({
     dietary_restrictions,
     comments,
     discussion_topics,
+    rsvp_type,
   }: {
     email: Guests["email"];
     full_name: Guests["full_name"];
@@ -204,6 +206,7 @@ export default function EventPage({
     dietary_restrictions: Guests["dietary_restrictions"];
     comments: Rsvps["comments"];
     discussion_topics: Rsvps["discussion_topics"];
+    rsvp_type: Rsvps["rsvp_type"];
   }) {
     try {
       const guestInfo = {
@@ -219,6 +222,8 @@ export default function EventPage({
         event_id: event.id,
         created_at: new Date().toISOString(),
         comments,
+        discussion_topics,
+        rsvp_type,
       };
 
       await addGuest(guestInfo);
@@ -439,7 +444,11 @@ export default function EventPage({
                     </div>
                     <div>
                       <Label htmlFor="rsvp type">RSVP</Label>
-                      <select onChange={(e) => setRsvpType(e.target.value)}>
+                      <select
+                        value={rsvp_type ? rsvp_type : "Choose an option"}
+                        className="h-10 p-1 w-half"
+                        onChange={(e) => setRsvpType(e.target.value)}
+                      >
                         <option value="in person">
                           I&apos;ll attend in person
                         </option>
@@ -461,6 +470,7 @@ export default function EventPage({
                                 dietary_restrictions,
                                 comments,
                                 discussion_topics,
+                                rsvp_type,
                               });
                             }
                           }}
@@ -472,6 +482,7 @@ export default function EventPage({
                               dietary_restrictions,
                               comments,
                               discussion_topics,
+                              rsvp_type,
                             })
                           }
                           disabled={guestRsvpStatus == "attending"}
