@@ -53,8 +53,8 @@ export default function NewEvent({ session }: { session: Session }) {
     description: Events["description"];
     location: Events["location"];
     location_url: Events["location_url"];
-    start_time: Events["start_time"];
-    end_time: Events["end_time"];
+    start_time: Events["start_timestampz"];
+    end_time: Events["end_timestampz"];
   }) {
     toast("One minute while we generate an image for your event...");
     try {
