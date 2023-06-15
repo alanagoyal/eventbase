@@ -423,16 +423,6 @@ export default function EventPage({
                       />
                     </div>
                     <div>
-                      <Label htmlFor="comments">Comments</Label>
-                      <Input
-                        id="comments"
-                        type="text"
-                        value={comments || ""}
-                        className="h-10 p-1 w-half"
-                        onChange={(e) => setComment(e.target.value)}
-                      />
-                    </div>
-                    <div>
                       <Label htmlFor="topics">Topics</Label>
                       <Input
                         id="topics"
@@ -441,21 +431,6 @@ export default function EventPage({
                         className="h-10 p-1 w-half"
                         onChange={(e) => setDiscussionTopics(e.target.value)}
                       />
-                    </div>
-                    <div>
-                      <Label htmlFor="rsvp type">RSVP</Label>
-                      <select
-                        value={rsvp_type ? rsvp_type : "Choose an option"}
-                        className="h-10 p-1 w-half"
-                        onChange={(e) => setRsvpType(e.target.value)}
-                      >
-                        <option value="in person">
-                          I&apos;ll attend in person
-                        </option>
-                        <option value="virtual">
-                          I&apos;ll join virtually
-                        </option>
-                      </select>
                     </div>
                     <div className="py-2">
                       <div className="py-1">

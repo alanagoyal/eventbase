@@ -24,7 +24,7 @@ export default function NewEvent({ session }: { session: Session }) {
   const [end_time, setEndTime] = useState<Events["end_timestampz"]>(null);
   const router = useRouter();
   const slugify = require("slugify");
-
+  /* 
   async function getImage() {
     try {
       const response = await fetch("/api/imageGen", {
@@ -39,7 +39,7 @@ export default function NewEvent({ session }: { session: Session }) {
       console.error(error);
       return "https://storage.googleapis.com/stablediffusionpyq/best%20dinne-1680492531.8617933.png";
     }
-  }
+  } */
 
   async function saveEvent({
     event_name,
@@ -73,7 +73,7 @@ export default function NewEvent({ session }: { session: Session }) {
         end_timestampz: endParsed,
         created_by: user.id,
         event_url: slugify(event_name, { lower: true, strict: true }),
-        og_image: await getImage(),
+        //  og_image: await getImage(),
       };
 
       let { error } = await supabase.from("events").insert(updates);
