@@ -65,8 +65,8 @@ create trigger on_auth_user_created
 Grab the project URL and anon key from the [API settings](https://app.supabase.com/project/_/settings/api) and put them in a new `.env.local` file in the root directory as shown:
 
 ```
-NEXT_PUBLIC_SUPABASE_URL = "https://<project>.supabase.co";
-NEXT_PUBLIC_SUPABASE_ANON_KEY = "<your-anon-key>";
+NEXT_PUBLIC_SUPABASE_URL = "https://<project>.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY = "<your-anon-key>"
 ```
 
 ### Install dependencies
