@@ -42,8 +42,12 @@ export default function EventPage({
   const [company_name, setCompanyName] = useState<Guests["company_name"]>(null);
   const [dietary_restrictions, setDietaryRestrictions] =
     useState<Guests["dietary_restrictions"]>(null);
+  const [discussion_topics, setDiscussionTopics] =
+    useState<Rsvps["discussion_topics"]>(null);
   const [comments, setComment] = useState<Rsvps["comments"]>(null);
+  const [rsvpType, setRsvpType] = useState<Rsvps["rsvp_type"]>("yes");
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
+
   const user = useUser();
   const [allRsvps, setAllRsvps] = useState<any>(null);
 
@@ -122,6 +126,8 @@ export default function EventPage({
         setEmail(data.email);
         setCompanyName(data.company_name);
         setDietaryRestrictions(data.dietary_restrictions);
+        setDiscussionTopics(data.discussion_topics);
+        setComment(data.comments);
       }
     } catch (error) {
       console.log(error);
@@ -190,12 +196,14 @@ export default function EventPage({
     company_name,
     dietary_restrictions,
     comments,
+    discussion_topics,
   }: {
     email: Guests["email"];
     full_name: Guests["full_name"];
     company_name: Guests["company_name"];
     dietary_restrictions: Guests["dietary_restrictions"];
     comments: Rsvps["comments"];
+    discussion_topics: Rsvps["discussion_topics"];
   }) {
     try {
       const guestInfo = {
@@ -419,6 +427,27 @@ export default function EventPage({
                         onChange={(e) => setComment(e.target.value)}
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="topics">Topics</Label>
+                      <Input
+                        id="topics"
+                        type="text"
+                        value={discussion_topics || ""}
+                        className="h-10 p-1 w-half"
+                        onChange={(e) => setDiscussionTopics(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="rsvp type">RSVP</Label>
+                      <select onChange={(e) => setRsvpType(e.target.value)}>
+                        <option value="in person">
+                          I&apos;ll attend in person
+                        </option>
+                        <option value="virtual">
+                          I&apos;ll join virtually
+                        </option>
+                      </select>
+                    </div>
                     <div className="py-2">
                       <div className="py-1">
                         <Button
@@ -431,6 +460,7 @@ export default function EventPage({
                                 company_name,
                                 dietary_restrictions,
                                 comments,
+                                discussion_topics,
                               });
                             }
                           }}
@@ -441,6 +471,7 @@ export default function EventPage({
                               company_name,
                               dietary_restrictions,
                               comments,
+                              discussion_topics,
                             })
                           }
                           disabled={guestRsvpStatus == "attending"}

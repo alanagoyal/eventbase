@@ -13,10 +13,7 @@ export interface Database {
         Row: {
           created_at: string | null
           created_by: string | null
-          date: string | null
-          date_time: string | null
           description: string | null
-          end_time: string | null
           end_timestampz: string | null
           event_name: string | null
           event_url: string
@@ -24,16 +21,12 @@ export interface Database {
           location: string | null
           location_url: string | null
           og_image: string | null
-          start_time: string | null
           start_timestampz: string | null
         }
         Insert: {
           created_at?: string | null
           created_by?: string | null
-          date?: string | null
-          date_time?: string | null
           description?: string | null
-          end_time?: string | null
           end_timestampz?: string | null
           event_name?: string | null
           event_url: string
@@ -41,16 +34,12 @@ export interface Database {
           location?: string | null
           location_url?: string | null
           og_image?: string | null
-          start_time?: string | null
           start_timestampz?: string | null
         }
         Update: {
           created_at?: string | null
           created_by?: string | null
-          date?: string | null
-          date_time?: string | null
           description?: string | null
-          end_time?: string | null
           end_timestampz?: string | null
           event_name?: string | null
           event_url?: string
@@ -58,9 +47,16 @@ export interface Database {
           location?: string | null
           location_url?: string | null
           og_image?: string | null
-          start_time?: string | null
           start_timestampz?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "events_created_by_fkey"
+            columns: ["created_by"]
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       guests: {
         Row: {
@@ -87,6 +83,7 @@ export interface Database {
           id?: string
           updated_at?: string | null
         }
+        Relationships: []
       }
       rsvps: {
         Row: {
@@ -96,7 +93,7 @@ export interface Database {
           email: string | null
           event_id: string | null
           id: string
-          status: string | null
+          rsvp_type: string | null
         }
         Insert: {
           comments?: string | null
@@ -105,7 +102,7 @@ export interface Database {
           email?: string | null
           event_id?: string | null
           id?: string
-          status?: string | null
+          rsvp_type?: string | null
         }
         Update: {
           comments?: string | null
@@ -114,8 +111,22 @@ export interface Database {
           email?: string | null
           event_id?: string | null
           id?: string
-          status?: string | null
+          rsvp_type?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "rsvps_email_fkey"
+            columns: ["email"]
+            referencedRelation: "guests"
+            referencedColumns: ["email"]
+          },
+          {
+            foreignKeyName: "rsvps_event_id_fkey"
+            columns: ["event_id"]
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          }
+        ]
       }
     }
     Views: {
