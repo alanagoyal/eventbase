@@ -1,10 +1,10 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Metadata } from "next";
+import "@/styles/globals.css";
 import { siteConfig } from "@/config/site";
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/theme-provider";
-import { createClient } from "@/utils/supabase/server";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -24,35 +24,33 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
-  const supabase = createClient();
-  const user = supabase.auth.getUser();
-
   return (
     <html lang="en">
-      <title>{siteConfig.name}</title>
-      <meta
-        name="description"
-        content="base case capital is inviting you to an event"
-      />
-      <meta
-        property="og:site_name"
-        content="base case capital is inviting you to an event"
-      />
-      <meta
-        property="og:description"
-        content="base case capital is inviting you to an event"
-      />
-      <meta property="og:title" content="you're invited 🤗" />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta
-        name="twitter:title"
-        content="base case capital is inviting you to an event"
-      />
-      <meta
-        name="twitter:description"
-        content="base case capital is inviting you to an event"
-      />
+      <head>
+        <title>{siteConfig.name}</title>
+        <meta
+          name="description"
+          content="base case capital is inviting you to an event"
+        />
+        <meta
+          property="og:site_name"
+          content="base case capital is inviting you to an event"
+        />
+        <meta
+          property="og:description"
+          content="base case capital is inviting you to an event"
+        />
+        <meta property="og:title" content="you're invited 🤗" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="base case capital is inviting you to an event"
+        />
+        <meta
+          name="twitter:description"
+          content="base case capital is inviting you to an event"
+        />
+      </head>
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",

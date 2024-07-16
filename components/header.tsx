@@ -6,13 +6,13 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
-import { siteUrl } from "@/config/site";
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "../types/supabase";
+import { siteConfig } from "@/config/site";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
-export function Header({ session, user }: { session: Session; user: any }) {
+export function Header({ user }: { user: any }) {
   const supabase = createClient();
   const [name, setName] = useState<Guests["full_name"]>(null);
   const [createdBy, setCreatedBy] = useState<any>(null);
@@ -27,7 +27,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
     if (event_url) {
       getEvent();
     }
-  }, [session, user]);
+  }, [user]);
 
   async function getUser() {
     let { data, status, error } = await supabase
@@ -57,7 +57,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${siteUrl}/account/`,
+        redirectTo: `${siteConfig.url}/account/`,
       },
     });
     if (error) {
@@ -72,7 +72,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
         <div className="flex text-xl font-semibold">
           <Link href="/">
             <div>
-              <span className="text-base-case-pink-800">Event</span>base
+              <span className="text-pink-800">Event</span>base
             </div>
           </Link>
         </div>
@@ -80,7 +80,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
           {!user ? (
             <Button
               type="submit"
-              className="bg-base-case-pink-800 w-32 h-10 mr-2 rounded-md"
+              className="bg-pink-800 w-32 h-10 mr-2 rounded-md"
               onClick={() => signInWithGoogle()}
             >
               Sign In
@@ -89,7 +89,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
             <>
               {router.pathname === "/events" && (
                 <Button
-                  className="bg-base-case-pink-800 w-32 h-10 mr-2 rounded-md"
+                  className="bg-pink-800 w-32 h-10 mr-2 rounded-md"
                   onClick={() => router.push("/new_event")}
                   id="tooltip-select-3"
                 >
@@ -108,7 +108,7 @@ export function Header({ session, user }: { session: Session; user: any }) {
               )}
               {router.pathname !== "/events" && (
                 <Button
-                  className="bg-base-case-pink-800 w-24 h-10 mr-2 rounded-md"
+                  className="bg-pink-800 w-24 h-10 mr-2 rounded-md"
                   onClick={() => router.push("/events")}
                   id="tooltip-select-2"
                 >

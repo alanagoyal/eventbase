@@ -3,7 +3,7 @@ import { Database } from "@/types/supabase";
 import { Session } from "@supabase/auth-helpers-nextjs";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Head from "next/head";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import LocationAutocomplete from "@/components/location";
@@ -13,9 +13,7 @@ import { Button } from "@/components/ui/button";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 
-export default function NewEvent({ session }: { session: Session }) {
-  const supabase = useSupabaseClient<Database>();
-  const user = useUser();
+export default function NewEvent() {
   const [event_name, setEventName] = useState<Events["event_name"]>(null);
   const [description, setDescription] = useState<Events["description"]>(null);
   const [location, setLocation] = useState<Events["location"]>(null);
@@ -24,22 +22,6 @@ export default function NewEvent({ session }: { session: Session }) {
   const [end_time, setEndTime] = useState<Events["end_timestampz"]>(null);
   const router = useRouter();
   const slugify = require("slugify");
-  /* 
-  async function getImage() {
-    try {
-      const response = await fetch("/api/imageGen", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ description }),
-      });
-      const data = await response.json();
-
-      return Promise.resolve(data.response);
-    } catch (error) {
-      console.error(error);
-      return "https://storage.googleapis.com/stablediffusionpyq/best%20dinne-1680492531.8617933.png";
-    }
-  } */
 
   async function saveEvent({
     event_name,
@@ -73,7 +55,6 @@ export default function NewEvent({ session }: { session: Session }) {
         end_timestampz: endParsed,
         created_by: user.id,
         event_url: slugify(event_name, { lower: true, strict: true }),
-        //  og_image: await getImage(),
       };
 
       let { error } = await supabase.from("events").insert(updates);
@@ -89,8 +70,6 @@ export default function NewEvent({ session }: { session: Session }) {
 
   return (
     <div className="p-4">
-      <Header session={session} user={user} />
-      <Toaster />
       <Head>
         <title>New Event</title>
       </Head>
@@ -152,7 +131,7 @@ export default function NewEvent({ session }: { session: Session }) {
           <div className="py-2">
             <div className="py-1">
               <Button
-                className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
+                className="text-custom-color border-custom-border bg-pink-800 hover:bg-pink-600 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase"
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     saveEvent({

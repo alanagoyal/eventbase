@@ -1,7 +1,3 @@
-import { Session, useUser } from "@supabase/auth-helpers-react";
-import { Database } from "../../types/supabase";
-import { supabase } from "@/lib/supabaseClient";
-import toast, { Toaster } from "react-hot-toast";
 import Balancer from "react-wrap-balancer";
 import { useEffect, useState } from "react";
 import Head from "next/head";
@@ -11,31 +7,20 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMediaQuery } from "react-responsive";
+import { createClient } from "@/utils/supabase/server";
+import { Database } from "@/types/supabase";
+import { toast } from "./ui/use-toast";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
 type Rsvps = Database["public"]["Tables"]["rsvps"]["Row"];
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
-export async function getServerSideProps(context: any) {
-  const { event_url } = context.params;
-  let { data, error, status } = await supabase
-    .from("events")
-    .select()
-    .eq("event_url", event_url)
-    .single();
-
-  return {
-    props: { eventInfo: data },
-  };
-}
-
-export default function EventPage({
-  eventInfo,
-  session,
+export default function Event({
+  event,
+  user,
 }: {
-  eventInfo: Events;
-  session: Session;
+  event: Events;
+  user: Guests;
 }) {
   const [full_name, setName] = useState<Guests["full_name"]>(null);
   const [email, setEmail] = useState<Guests["email"]>("");
@@ -44,24 +29,11 @@ export default function EventPage({
     useState<Guests["dietary_restrictions"]>(null);
   const [discussion_topics, setDiscussionTopics] =
     useState<Rsvps["discussion_topics"]>(null);
-  const [comments, setComment] = useState<Rsvps["comments"]>(null);
+  const [comments, setComments] = useState<Rsvps["comments"]>(null);
   const [rsvp_type, setRsvpType] = useState<Rsvps["rsvp_type"]>("yes");
   const [guestRsvpStatus, setGuestRsvpStatus] = useState<any>(null);
-
-  const user = useUser();
   const [allRsvps, setAllRsvps] = useState<any>(null);
-
-  useEffect(() => {
-    getUser();
-    getGuests();
-  }, [session, user]);
-
-  if (!eventInfo) {
-    console.log("Waiting for data...");
-    return null;
-  }
-
-  const event = eventInfo;
+  const supabase = createClient();
   const startTimestampz = new Date(event.start_timestampz!);
   const endTimestampz = new Date(event.end_timestampz!);
   const formattedDate = startTimestampz.toLocaleDateString("en-US", {
@@ -106,62 +78,33 @@ export default function EventPage({
     { ssr: false }
   );
 
-  async function getUser() {
-    try {
-      if (!user) throw new Error("Waiting for user...");
-      getRsvpStatus();
-
-      let { data, error, status } = await supabase
-        .from("guests")
-        .select()
-        .eq("email", user.email)
-        .single();
-
-      if (error && status !== 406) {
-        throw error;
-      }
-
-      if (data) {
-        setName(data.full_name);
-        setEmail(data.email);
-        setCompanyName(data.company_name);
-        setDietaryRestrictions(data.dietary_restrictions);
-        setDiscussionTopics(data.discussion_topics);
-        setComment(data.comments);
-        setRsvpType(data.rsvp_type);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  useEffect(() => {
+    getRsvpStatus();
+  }, [user, event]);
 
   async function getRsvpStatus() {
     try {
-      if (!user) throw new Error("Waiting for user...");
-
-      let { data, error, status } = await supabase
-        .from("rsvps")
-        .select()
-        .eq("event_id", eventInfo.id)
-        .eq("email", user.email);
-
-      if (data!.length !== 0) {
-        setGuestRsvpStatus("attending");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  async function getGuests() {
-    try {
-      let { data, error, status } = await supabase
+      let { data: allRsvpsData, error: allRsvpsError } = await supabase
         .from("rsvps")
         .select(
-          "email (id, full_name, company_name, dietary_restrictions), comments"
+          `
+          *,
+          email: guests(full_name, company_name)
+        `
         )
-        .eq("event_id", eventInfo.id);
-      setAllRsvps(data);
+        .eq("event_id", event.id);
+
+      if (allRsvpsError) throw allRsvpsError;
+
+      setAllRsvps(allRsvpsData);
+
+      const userRsvp = allRsvpsData?.find((rsvp) => rsvp.email === user.email);
+
+      if (userRsvp) {
+        setGuestRsvpStatus("attending");
+      } else {
+        setGuestRsvpStatus("not attending");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -230,7 +173,10 @@ export default function EventPage({
       await addRsvp(rsvpInfo);
       setGuestRsvpStatus("attending");
     } catch (error) {
-      toast.error("Whoops! Something went wrong...");
+      toast({
+        title: "Whoops! Something went wrong...",
+        variant: "destructive",
+      });
       console.log(error);
     }
   }
@@ -273,11 +219,15 @@ export default function EventPage({
           .eq("email", email)
           .eq("event_id", event.id);
         if (error) throw error;
-        toast.success("Your response has been updated!");
+        toast({
+          description: "Your response has been updated!",
+        });
       } else {
         let { error } = await supabase.from("rsvps").insert(rsvpInfo);
         if (error) throw error;
-        toast.success("You're in!");
+        toast({
+          description: "You're in!",
+        });
         sendMail(email!, event, formattedDate, formattedTime);
       }
     } catch (error) {
@@ -286,7 +236,9 @@ export default function EventPage({
   }
 
   async function removeGuest(email: string) {
-    toast("We hope to see you next time!");
+    toast({
+      description: "We hope to see you next time!",
+    });
     setGuestRsvpStatus("not attending");
     let { data, error, status } = await supabase
       .from("rsvps")
@@ -301,8 +253,7 @@ export default function EventPage({
 
   return (
     <div className="p-4">
-      <Header session={session} user={user} />
-      <Toaster />
+      <Header user={user} />
       <Head>
         <title>{`${event.event_name}`}</title>
       </Head>
@@ -370,7 +321,7 @@ export default function EventPage({
                   <div className="py-2">
                     <div className="py-1">
                       <Button
-                        className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-half"
+                        className="text-custom-color border-custom-border bg-pink-800 hover:bg-pink-600  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-half"
                         onClick={() => removeGuest(email!)}
                       >
                         Can&apos;t Make It Anymore
@@ -432,10 +383,33 @@ export default function EventPage({
                         onChange={(e) => setDiscussionTopics(e.target.value)}
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="comments">Comments</Label>
+                      <Input
+                        id="comments"
+                        type="text"
+                        value={comments || ""}
+                        className="h-10 p-1 w-half"
+                        onChange={(e) => setComments(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="rsvp_type">RSVP Type</Label>
+                      <select
+                        id="rsvp_type"
+                        value={rsvp_type || ""}
+                        className="h-10 p-1 w-half"
+                        onChange={(e) => setRsvpType(e.target.value as Rsvps["rsvp_type"])}
+                      >
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                        <option value="maybe">Maybe</option>
+                      </select>
+                    </div>
                     <div className="py-2">
                       <div className="py-1">
                         <Button
-                          className="text-custom-color border-custom-border bg-base-case-pink-800 hover:bg-base-case-pink-600 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-half"
+                          className="text-custom-color border-custom-border bg-pink-800 hover:bg-pink-600 inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-half"
                           onKeyDown={(e) => {
                             if (e.key === "Enter") {
                               onRsvp({

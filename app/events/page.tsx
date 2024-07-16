@@ -125,7 +125,7 @@ export default function Events({ session }: { session: Session }) {
             <div className="mt-8">
               <Link href="/new_event">
                 <Button
-                  className="bg-base-case-pink-500 text-white h-12 w-64 px-8 py-4 rounded-md text-xl"
+                  className="bg-pink-500 text-white h-12 w-64 px-8 py-4 rounded-md text-xl"
                   style={{
                     background:
                       "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
