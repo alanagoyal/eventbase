@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { siteUrl } from "@/config/site";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
@@ -53,12 +54,15 @@ export function Header({ session, user }: { session: Session; user: any }) {
   }
 
   async function signInWithGoogle() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://eventbase.app/account/",
+        redirectTo: `${siteUrl}/account/`,
       },
     });
+    if (error) {
+      console.error(error);
+    }
   }
 
   return (

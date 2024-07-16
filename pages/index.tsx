@@ -1,5 +1,6 @@
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { siteUrl } from "@/config/site";
 import { useSupabaseClient, useUser } from "@supabase/auth-helpers-react";
 import Head from "next/head";
 import Link from "next/link";
@@ -31,12 +32,16 @@ const Home: React.FC = () => {
   }
 
   async function signInWithGoogle() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: "https://eventbase.app/account/",
+        redirectTo: `${siteUrl}/account/`,
       },
     });
+
+    if (error) {
+      console.error(error);
+    }
   }
 
   return (
