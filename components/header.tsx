@@ -1,19 +1,19 @@
 "use client";
 
-import { Database } from "@/types/supabase";
 import { FrigadeTour } from "@frigade/react";
 import { Avatar, AvatarFallback } from "@radix-ui/react-avatar";
-import { Session, useSupabaseClient } from "@supabase/auth-helpers-react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import { siteUrl } from "@/config/site";
+import { createClient } from "@/utils/supabase/client";
+import { Database } from "../types/supabase";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 export function Header({ session, user }: { session: Session; user: any }) {
-  const supabase = useSupabaseClient<Database>();
+  const supabase = createClient();
   const [name, setName] = useState<Guests["full_name"]>(null);
   const [createdBy, setCreatedBy] = useState<any>(null);
   const router = useRouter();
