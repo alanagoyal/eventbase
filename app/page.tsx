@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "../components/ui/button";
+import { Github } from "lucide-react";
 
 export default function Home() {
   return (
@@ -12,10 +13,9 @@ export default function Home() {
           <p className="text-lg mt-4">
             A simple platform for all of your event management needs
           </p>
-          <div className="mt-8">
+          <div className="mt-8 flex justify-center gap-4">
             <Link href="/signin">
               <Button
-                className="rounded-md bg-pink-500 text-white h-15 w-64 px-8 py-4 text-xl overflow-hidden"
                 style={{
                   background:
                     "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
@@ -24,11 +24,16 @@ export default function Home() {
                 Get Started Today
               </Button>
             </Link>
+            <Link href="https://github.com/alanagoyal/eventbase" target="_blank" rel="noopener noreferrer">
+              <Button variant="ghost">
+                <Github className="mr-2 h-4 w-4" />
+                GitHub
+              </Button>
+            </Link>
           </div>
         </section>
         <section className="mt-24 flex justify-center"></section>
       </main>
-
     </div>
   );
 }

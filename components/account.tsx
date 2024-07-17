@@ -87,7 +87,7 @@ export default function Account({ user }: { user: Guests }) {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10 p-1 w-full" disabled />
+                    <Input {...field} className="h-10 p-1 w-full" disabled autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -100,7 +100,7 @@ export default function Account({ user }: { user: Guests }) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10 p-1 w-full" />
+                    <Input {...field} className="h-10 p-1 w-full" autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -113,7 +113,7 @@ export default function Account({ user }: { user: Guests }) {
                 <FormItem>
                   <FormLabel>Company</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10 p-1 w-full" />
+                    <Input {...field} className="h-10 p-1 w-full" autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -126,7 +126,7 @@ export default function Account({ user }: { user: Guests }) {
                 <FormItem>
                   <FormLabel>Dietary Restrictions</FormLabel>
                   <FormControl>
-                    <Input {...field} className="h-10 p-1 w-full" />
+                    <Input {...field} className="h-10 p-1 w-full" autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

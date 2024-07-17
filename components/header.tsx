@@ -12,7 +12,7 @@ export function Header({ guest }: { guest: Guests }) {
   return (
     <div>
       <div className="flex flex-row justify-center items-center px-5 pt-5">
-        <div className="flex text-xl font-semibold">
+        <div className="flex text-2xl font-semibold">
           <Link href="/">
             <div>
               <span className="text-pink-300">Event</span>base
@@ -22,7 +22,7 @@ export function Header({ guest }: { guest: Guests }) {
         <div className="flex ml-auto">
           {!guest ? (
             <Link href="/login">
-              <Button>Sign In</Button>
+              <Button variant="ghost">Sign In</Button>
             </Link>
           ) : (
             <UserNav guest={guest} />
