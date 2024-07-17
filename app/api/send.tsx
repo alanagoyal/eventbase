@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import sendEmail from "@/defer/sendEmail";
 import React from "react";
 import { Resend } from "resend";
-import { defer } from "@defer/client";
 import EmailTemplate from "@/transactional/emails/confirmation";
 
 export type SendEmailRequestData = {
@@ -19,7 +17,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const { email, eventInfo, formattedDate, formattedTime } =
       req.body as SendEmailRequestData;
     console.log(req.body);
-    const data = await resend.sendEmail({
+    const data = await resend.emails.send({
       from: "hi@basecase.vc",
       to: email,
       subject: "You're in!",
