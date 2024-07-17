@@ -6,6 +6,17 @@ interface LocationAutocompleteProps {
   value: string;
 }
 
+const loadScript = (url: string) => {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = url;
+    script.async = true;
+    script.onload = resolve;
+    script.onerror = reject;
+    document.head.appendChild(script);
+  });
+};
+
 const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
   setLocation,
   setLocationUrl,
@@ -14,22 +25,34 @@ const LocationAutocomplete: React.FC<LocationAutocompleteProps> = ({
   const autocompleteInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (!autocompleteInputRef.current) return;
-    const autocomplete = new google.maps.places.Autocomplete(
-      autocompleteInputRef.current
-    );
+    const initializeAutocomplete = () => {
+      if (!autocompleteInputRef.current) return;
+      const autocomplete = new google.maps.places.Autocomplete(
+        autocompleteInputRef.current
+      );
 
-    autocomplete.addListener("place_changed", () => {
-      const place = autocomplete.getPlace();
-      if (place.formatted_address) {
-        setLocation(place.formatted_address);
-      }
-      if (place.place_id) {
-        const locationUrl = `https://www.google.com/maps/place/?q=place_id:${place.place_id}`;
-        setLocationUrl(locationUrl);
-      }
-    });
-  }, []);
+      autocomplete.addListener("place_changed", () => {
+        const place = autocomplete.getPlace();
+        if (place.formatted_address) {
+          setLocation(place.formatted_address);
+        }
+        if (place.place_id) {
+          const locationUrl = `https://www.google.com/maps/place/?q=place_id:${place.place_id}`;
+          setLocationUrl(locationUrl);
+        }
+      });
+    };
+
+    if (!window.google) {
+      loadScript(
+        `https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places`
+      ).then(initializeAutocomplete).catch((error) => {
+        console.error("Error loading Google Maps script:", error);
+      });
+    } else {
+      initializeAutocomplete();
+    }
+  }, [setLocation, setLocationUrl]);
 
   return (
     <input
