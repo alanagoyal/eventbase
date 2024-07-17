@@ -52,13 +52,15 @@ CREATE UNIQUE INDEX guests_pkey ON public.guests USING btree (id);
 
 CREATE UNIQUE INDEX rsvps_pkey ON public.rsvps USING btree (id);
 
+CREATE UNIQUE INDEX unique_email_event ON public.rsvps USING btree (email, event_id);
+
 alter table "public"."events" add constraint "events_pkey" PRIMARY KEY using index "events_pkey";
 
 alter table "public"."guests" add constraint "guests_pkey" PRIMARY KEY using index "guests_pkey";
 
 alter table "public"."rsvps" add constraint "rsvps_pkey" PRIMARY KEY using index "rsvps_pkey";
 
-alter table "public"."events" add constraint "events_created_by_fkey" FOREIGN KEY (created_by) REFERENCES auth.users(id) not valid;
+alter table "public"."events" add constraint "events_created_by_fkey" FOREIGN KEY (created_by) REFERENCES guests(id) not valid;
 
 alter table "public"."events" validate constraint "events_created_by_fkey";
 
@@ -75,6 +77,8 @@ alter table "public"."rsvps" validate constraint "rsvps_email_fkey";
 alter table "public"."rsvps" add constraint "rsvps_event_id_fkey" FOREIGN KEY (event_id) REFERENCES events(id) not valid;
 
 alter table "public"."rsvps" validate constraint "rsvps_event_id_fkey";
+
+alter table "public"."rsvps" add constraint "unique_email_event" UNIQUE using index "unique_email_event";
 
 set check_function_bodies = off;
 
