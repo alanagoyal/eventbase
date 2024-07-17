@@ -1,3 +1,5 @@
+"use client";
+
 import Balancer from "react-wrap-balancer";
 import { useEffect, useState } from "react";
 import Head from "next/head";
@@ -7,7 +9,7 @@ import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/types/supabase";
 import { toast } from "./ui/use-toast";
 
@@ -253,7 +255,6 @@ export default function Event({
 
   return (
     <div className="p-4">
-      <Header user={user} />
       <Head>
         <title>{`${event.event_name}`}</title>
       </Head>

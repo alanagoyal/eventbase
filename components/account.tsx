@@ -1,9 +1,7 @@
-'use client'
+"use client";
 
-import { useState } from "react";
-import { useSupabaseClient } from "@supabase/auth-helpers-react";
+import { useState, useEffect } from "react";
 import { Database } from "@/types/supabase";
-import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { Header } from "@/components/header";
 import Head from "next/head";
@@ -11,15 +9,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import { createClient } from "@/utils/supabase/client";
+import { toast } from "./ui/use-toast";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 export default function Account({ user }: { user: Guests }) {
   const supabase = createClient();
   const router = useRouter();
-  const [full_name, setName] = useState<Guests["full_name"]>(user.full_name);
-  const [company_name, setCompanyName] = useState<Guests["company_name"]>(user.company_name);
-  const [dietary_restrictions, setDietaryRestrictions] = useState<Guests["dietary_restrictions"]>(user.dietary_restrictions);
+  const [full_name, setName] = useState<Guests["full_name"]>("");
+  const [company_name, setCompanyName] = useState<Guests["company_name"]>("");
+  const [dietary_restrictions, setDietaryRestrictions] =
+    useState<Guests["dietary_restrictions"]>("");
+
+  useEffect(() => {
+    if (user) {
+      setName(user.full_name || "");
+      setCompanyName(user.company_name || "");
+      setDietaryRestrictions(user.dietary_restrictions || "");
+    }
+  }, [user]);
 
   async function updateProfile() {
     try {
@@ -33,12 +41,12 @@ export default function Account({ user }: { user: Guests }) {
       let { error } = await supabase
         .from("guests")
         .update(updates)
-        .eq("email", user.email);
+        .eq("email", user?.email);
       if (error) throw error;
-      toast.success("Profile updated!");
+      toast({ description: "Profile updated!" });
     } catch (error) {
       console.log(error);
-      toast.error("Failed to update profile");
+      toast({ description: "Failed to update profile" });
     }
   }
 
@@ -49,8 +57,6 @@ export default function Account({ user }: { user: Guests }) {
 
   return (
     <div className="p-4">
-      <Header user={user} />
-      <Toaster />
       <Head>
         <title>Account</title>
       </Head>
@@ -115,7 +121,6 @@ export default function Account({ user }: { user: Guests }) {
 
             <div className="py-1">
               <Button
-                variant="subtle"
                 className="text-custom-color border-custom-borderinline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-full"
                 onClick={SignOut}
               >

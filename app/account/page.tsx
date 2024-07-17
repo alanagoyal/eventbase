@@ -9,6 +9,8 @@ export default async function AccountPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  console.log(user)
+
   if (!user) {
     redirect("/login");
   }
