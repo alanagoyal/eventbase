@@ -16,9 +16,7 @@ import * as React from "react";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -63,18 +61,22 @@ export default function RsvpForm({
         <form
           onSubmit={form.handleSubmit(onRsvp)}
           className="flex-col justify-between items-center mx-auto pb-2 space-y-2"
+          autoComplete="off"
         >
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Email</FormLabel>
+                <FormLabel htmlFor="email">Email</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
+                    id="email"
+                    name="email"
                     className="h-10 p-1"
                     disabled={guest ? true : false}
+                    autoComplete="off"
                   />
                 </FormControl>
                 <FormMessage />
@@ -86,9 +88,9 @@ export default function RsvpForm({
             name="full_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Name</FormLabel>
+                <FormLabel htmlFor="full_name">Name</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} id="full_name" name="full_name" className="h-10 p-1" autoComplete="off" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -99,9 +101,9 @@ export default function RsvpForm({
             name="company_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Company</FormLabel>
+                <FormLabel htmlFor="company_name">Company</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} id="company_name" name="company_name" className="h-10 p-1" autoComplete="off" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -112,9 +114,9 @@ export default function RsvpForm({
             name="dietary_restrictions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dietary Restrictions</FormLabel>
+                <FormLabel htmlFor="dietary_restrictions">Dietary Restrictions</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} id="dietary_restrictions" name="dietary_restrictions" className="h-10 p-1" autoComplete="off" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -125,9 +127,9 @@ export default function RsvpForm({
             name="discussion_topics"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Topics</FormLabel>
+                <FormLabel htmlFor="discussion_topics">Topics</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} id="discussion_topics" name="discussion_topics" className="h-10 p-1" autoComplete="off" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -138,9 +140,9 @@ export default function RsvpForm({
             name="comments"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Comments</FormLabel>
+                <FormLabel htmlFor="comments">Comments</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} id="comments" name="comments" className="h-10 p-1" autoComplete="off" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -151,13 +153,13 @@ export default function RsvpForm({
             name="rsvp_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>RSVP</FormLabel>
+                <FormLabel htmlFor="rsvp_type">RSVP</FormLabel>
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger>
+                    <SelectTrigger id="rsvp_type" name="rsvp_type">
                       <SelectValue placeholder="Select RSVP" />
                     </SelectTrigger>
                   </FormControl>
@@ -172,8 +174,8 @@ export default function RsvpForm({
             )}
           />
           <div className="py-2 w-full">
-            <Button type="submit" className="w-full">
-              Count Me In
+            <Button id="submit" type="submit" className="w-full">
+              Count me in
             </Button>
           </div>
         </form>

@@ -233,11 +233,11 @@ export default function Event({
             ) : null}
           </div>
         ) : (
-          <div className="w-full">
+          <div className="w-full pt-4">
             {guestRsvpStatus === "attending" ? (
               <div className="py-2">
                 <Button onClick={() => removeGuest(guest.email)}>
-                  Can&apos;t Make It Anymore
+                  Can&apos;t make it anymore
                 </Button>
               </div>
             ) : (

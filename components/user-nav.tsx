@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Briefcase, LogOut, Moon, Plus, Sun, User } from "lucide-react";
+import { Briefcase, Calendar, LogOut, Moon, Plus, Sun, User } from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Avatar, AvatarFallback } from "./ui/avatar";
@@ -67,7 +67,15 @@ export default function UserNav({ guest }: { guest: any }) {
             <DropdownMenuItem className="cursor-pointer justify-between">
               <div className="flex items-center">
                 <Plus className="mr-2 h-4 w-4" />
-                <span>Create Event</span>
+                <span>New Event</span>
+              </div>
+            </DropdownMenuItem>
+          </Link>
+          <Link href="/events">
+            <DropdownMenuItem className="cursor-pointer justify-between">
+              <div className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4" />
+                <span>All Events</span>
               </div>
             </DropdownMenuItem>
           </Link>
@@ -75,7 +83,7 @@ export default function UserNav({ guest }: { guest: any }) {
             <DropdownMenuItem className="cursor-pointer justify-between">
               <div className="flex items-center">
                 <User className="mr-2 h-4 w-4" />
-                <span>Account</span>
+                <span>Your Account</span>
               </div>
             </DropdownMenuItem>
           </Link>

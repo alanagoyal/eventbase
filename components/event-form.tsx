@@ -91,6 +91,7 @@ export default function EventForm({ guest }: { guest: Guests }) {
         <form
           onSubmit={form.handleSubmit(saveEvent)}
           className="flex-col justify-between items-center mx-auto w-full pb-2 space-y-2"
+          autoComplete="off"  
         >
           <FormField
             control={form.control}
