@@ -63,7 +63,7 @@ export default function UserNav({ guest }: { guest: any }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href="/new_event">
+          <Link href="/new">
             <DropdownMenuItem className="cursor-pointer justify-between">
               <div className="flex items-center">
                 <Plus className="mr-2 h-4 w-4" />

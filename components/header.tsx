@@ -2,17 +2,13 @@
 
 import { FrigadeTour } from "@frigade/react";
 import Link from "next/link";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "./ui/button";
-import { createClient } from "@/utils/supabase/client";
 import { Database } from "../types/supabase";
-import { siteConfig } from "@/config/site";
 import UserNav from "./user-nav";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 export function Header({ guest }: { guest: Guests }) {
-  const supabase = createClient();
 
   return (
     <div>
