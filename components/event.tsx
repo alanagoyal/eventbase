@@ -2,7 +2,6 @@
 
 import Balancer from "react-wrap-balancer";
 import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 import { Database } from "@/types/supabase";
@@ -10,6 +9,7 @@ import { toast } from "./ui/use-toast";
 import RsvpForm from "@/components/rsvp-form";
 import type { RsvpFormValues } from "@/components/rsvp-form";
 import { useRouter } from "next/navigation";
+import AddToCalendarButton from "@/components/add-to-calendar";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -64,14 +64,6 @@ export default function Event({
     minute: "2-digit",
     hour12: false,
   });
-
-  const DynamicAddToCalendarButton = dynamic(
-    () =>
-      import("add-to-calendar-button-react").then(
-        (mod) => mod.AddToCalendarButton
-      ),
-    { ssr: false }
-  );
 
   async function sendMail(
     email: string,
@@ -162,8 +154,6 @@ export default function Event({
   }
 
   async function removeGuest(email: string) {
-    console.log(email);
-
     try {
       let { error, status } = await supabase
         .from("rsvps")
@@ -175,7 +165,7 @@ export default function Event({
         throw error;
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     } finally {
       toast({
         description: "We hope to see you next time!",
@@ -185,52 +175,48 @@ export default function Event({
   }
 
   return (
-    <div className="flex flex-col items-start min-h-screen p-10 w-full">
+    <div className="flex flex-col items-start min-h-screen p-10 w-4/5">
       <h1 className="text-5xl font-bold py-4">
         <Balancer>{event.event_name}</Balancer>
       </h1>
       <h2 className="text-xl">{formattedDate}</h2>
       <h2 className="text-gray-600 text-lg pb-4">{formattedTime}</h2>
-      <div className="-ml-2 mb-4">
-        <DynamicAddToCalendarButton
-          name={event.event_name!}
-          startDate={calDate}
-          startTime={startTime}
-          endTime={endTime}
-          timeZone="America/Los_Angeles"
-          location={event.location!}
-          buttonStyle="date"
-          size="5"
-          lightMode="bodyScheme"
-          options={["Google", "iCal"]}
-        ></DynamicAddToCalendarButton>
-      </div>
-      <h3 className="text-gray-600 font-space text-md">
-        <a href={`${event.location_url}`}>{event.location}</a>
+      <AddToCalendarButton
+        eventName={event.event_name!}
+        startDate={calDate}
+        startTime={startTime}
+        endTime={endTime}
+        location={event.location!}
+      />
+      <h3 className="text-md">
+        Location: {event.location}
       </h3>
-      <h2 className="text-gray-600 font-space text-md pb-4">
+      <h2 className="text-md pb-4">
         Hosted by: {host.full_name}
       </h2>
-      <p className="text-gray-600 font-space text-md">{event.description}</p>
+      <p className="text-md">{event.description}</p>
       <div className="w-1/2">
         {guest?.id === event.created_by ? (
           <div className="w-full">
-            {allRsvps && allRsvps.length ? (
-              <div>
-                <h2 className="text-2xl font-syne pt-4">Confirmed Guests</h2>
-                <ol className="list-decimal list-inside pl-5">
-                  {allRsvps &&
-                    allRsvps.map((guest: any) => (
+            <div className="pt-4">
+              {allRsvps && allRsvps.length ? (
+                <>
+                  <h2 className="text-2xl font-syne pt-4">Confirmed Guests</h2>
+                  <ol className="list-decimal list-inside pl-5">
+                    {allRsvps.map((guest: any) => (
                       <li
                         className="text-gray-600 font-space text-md"
                         key={guest.id}
                       >
-                        {guest.email.full_name} ({guest.email.company_name})
+                        {guest.full_name} ({guest.company_name})
                       </li>
                     ))}
-                </ol>
-              </div>
-            ) : null}
+                  </ol>
+                </>
+              ) : (
+                <p>No guests yet</p>
+              )}
+            </div>
           </div>
         ) : (
           <div className="w-full pt-4">
