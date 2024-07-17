@@ -78,17 +78,34 @@ alter table "public"."rsvps" validate constraint "rsvps_event_id_fkey";
 
 set check_function_bodies = off;
 
+CREATE OR REPLACE FUNCTION public."checkIfUser"(given_mail text)
+ RETURNS boolean
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+AS $function$BEGIN
+  RETURN (EXISTS (SELECT 1 FROM auth.users a WHERE a.email = given_mail));
+END;$function$
+;
+
 CREATE OR REPLACE FUNCTION public.handle_new_user()
  RETURNS trigger
  LANGUAGE plpgsql
  SECURITY DEFINER
-AS $function$
-begin
-  insert into public.guests (id, email)
-  values (new.id, new.email);
-  return new;
-end;
-$function$
+AS $function$BEGIN
+  -- Check if a user with this email already exists
+  IF EXISTS (SELECT 1 FROM public.guests WHERE email = new.email) THEN
+    -- Update the existing user's auth_id
+    UPDATE public.users
+    SET id = new.id,
+        updated_at = now()
+    WHERE email = new.email;
+  ELSE
+    -- Insert a new user if no existing user is found
+    INSERT INTO public.guests (id, email, updated_at)
+    VALUES (new.id, new.email, now());
+  END IF;
+  RETURN new;
+END;$function$
 ;
 
 CREATE OR REPLACE FUNCTION public.pg_notify_trigger_event_public_rsvps()
@@ -356,5 +373,40 @@ CREATE TRIGGER pg_notify_trigger_event_public_rsvps_delete AFTER DELETE ON publi
 CREATE TRIGGER pg_notify_trigger_event_public_rsvps_insert AFTER INSERT ON public.rsvps FOR EACH ROW EXECUTE FUNCTION pg_notify_trigger_event_public_rsvps();
 
 CREATE TRIGGER pg_notify_trigger_event_public_rsvps_update AFTER UPDATE ON public.rsvps FOR EACH ROW EXECUTE FUNCTION pg_notify_trigger_event_public_rsvps();
+
+
+alter table "auth"."audit_log_entries" enable row level security;
+
+alter table "auth"."flow_state" enable row level security;
+
+alter table "auth"."identities" enable row level security;
+
+alter table "auth"."instances" enable row level security;
+
+alter table "auth"."mfa_amr_claims" enable row level security;
+
+alter table "auth"."mfa_challenges" enable row level security;
+
+alter table "auth"."mfa_factors" enable row level security;
+
+alter table "auth"."one_time_tokens" enable row level security;
+
+alter table "auth"."refresh_tokens" enable row level security;
+
+alter table "auth"."saml_providers" enable row level security;
+
+alter table "auth"."saml_relay_states" enable row level security;
+
+alter table "auth"."schema_migrations" enable row level security;
+
+alter table "auth"."sessions" enable row level security;
+
+alter table "auth"."sso_domains" enable row level security;
+
+alter table "auth"."sso_providers" enable row level security;
+
+alter table "auth"."users" enable row level security;
+
+CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 
