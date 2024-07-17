@@ -1,6 +1,5 @@
 "use client";
 
-import { FrigadeTour } from "@frigade/react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Database } from "../types/supabase";
@@ -12,7 +11,6 @@ export function Header({ guest }: { guest: Guests }) {
 
   return (
     <div>
-      <FrigadeTour flowId="flow_is5fTYIviWExwRjW" tooltipPosition="left" />
       <div className="flex flex-row justify-center items-center px-5 pt-5">
         <div className="flex text-xl font-semibold">
           <Link href="/">

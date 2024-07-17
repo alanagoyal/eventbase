@@ -22,7 +22,6 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
-import { format } from "date-fns";
 import { useState } from "react";
 
 type Events = Database["public"]["Tables"]["events"]["Row"];
@@ -78,7 +77,7 @@ export default function EventForm({ guest }: { guest: Guests }) {
       if (error) throw error;
       toast({ description: "Event created!" });
       setTimeout(() => {
-        router.push(`/events/${updates.event_url}`);
+        router.push(`/${updates.event_url}`);
       }, 500);
     } catch (error) {
       console.log(error);

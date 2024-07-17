@@ -14,14 +14,14 @@ import {
 import { Input } from "./ui/input"
 import { toast } from "./ui/use-toast"
 
-export default function MagicLink() {
+export default function MagicLink({ redirect }: { redirect: string }) {
   const supabase = createClient()
   const [email, setEmail] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   async function signInWithEmail(email: string) {
     setIsSubmitting(true)
-    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL + "/account"
+    const redirectUrl = process.env.NEXT_PUBLIC_SITE_URL + redirect
     const { error } = await supabase.auth.signInWithOtp({
       email: email,
       options: {
@@ -29,6 +29,7 @@ export default function MagicLink() {
         emailRedirectTo: redirectUrl,
       },
     })
+    console.log(error)
     setIsSubmitting(false)
     setEmail("")
     if (error) {

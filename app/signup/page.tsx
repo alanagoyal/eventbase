@@ -13,16 +13,16 @@ export default async function Signup() {
             <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
               Create your account
             </h1>
-            <Tabs defaultValue="email" className="w-full max-w-[400px]">
+            <Tabs defaultValue="magic-link" className="w-full max-w-[400px]">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email">Email</TabsTrigger>
                 <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
+                <TabsTrigger value="email">Email</TabsTrigger>
               </TabsList>
+              <TabsContent value="magic-link">
+                <MagicLink redirect="/account" />
+              </TabsContent>
               <TabsContent value="email">
                 <SignupForm signup={signup} />
-              </TabsContent>
-              <TabsContent value="magic-link">
-                <MagicLink redirect="dashboard" />
               </TabsContent>
             </Tabs>
           </div>

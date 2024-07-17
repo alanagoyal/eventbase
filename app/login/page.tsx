@@ -1,8 +1,8 @@
-import Link from "next/link"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { LoginForm } from "@/components/login-form"
-import MagicLink from "@/components/magic-link"
-import { login } from "./actions"
+import Link from "next/link";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { LoginForm } from "@/components/login-form";
+import MagicLink from "@/components/magic-link";
+import { login } from "./actions";
 
 export default async function Login() {
   return (
@@ -13,16 +13,16 @@ export default async function Login() {
             <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
               Sign in to your account
             </h1>
-            <Tabs defaultValue="email" className="w-full max-w-[400px]">
+            <Tabs defaultValue="magic-link" className="w-full max-w-[400px]">
               <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="email">Email</TabsTrigger>
                 <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
+                <TabsTrigger value="email">Email</TabsTrigger>
               </TabsList>
+              <TabsContent value="magic-link">
+                <MagicLink redirect="/account" />
+              </TabsContent>
               <TabsContent value="email">
                 <LoginForm login={login} />
-              </TabsContent>
-              <TabsContent value="magic-link">
-                <MagicLink />
               </TabsContent>
             </Tabs>
           </div>
@@ -33,10 +33,10 @@ export default async function Login() {
               className="underline underline-offset-2 md:underline-offset-4 hover:text-primary"
             >
               Sign Up
-            </Link>{" "}
+            </Link>
           </p>
         </div>
       </div>
     </>
-  )
+  );
 }
