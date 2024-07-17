@@ -1,40 +1,60 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Database } from "@/types/supabase";
 import { useRouter } from "next/navigation";
-import { Header } from "@/components/header";
+import { createClient } from "@/utils/supabase/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import Head from "next/head";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@radix-ui/react-label";
-import { createClient } from "@/utils/supabase/client";
-import { toast } from "./ui/use-toast";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
+
+const accountFormSchema = z.object({
+  email: z.string().email(),
+  full_name: z.string().optional(),
+  company_name: z.string().optional(),
+  dietary_restrictions: z.string().optional(),
+});
+
+type AccountFormValues = z.infer<typeof accountFormSchema>;
 
 export default function Account({ user }: { user: Guests }) {
   const supabase = createClient();
   const router = useRouter();
-  const [full_name, setName] = useState<Guests["full_name"]>("");
-  const [company_name, setCompanyName] = useState<Guests["company_name"]>("");
-  const [dietary_restrictions, setDietaryRestrictions] =
-    useState<Guests["dietary_restrictions"]>("");
+
+  const form = useForm<AccountFormValues>({
+    resolver: zodResolver(accountFormSchema),
+    defaultValues: {
+      email: user.email || "",
+      full_name: user.full_name || "",
+      company_name: user.company_name || "",
+      dietary_restrictions: user.dietary_restrictions || "",
+    },
+  });
 
   useEffect(() => {
     if (user) {
-      setName(user.full_name || "");
-      setCompanyName(user.company_name || "");
-      setDietaryRestrictions(user.dietary_restrictions || "");
+      form.reset({
+        email: user.email || "",
+        full_name: user.full_name || "",
+        company_name: user.company_name || "",
+        dietary_restrictions: user.dietary_restrictions || "",
+      });
     }
-  }, [user]);
+  }, [user, form]);
 
-  async function updateProfile() {
+  async function onSubmit(data: AccountFormValues) {
     try {
       const updates = {
-        full_name,
-        company_name,
-        dietary_restrictions,
+        full_name: data.full_name,
+        company_name: data.company_name,
+        dietary_restrictions: data.dietary_restrictions,
         updated_at: new Date().toISOString(),
       };
 
@@ -56,67 +76,72 @@ export default function Account({ user }: { user: Guests }) {
   }
 
   return (
-    <div className="p-10">
-      <Head>
-        <title>Account</title>
-      </Head>
-      <div className="flex-col sm:flex  mx-auto max-w-6xl pt-20 pb-5">
-        <div>
-          <h1 className="sm:text-5xl text-4xl max-w-2xl font-bold font-syne py-2">
-            {full_name ? `Welcome, ${full_name} 👋🏼` : `Welcome 👋🏼`}
-          </h1>
-        </div>
-        <div className="flex-col justify-between items-center mx-auto w-full pb-2">
-          <div className="mb-4">
-            <Label htmlFor="email" className="text-sm font-bold">Email</Label>
-            <Input
-              id="email"
-              type="text"
-              value={user.email || ""}
-              className="h-10 p-1 w-full"
-              disabled
+    <div className="flex flex-col items-start min-h-screen p-6 w-1/2">
+      <h1 className="text-2xl font-bold py-4">Account</h1>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex-col justify-between items-center mx-auto w-full pb-2 space-y-2">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-10 p-1 w-full" disabled />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="mb-4">
-            <Label htmlFor="name" className="text-sm font-bold">Name</Label>
-            <Input
-              id="name"
-              type="text"
-              value={full_name || ""}
-              className="h-10 p-1 w-full"
-              onChange={(e) => setName(e.target.value)}
+            <FormField
+              control={form.control}
+              name="full_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-10 p-1 w-full" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="mb-4">
-            <Label htmlFor="company name" className="text-sm font-bold">Company</Label>
-            <Input
-              id="company name"
-              type="text"
-              value={company_name || ""}
-              className="h-10 p-1 w-full"
-              onChange={(e) => setCompanyName(e.target.value)}
+            <FormField
+              control={form.control}
+              name="company_name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-10 p-1 w-full" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="mb-4">
-            <Label htmlFor="dietary restrictions" className="text-sm font-bold">Dietary Restrictions</Label>
-            <Input
-              id="dietary restrictions"
-              type="text"
-              value={dietary_restrictions || ""}
-              className="h-10 p-1 w-full"
-              onChange={(e) => setDietaryRestrictions(e.target.value)}
+            <FormField
+              control={form.control}
+              name="dietary_restrictions"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Dietary Restrictions</FormLabel>
+                  <FormControl>
+                    <Input {...field} className="h-10 p-1 w-full" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-          <div className="pt-1 w-full">
-            <div className="py-1 w-full">
-              <Button className="w-full" onClick={updateProfile}>Update</Button>
+            <div className="pt-1 w-full">
+              <div className="py-1 w-full">
+                <Button className="w-full" type="submit">Update</Button>
+              </div>
+              <div className="py-1 w-full">
+                <Button className="w-full" variant="secondary" onClick={SignOut}>Sign Out</Button>
+              </div>
             </div>
-            <div className="py-1 w-full">
-              <Button className="w-full" variant="secondary" onClick={SignOut}>Sign Out</Button>
-            </div>
-          </div>
-        </div>
+          </form>
+        </Form>
       </div>
-    </div>
   );
 }
