@@ -4,6 +4,8 @@ import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { createClient } from "@/utils/supabase/server";
+import { Header } from "@/components/header";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -34,11 +36,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const supabase = createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { data: guest } = await supabase.from("guests").select().eq("email", user?.email).single();
+
   return (
     <html lang="en">
       <body
@@ -47,6 +56,7 @@ export default function RootLayout({
           fontSans.variable
         )}
       >
+        <Header guest={guest} />
         {children}
         <Toaster />
       </body>
