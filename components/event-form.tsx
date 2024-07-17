@@ -285,7 +285,7 @@ export default function EventForm({ guest }: { guest: Guests }) {
           />
           <div className="py-2 w-full">
             <Button type="submit" className="w-full">
-              Create Event
+              Create event
             </Button>
           </div>
         </form>

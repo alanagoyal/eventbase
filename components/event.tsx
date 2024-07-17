@@ -209,7 +209,7 @@ export default function Event({
         <a href={`${event.location_url}`}>{event.location}</a>
       </h3>
       <h2 className="text-gray-600 font-space text-md pb-4">
-        Hosted By: {host.full_name}
+        Hosted by: {host.full_name}
       </h2>
       <p className="text-gray-600 font-space text-md">{event.description}</p>
       <div className="w-1/2">
