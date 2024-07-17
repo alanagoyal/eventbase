@@ -56,7 +56,7 @@ export default function Account({ user }: { user: Guests }) {
   }
 
   return (
-    <div className="p-4">
+    <div className="p-10">
       <Head>
         <title>Account</title>
       </Head>
@@ -66,66 +66,53 @@ export default function Account({ user }: { user: Guests }) {
             {full_name ? `Welcome, ${full_name} 👋🏼` : `Welcome 👋🏼`}
           </h1>
         </div>
-
         <div className="flex-col justify-between items-center mx-auto w-full pb-2">
-          <div>
-            <Label htmlFor="email">Email</Label>
+          <div className="mb-4">
+            <Label htmlFor="email" className="text-sm font-bold">Email</Label>
             <Input
               id="email"
               type="text"
               value={user.email || ""}
-              className="h-10 p-1"
+              className="h-10 p-1 w-full"
               disabled
             />
           </div>
-          <div>
-            <Label htmlFor="name">Name</Label>
+          <div className="mb-4">
+            <Label htmlFor="name" className="text-sm font-bold">Name</Label>
             <Input
               id="name"
               type="text"
               value={full_name || ""}
-              className="h-10 p-1"
+              className="h-10 p-1 w-full"
               onChange={(e) => setName(e.target.value)}
             />
           </div>
-          <div>
-            <Label htmlFor="company name">Company</Label>
+          <div className="mb-4">
+            <Label htmlFor="company name" className="text-sm font-bold">Company</Label>
             <Input
               id="company name"
               type="text"
               value={company_name || ""}
-              className="h-10 p-1"
+              className="h-10 p-1 w-full"
               onChange={(e) => setCompanyName(e.target.value)}
             />
           </div>
-          <div>
-            <Label htmlFor="dietary restrictions">Dietary Restrictions</Label>
+          <div className="mb-4">
+            <Label htmlFor="dietary restrictions" className="text-sm font-bold">Dietary Restrictions</Label>
             <Input
               id="dietary restrictions"
               type="text"
               value={dietary_restrictions || ""}
-              className="h-10 p-1"
+              className="h-10 p-1 w-full"
               onChange={(e) => setDietaryRestrictions(e.target.value)}
             />
           </div>
-
-          <div className="pt-1">
-            <div className="py-1">
-              <Button
-                className="text-custom-color border-custom-border bg-pink-800 hover:bg-pink-600  inline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-full"
-                onClick={updateProfile}
-              >
-                Update
-              </Button>
+          <div className="pt-1 w-full">
+            <div className="py-1 w-full">
+              <Button className="w-full" onClick={updateProfile}>Update</Button>
             </div>
-
-            <div className="py-1">
-              <Button
-                className="text-custom-color border-custom-borderinline-block text-center rounded-custom-border-radius py-2 px-4 cursor-pointer text-sm uppercase w-full"
-                onClick={SignOut}
-              >
-                Sign Out
-              </Button>
+            <div className="py-1 w-full">
+              <Button className="w-full" variant="secondary" onClick={SignOut}>Sign Out</Button>
             </div>
           </div>
         </div>
