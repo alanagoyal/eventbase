@@ -80,7 +80,7 @@ export default function EventForm({ guest }: { guest: Guests }) {
         router.push(`/${updates.event_url}`);
       }, 500);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 

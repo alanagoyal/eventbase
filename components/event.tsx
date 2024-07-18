@@ -83,7 +83,6 @@ export default function Event({
         }),
       });
       const data = await response.json();
-      console.log("Email sent:", data);
     } catch (error) {
       console.error("Error sending email:", error);
     }
@@ -125,9 +124,6 @@ export default function Event({
         .from("guests")
         .upsert(guestInfo, { onConflict: "email" });
       if (error) throw error;
-      toast({
-        description: "Your response has been saved!",
-      });
     } catch (error) {
       throw error;
     }
@@ -147,7 +143,7 @@ export default function Event({
       throw error;
     } finally {
       toast({
-        description: "Your response has been updated!",
+        description: "Your response has been saved!",
       });
       router.refresh();
     }

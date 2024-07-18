@@ -50,12 +50,11 @@ export default async function EventPage({
     )
     .eq("event_id", event.id);
 
-  const guestRsvpStatus = allRsvps?.find((rsvp) => rsvp.guest.email === guest.email)
+  const guestRsvpStatus = allRsvps?.find(
+    (rsvp) => rsvp.guest.email === guest.email
+  )
     ? "attending"
     : "not attending";
-
-  console.log(allRsvps);
-  console.log(guestRsvpStatus);
 
   return (
     <div className="flex w-full justify-center min-h-screen">

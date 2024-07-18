@@ -29,10 +29,10 @@ export default function MagicLink({ redirect }: { redirect: string }) {
         emailRedirectTo: redirectUrl,
       },
     })
-    console.log(error)
     setIsSubmitting(false)
     setEmail("")
     if (error) {
+      console.error(error)
       toast({
         title: "Failed to send magic link",
         description: error.message,

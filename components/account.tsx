@@ -65,7 +65,7 @@ export default function Account({ user }: { user: Guests }) {
       if (error) throw error;
       toast({ description: "Profile updated!" });
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast({ description: "Failed to update profile" });
     }
   }

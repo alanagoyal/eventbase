@@ -16,7 +16,6 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { email, eventInfo, formattedDate, formattedTime } =
       req.body as SendEmailRequestData;
-    console.log(req.body);
     const data = await resend.emails.send({
       from: "hi@basecase.vc",
       to: email,
