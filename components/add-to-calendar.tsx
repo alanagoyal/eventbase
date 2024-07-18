@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect } from "react";
 
 const DynamicAddToCalendarButton = dynamic(
   () =>
@@ -25,6 +26,26 @@ export default function AddToCalendarButton({
   endTime,
   location,
 }: AddToCalendarButtonProps) {
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const button = document.querySelector('add-to-calendar-button');
+      if (button && button.shadowRoot) {
+        const style = document.createElement('style');
+        style.textContent = `
+          :host {
+            --atcb-button-box-shadow: none !important;
+          }
+          button {
+            box-shadow: none !important;
+          }
+        `;
+        button.shadowRoot.appendChild(style);
+        clearInterval(interval);
+      }
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="-ml-2 mb-4">
       <DynamicAddToCalendarButton
@@ -34,7 +55,7 @@ export default function AddToCalendarButton({
         endTime={endTime}
         timeZone="America/Los_Angeles"
         location={location}
-        buttonStyle="default"
+        buttonStyle="flat"
         size="4"
         lightMode="bodyScheme"
         options={["Google", "iCal"]}

@@ -1,15 +1,13 @@
-"use client";
-
-import Balancer from "react-wrap-balancer";
-import { useEffect, useState } from "react";
+/**
+ * v0 by Vercel.
+ * @see https://v0.dev/t/BRPLPRZdkJi
+ * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
+ */
 import { Button } from "@/components/ui/button";
-import { createClient } from "@/utils/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Database } from "@/types/supabase";
-import { toast } from "./ui/use-toast";
-import RsvpForm from "@/components/rsvp-form";
-import type { RsvpFormValues } from "@/components/rsvp-form";
-import { useRouter } from "next/navigation";
-import AddToCalendarButton from "@/components/add-to-calendar";
+import Registration from "./registration";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -27,207 +25,145 @@ export default function Event({
   allRsvps: any;
   guestRsvpStatus: string;
 }) {
-  const router = useRouter();
-  const supabase = createClient();
   const startTimestampz = new Date(event.start_timestampz!);
   const endTimestampz = new Date(event.end_timestampz!);
+
+  const month = startTimestampz
+    .toLocaleString("en-US", { month: "short" })
+    .toUpperCase();
+  const day = startTimestampz.getDate();
   const formattedDate = startTimestampz.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
     year: "numeric",
   });
-
-  const calDate = startTimestampz
-    .toLocaleString("en-US", {
-      timeZone: "America/Los_Angeles",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-    })
-    .replace(/\//g, "-");
-
-  const formattedTime = startTimestampz.toLocaleTimeString("en-US", {
+  const formattedTime = `${startTimestampz.toLocaleTimeString("en-US", {
     hour: "numeric",
     minute: "numeric",
-    timeZoneName: "short",
-  });
-
-  const startTime = startTimestampz.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-
-  const endTime = endTimestampz.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-
-  async function sendMail(
-    email: string,
-    eventInfo: any,
-    formattedDate: string,
-    formattedTime: string
-  ) {
-    try {
-      const response = await fetch("/api/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          eventInfo,
-          formattedDate,
-          formattedTime,
-        }),
-      });
-      const data = await response.json();
-    } catch (error) {
-      console.error("Error sending email:", error);
-    }
-  }
-
-  async function onRsvp(data: RsvpFormValues) {
-    try {
-      const guestInfo = {
-        email: data.email,
-        full_name: data.full_name,
-        company_name: data.company_name,
-        dietary_restrictions: data.dietary_restrictions,
-        updated_at: new Date().toISOString(),
-      };
-
-      const rsvpInfo = {
-        email: data.email,
-        event_id: event.id,
-        created_at: new Date().toISOString(),
-        comments: data.comments,
-        discussion_topics: data.discussion_topics,
-        rsvp_type: data.rsvp_type,
-      };
-
-      await addGuest(guestInfo);
-      await addRsvp(rsvpInfo);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: "Whoops! Something went wrong...",
-        variant: "destructive",
-      });
-    }
-  }
-
-  async function addGuest(guestInfo: any) {
-    try {
-      let { error } = await supabase
-        .from("guests")
-        .upsert(guestInfo, { onConflict: "email" });
-      if (error) throw error;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async function addRsvp(rsvpInfo: any) {
-    try {
-      let { error } = await supabase
-        .from("rsvps")
-        .upsert(rsvpInfo, { onConflict: "email, event_id" });
-      if (error) throw error;
-
-      if (!rsvpInfo.created_at) {
-        sendMail(rsvpInfo.email, event, formattedDate, formattedTime);
-      }
-    } catch (error) {
-      throw error;
-    } finally {
-      toast({
-        description: "Your response has been saved!",
-      });
-      router.refresh();
-    }
-  }
-
-  async function removeGuest(email: string) {
-    try {
-      let { error, status } = await supabase
-        .from("rsvps")
-        .delete()
-        .eq("email", email)
-        .eq("event_id", event.id);
-
-      if (error && status !== 406) {
-        throw error;
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      toast({
-        description: "We hope to see you next time!",
-      });
-      router.refresh();
-    }
-  }
+    hour12: true,
+  })} - ${endTimestampz.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true,
+  })}`;
 
   return (
-    <div className="flex flex-col items-start min-h-screen p-10 w-4/5">
-      <h1 className="text-5xl font-bold py-4">
-        <Balancer>{event.event_name}</Balancer>
-      </h1>
-      <h2 className="text-xl">{formattedDate}</h2>
-      <h2 className="text-gray-600 text-lg pb-4">{formattedTime}</h2>
-      <AddToCalendarButton
-        eventName={event.event_name!}
-        startDate={calDate}
-        startTime={startTime}
-        endTime={endTime}
-        location={event.location!}
-      />
-      <h3 className="text-md">
-        Location: {event.location}
-      </h3>
-      <h2 className="text-md pb-4">
-        Hosted by: {host.full_name}
-      </h2>
-      <p className="text-md">{event.description}</p>
-      <div className="w-1/2">
-        {guest?.id === event.created_by ? (
-          <div className="w-full">
-            <div className="pt-4">
-              {allRsvps && allRsvps.length ? (
-                <>
-                  <h2 className="text-2xl font-syne pt-4">Confirmed Guests</h2>
-                  <ol className="list-decimal list-inside pl-5">
-                    {allRsvps.map((guest: any) => (
-                      <li
-                        className="text-gray-600 font-space text-md"
-                        key={guest.id}
-                      >
-                        {guest.full_name} ({guest.company_name})
-                      </li>
-                    ))}
-                  </ol>
-                </>
-              ) : (
-                <p>No guests yet</p>
-              )}
+    <div className="min-h-screen text-white p-6">
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:w-1/3">
+          <div className="bg-black p-4 rounded-lg">
+            <img
+              src={event.og_image || "/sf.jpg"}
+              alt="Event Image"
+              className="w-full h-auto rounded-lg"
+            />
+            <div className="mt-4">
+              <h2 className="text-lg font-semibold">Hosted By</h2>
+              <div className="flex items-center mt-2">
+                <UserIcon className="w-6 h-6 text-pink-300" />
+                <span className="ml-2">{host.full_name}</span>
+              </div>
+            </div>
+            <div className="mt-4">
+              <Button variant="ghost" className="w-full" asChild>
+                <a href={`mailto:${host.email}`}>Contact the Host</a>
+              </Button>
             </div>
           </div>
-        ) : (
-          <div className="w-full pt-4">
-            {guestRsvpStatus === "attending" ? (
-              <div className="py-2">
-                <Button onClick={() => removeGuest(guest.email)}>
-                  Can&apos;t make it anymore
-                </Button>
+        </div>
+        <div className="flex flex-col lg:w-2/3">
+          <div className="bg-black p-6 rounded-lg">
+            <h1 className="text-3xl font-bold">{event.event_name}</h1>
+            <div className="flex items-center mt-4">
+              <div className="flex flex-col items-center">
+                <span className="text-base font-semibold">{month}</span>
+                <span className="text-base font-bold">{day}</span>
               </div>
-            ) : (
-              <RsvpForm guest={guest} onRsvp={onRsvp} />
-            )}
+              <div className="ml-4">
+                <p className="font-medium">{formattedDate}</p>
+                <p className="text-muted-foreground">{formattedTime}</p>
+              </div>
+            </div>
+            <div className="flex items-center mt-4">
+              <MapPinIcon className="w-6 h-6" />
+              <span className="ml-5">{event.location}</span>
+            </div>
+            <Registration event={event} guest={guest} guestRsvpStatus={guestRsvpStatus} formattedDate={formattedDate} formattedTime={formattedTime} />
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold">About Event</h2>
+              <p className="mt-4">{event.description}</p>
+              <p className="mt-4">
+                If you have questions, please email {host.email}
+              </p>
+            </div>
+            <div className="mt-6">
+              <h2 className="text-xl font-semibold">Location</h2>
+              <p>{event.location}</p>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
+  );
+}
+
+function MapPinIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+function UserIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <circle cx="12" cy="7" r="4" />
+    </svg>
+  );
+}
+
+function XIcon(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
   );
 }

@@ -1,7 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
-import Event from "@/components/event";
-import { redirect } from "next/navigation";
 import MagicLink from "@/components/magic-link";
+import Event from "@/components/event";
 
 export default async function EventPage({
   params,
@@ -50,11 +49,15 @@ export default async function EventPage({
     )
     .eq("event_id", event.id);
 
-  const guestRsvpStatus = allRsvps?.find(
+  const guestRsvp = allRsvps?.find(
     (rsvp) => rsvp.guest.email === guest.email
-  )
-    ? "attending"
-    : "not attending";
+  );
+
+  const guestRsvpStatus = guestRsvp
+    ? guestRsvp.rsvp_type === 'yes'
+      ? "attending"
+      : "not attending"
+    : "not responded";
 
   return (
     <div className="flex w-full justify-center min-h-screen">

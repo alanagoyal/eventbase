@@ -21,6 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Database } from "@/types/supabase";
+import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
+import { toast } from "./ui/use-toast";
+import { DialogClose } from "@/components/ui/dialog";
 
 const rsvpFormSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -33,15 +37,23 @@ const rsvpFormSchema = z.object({
 });
 
 export type RsvpFormValues = z.infer<typeof rsvpFormSchema>;
+
+type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
 
 export default function RsvpForm({
   guest,
-  onRsvp,
+  event,
+  formattedDate,
+  formattedTime,
 }: {
   guest: Guest;
-  onRsvp: (data: RsvpFormValues) => void;
+  event: Event;
+  formattedDate: string;
+  formattedTime: string;
 }) {
+  const supabase = createClient();
+  const router = useRouter();
   const form = useForm<RsvpFormValues>({
     resolver: zodResolver(rsvpFormSchema),
     defaultValues: {
@@ -55,8 +67,97 @@ export default function RsvpForm({
     },
   });
 
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+
+  async function sendMail(
+    email: string,
+    eventInfo: any,
+    formattedDate: string,
+    formattedTime: string
+  ) {
+    try {
+      const response = await fetch("/api/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          eventInfo,
+          formattedDate,
+          formattedTime,
+        }),
+      });
+      const data = await response.json();
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  }
+
+  async function onRsvp(data: RsvpFormValues) {
+    setIsSubmitting(true);
+    try {
+      const guestInfo = {
+        email: data.email,
+        full_name: data.full_name,
+        company_name: data.company_name,
+        dietary_restrictions: data.dietary_restrictions,
+        updated_at: new Date().toISOString(),
+      };
+
+      const rsvpInfo = {
+        email: data.email,
+        event_id: event.id,
+        created_at: new Date().toISOString(),
+        comments: data.comments,
+        discussion_topics: data.discussion_topics,
+        rsvp_type: data.rsvp_type,
+      };
+
+      await addGuest(guestInfo);
+      await addRsvp(rsvpInfo);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: "Whoops! Something went wrong...",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  async function addGuest(guestInfo: any) {
+    try {
+      let { error } = await supabase
+        .from("guests")
+        .upsert(guestInfo, { onConflict: "email" });
+      if (error) throw error;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async function addRsvp(rsvpInfo: any) {
+    try {
+      let { error } = await supabase
+        .from("rsvps")
+        .upsert(rsvpInfo, { onConflict: "email, event_id" });
+      if (error) throw error;
+
+      if (!rsvpInfo.created_at) {
+        sendMail(rsvpInfo.email, event, formattedDate, formattedTime);
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      toast({
+        description: "Your response has been saved!",
+      });
+      router.refresh();
+    }
+  }
+
   return (
-    <div className="pt-4 w-full">
+    <div className="w-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onRsvp)}
@@ -90,7 +191,13 @@ export default function RsvpForm({
               <FormItem>
                 <FormLabel htmlFor="full_name">Name</FormLabel>
                 <FormControl>
-                  <Input {...field} id="full_name" name="full_name" className="h-10 p-1" autoComplete="off" />
+                  <Input
+                    {...field}
+                    id="full_name"
+                    name="full_name"
+                    className="h-10 p-1"
+                    autoComplete="off"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -103,7 +210,13 @@ export default function RsvpForm({
               <FormItem>
                 <FormLabel htmlFor="company_name">Company</FormLabel>
                 <FormControl>
-                  <Input {...field} id="company_name" name="company_name" className="h-10 p-1" autoComplete="off" />
+                  <Input
+                    {...field}
+                    id="company_name"
+                    name="company_name"
+                    className="h-10 p-1"
+                    autoComplete="off"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -114,9 +227,17 @@ export default function RsvpForm({
             name="dietary_restrictions"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="dietary_restrictions">Dietary Restrictions</FormLabel>
+                <FormLabel htmlFor="dietary_restrictions">
+                  Dietary Restrictions
+                </FormLabel>
                 <FormControl>
-                  <Input {...field} id="dietary_restrictions" name="dietary_restrictions" className="h-10 p-1" autoComplete="off" />
+                  <Input
+                    {...field}
+                    id="dietary_restrictions"
+                    name="dietary_restrictions"
+                    className="h-10 p-1"
+                    autoComplete="off"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -129,7 +250,13 @@ export default function RsvpForm({
               <FormItem>
                 <FormLabel htmlFor="discussion_topics">Topics</FormLabel>
                 <FormControl>
-                  <Input {...field} id="discussion_topics" name="discussion_topics" className="h-10 p-1" autoComplete="off" />
+                  <Input
+                    {...field}
+                    id="discussion_topics"
+                    name="discussion_topics"
+                    className="h-10 p-1"
+                    autoComplete="off"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -142,7 +269,13 @@ export default function RsvpForm({
               <FormItem>
                 <FormLabel htmlFor="comments">Comments</FormLabel>
                 <FormControl>
-                  <Input {...field} id="comments" name="comments" className="h-10 p-1" autoComplete="off" />
+                  <Input
+                    {...field}
+                    id="comments"
+                    name="comments"
+                    className="h-10 p-1"
+                    autoComplete="off"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -174,9 +307,11 @@ export default function RsvpForm({
             )}
           />
           <div className="py-2 w-full">
-            <Button id="submit" type="submit" className="w-full">
-              Count me in
-            </Button>
+            <DialogClose asChild>
+              <Button id="submit" type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? "Submitting..." : "Submit"}
+              </Button>
+            </DialogClose>
           </div>
         </form>
       </Form>
