@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import RsvpForm from "./rsvp-form";
+import EventForm from "./event-form";
+import { useState } from "react";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -27,6 +29,7 @@ export default function Registration({
   const supabase = createClient();
   const router = useRouter();
   const isEventInFuture = new Date(event.end_timestampz!) > new Date();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   async function removeGuest(email: string) {
     try {
@@ -50,6 +53,36 @@ export default function Registration({
   }
 
   const renderContent = () => {
+    if (guest.id === event.created_by) {
+      return (
+        <div className="ml-4 flex-grow flex flex-col">
+          <h3 className="text-base font-semibold text-white">
+            <strong>You are the host of this event</strong>
+          </h3>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="mt-3 bg-white text-black hover:bg-gray-100">
+                Edit Event
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Edit Event</DialogTitle>
+                <DialogDescription>
+                  Make changes to your event details below
+                </DialogDescription>
+              </DialogHeader>
+              <EventForm 
+                guest={guest} 
+                existingEvent={event} 
+                onEventSaved={() => setIsDialogOpen(false)} 
+              />
+            </DialogContent>
+          </Dialog>
+        </div>
+      );
+    }
+
     if (isEventInFuture) {
       if (guestRsvpStatus === "attending") {
         return (

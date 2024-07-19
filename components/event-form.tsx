@@ -40,40 +40,63 @@ const eventFormSchema = z.object({
 });
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
+type Event = Database["public"]["Tables"]["events"]["Row"];
 
-export default function EventForm({ guest }: { guest: Guests }) {
+export default function EventForm({ 
+  guest, 
+  existingEvent, 
+  onEventSaved 
+}: { 
+  guest: Guests; 
+  existingEvent?: Event;
+  onEventSaved?: () => void;
+}) {
   const router = useRouter();
   const supabase = createClient();
   const [startCalendarOpen, setStartCalendarOpen] = useState(false);
   const [endCalendarOpen, setEndCalendarOpen] = useState(false);
+
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
-    defaultValues: {
-      event_name: "",
-      description: "",
-      street_address: "",
-      city_state_zip: "",
-      start_time: setDefaultTime(18), 
-      end_time: setDefaultTime(21),   
-    },
+    defaultValues: existingEvent
+      ? {
+          event_name: existingEvent.event_name || "",
+          description: existingEvent.description || "",
+          street_address: existingEvent.location?.split(", ")[0] || "",
+          city_state_zip: existingEvent.location?.split(", ").slice(1).join(", ") || "",
+          start_time: new Date(existingEvent.start_timestampz!),
+          end_time: new Date(existingEvent.end_timestampz!),
+        }
+      : {
+          event_name: "",
+          description: "",
+          street_address: "",
+          city_state_zip: "",
+          start_time: setDefaultTime(18),
+          end_time: setDefaultTime(21),
+        },
   });
 
   async function saveEvent(data: EventFormValues) {
     try {
       const updates = {
-        created_at: new Date().toISOString(),
         event_name: data.event_name,
         description: data.description,
-        location: `${data.street_address}, ${data.city_state_zip}`, 
+        location: `${data.street_address}, ${data.city_state_zip}`,
         start_timestampz: data.start_time.toISOString(),
         end_timestampz: data.end_time.toISOString(),
-        created_by: guest.id,
         event_url: slugify(data.event_name, { lower: true, strict: true }),
       };
 
-      let { error } = await supabase.from("events").insert(updates);
+      let { error } = existingEvent
+        ? await supabase.from("events").update(updates).eq("id", existingEvent.id)
+        : await supabase.from("events").insert({ ...updates, created_at: new Date().toISOString(), created_by: guest.id });
+
       if (error) throw error;
-      toast({ description: "Event created!" });
+      toast({ description: existingEvent ? "Event updated!" : "Event created!" });
+      if (onEventSaved) {
+        onEventSaved();
+      }
       setTimeout(() => {
         router.push(`/${updates.event_url}`);
       }, 500);
@@ -83,13 +106,12 @@ export default function EventForm({ guest }: { guest: Guests }) {
   }
 
   return (
-    <div className="flex flex-col items-start min-h-screen p-6 w-1/2">
-      <h1 className="text-2xl font-bold py-4">Create Event</h1>
+    <div className="flex flex-col items-start p-6 w-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(saveEvent)}
           className="flex-col justify-between items-center mx-auto w-full pb-2 space-y-2"
-          autoComplete="off"  
+          autoComplete="off"
         >
           <FormField
             control={form.control}
@@ -283,7 +305,7 @@ export default function EventForm({ guest }: { guest: Guests }) {
           />
           <div className="py-2 w-full">
             <Button type="submit" className="w-full">
-              Create event
+              {existingEvent ? "Update event" : "Create event"}
             </Button>
           </div>
         </form>
