@@ -7,8 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Database } from "@/types/supabase";
 import Registration from "./registration";
 import { formatEventDates } from "@/utils/dates";
-import { MapPinIcon, UserIcon } from "lucide-react";
+import { ExternalLink, MapPinIcon, UserIcon } from "lucide-react";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import Link from 'next/link';
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -30,6 +31,8 @@ export default function Event({
     event.start_timestampz!,
     event.end_timestampz!
   );
+
+  const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   return (
     <div className="min-h-screen text-white p-6">
@@ -73,7 +76,14 @@ export default function Event({
               </div>
               <div className="flex items-center mt-4">
                 <MapPinIcon className="w-6 h-6" />
-                <span className="ml-5">{event.location}</span>
+                {event.location_url ? (
+                  <Link href={event.location_url} target="_blank" rel="noopener noreferrer" className="flex items-center hover:underline">
+                    {event.location}
+                    <ExternalLink className="w-4 h-4 ml-1" />
+                  </Link>
+                ) : (
+                  <p>{event.location}</p>
+                )}
               </div>
             </CardHeader>
             <CardContent>
@@ -87,7 +97,25 @@ export default function Event({
               </div>
               <div className="mt-6">
                 <h2 className="text-xl font-semibold">Location</h2>
-                <p>{event.location}</p>
+                {event.location_url ? (
+                  <Link href={event.location_url} target="_blank" rel="noopener noreferrer" className="flex items-center hover:underline">
+                    {event.location}
+                    <ExternalLink className="w-4 h-4 ml-1" />
+                  </Link>
+                ) : (
+                  <p>{event.location}</p>
+                )}
+                {googleMapsApiKey && event.location_url && (
+                  <div className="mt-4 aspect-video w-full">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      style={{ border: 0 }}
+                      src={`https://www.google.com/maps/embed/v1/place?key=${googleMapsApiKey}&q=${encodeURIComponent(event.location || '')}`}
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>

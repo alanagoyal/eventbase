@@ -8,7 +8,7 @@ import {
 } from "./ui/card";
 import { formatEventDates } from "@/utils/dates";
 import { Badge } from "./ui/badge";
-import { MapPinIcon, UserIcon } from "lucide-react";
+import { ExternalLink, MapPinIcon, UserIcon } from "lucide-react";
 import Link from 'next/link';
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -49,7 +49,14 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
                   </div>
                   <div className="flex items-center mt-2">
                     <MapPinIcon className="w-6 h-6 text-pink-300" />
-                    <span className="ml-2">{event.location}</span>
+                    {event.location_url ? (
+                      <Link href={event.location_url} target="_blank" rel="noopener noreferrer" className="ml-2 flex items-center hover:underline">
+                        {event.location}
+                        <ExternalLink className="w-4 h-4 ml-1" />
+                      </Link>
+                    ) : (
+                      <span className="ml-2">{event.location}</span>
+                    )}
                   </div>
                 </div>
               </div>
