@@ -6,13 +6,13 @@ import { login } from "./actions";
 
 export default async function Login() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="min-h-[80vh] flex items-center justify-center pt-16">
       <div className="w-full max-w-md flex flex-col space-y-6 p-4">
         <div className="flex flex-col items-center space-y-2">
           <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
             Sign in to your account
           </h1>
-          <Tabs defaultValue="magic-link" className="w-full max-w-[400px]">
+          <Tabs defaultValue="magic-link" className="w-full max-w-[400px] pt-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>

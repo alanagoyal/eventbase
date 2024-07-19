@@ -23,8 +23,8 @@ import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { useState } from "react";
+import { Textarea } from "./ui/textarea";
 
-type Events = Database["public"]["Tables"]["events"]["Row"];
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 const eventFormSchema = z.object({
@@ -55,8 +55,8 @@ export default function EventForm({ guest }: { guest: Guests }) {
       street_address: "",
       city_state_zip: "",
       location_url: "",
-      start_time: new Date(),
-      end_time: new Date(),
+      start_time: setDefaultTime(18), 
+      end_time: setDefaultTime(21),   
     },
   });
 
@@ -113,7 +113,7 @@ export default function EventForm({ guest }: { guest: Guests }) {
               <FormItem>
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Textarea {...field} className="h-10 p-1" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -292,4 +292,10 @@ export default function EventForm({ guest }: { guest: Guests }) {
       </Form>
     </div>
   );
+}
+
+function setDefaultTime(hours: number): Date {
+  const date = new Date();
+  date.setHours(hours, 0, 0, 0); // Set minutes, seconds, and milliseconds to 0
+  return date;
 }

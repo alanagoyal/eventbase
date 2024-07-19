@@ -4,10 +4,9 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Database } from "@/types/supabase";
 import Registration from "./registration";
+import { formatEventDates } from "@/utils/dates";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -25,28 +24,10 @@ export default function Event({
   allRsvps: any;
   guestRsvpStatus: string;
 }) {
-  const startTimestampz = new Date(event.start_timestampz!);
-  const endTimestampz = new Date(event.end_timestampz!);
-
-  const month = startTimestampz
-    .toLocaleString("en-US", { month: "short" })
-    .toUpperCase();
-  const day = startTimestampz.getDate();
-  const formattedDate = startTimestampz.toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-    year: "numeric",
-  });
-  const formattedTime = `${startTimestampz.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  })} - ${endTimestampz.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "numeric",
-    hour12: true,
-  })}`;
+  const { month, day, formattedDate, formattedTime } = formatEventDates(
+    event.start_timestampz!,
+    event.end_timestampz!
+  );
 
   return (
     <div className="min-h-screen text-white p-6">

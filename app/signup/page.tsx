@@ -6,13 +6,13 @@ import { signup } from "./actions"
 
 export default async function Signup() {
   return (
-    <div className="container mx-auto flex items-center justify-center min-h-screen p-4">
-      <div className="w-full max-w-md flex flex-col space-y-6">
+    <div className="min-h-[80vh] flex items-center justify-center pt-16">
+      <div className="w-full max-w-md flex flex-col space-y-6 p-4">
         <div className="flex flex-col items-center space-y-2">
           <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
             Create your account
           </h1>
-          <Tabs defaultValue="magic-link" className="w-full max-w-[400px]">
+          <Tabs defaultValue="magic-link" className="w-full max-w-[400px] pt-4">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
               <TabsTrigger value="email">Email</TabsTrigger>

@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Briefcase, Calendar, LogOut, Moon, Plus, Sun, User } from "lucide-react";
-import { useTheme } from "next-themes";
+import { Calendar, LogOut, Plus, User } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -46,7 +45,7 @@ export default function UserNav({ guest }: { guest: any }) {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarFallback>
+            <AvatarFallback className="bg-pink-300">
               {guest.email?.charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>

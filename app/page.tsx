@@ -14,8 +14,9 @@ export default function Home() {
             A simple platform for all of your event management needs
           </p>
           <div className="mt-8 flex justify-center gap-4">
-            <Link href="/signin">
+            <Link href="/events">
               <Button
+                className="transition-opacity hover:opacity-70"
                 style={{
                   background:
                     "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
