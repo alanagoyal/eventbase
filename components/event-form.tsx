@@ -18,13 +18,13 @@ import {
 } from "@/components/ui/form";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "./ui/use-toast";
-import { CalendarIcon, ExternalLink } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { useLoadScript } from "@react-google-maps/api";
 import type { Libraries } from "@react-google-maps/api";
-import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
+import { PlacesAutocomplete } from "./places-autocomplete";
 import { cn } from "@/lib/utils"
 import {
   Popover,
@@ -88,6 +88,12 @@ export default function EventForm({
         },
   });
 
+  function setDefaultTime(hours: number): Date {
+    const date = new Date();
+    date.setHours(hours, 0, 0, 0);
+    return date;
+  }
+
   async function saveEvent(data: EventFormValues) {
     try {
       const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.location)}`;
@@ -137,9 +143,9 @@ export default function EventForm({
             name="event_name"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Event Name</FormLabel>
+                <FormLabel htmlFor="event_name">Event Name</FormLabel>
                 <FormControl>
-                  <Input {...field} className="w-full" />
+                  <Input {...field} id="event_name" className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -150,9 +156,9 @@ export default function EventForm({
             name="description"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel>Description</FormLabel>
+                <FormLabel htmlFor="description">Description</FormLabel>
                 <FormControl>
-                  <Textarea {...field} className="w-full" />
+                  <Textarea {...field} id="description" className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -164,7 +170,7 @@ export default function EventForm({
             name="start_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="pr-4">Start Time</FormLabel>
+                <FormLabel htmlFor="start_time">Start Time</FormLabel>
                 <Popover
                   open={startCalendarOpen}
                   onOpenChange={(open) => setStartCalendarOpen(open)}
@@ -172,6 +178,7 @@ export default function EventForm({
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
+                        id="start_time"
                         variant="outline"
                         className={cn(
                           "w-full pl-3 text-left font-normal",
@@ -233,7 +240,7 @@ export default function EventForm({
             name="end_time"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="pr-4">End Time</FormLabel>
+                <FormLabel htmlFor="end_time">End Time</FormLabel>
                 <Popover
                   open={endCalendarOpen}
                   onOpenChange={(open) => setEndCalendarOpen(open)}
@@ -241,6 +248,7 @@ export default function EventForm({
                   <PopoverTrigger asChild>
                     <FormControl>
                       <Button
+                        id="end_time"
                         variant="outline"
                         className={cn(
                           "w-full pl-3 text-left font-normal",
@@ -305,74 +313,5 @@ export default function EventForm({
         </form>
       </Form>
     </div>
-  );
-}
-
-function setDefaultTime(hours: number): Date {
-  const date = new Date();
-  date.setHours(hours, 0, 0, 0);
-  return date;
-}
-
-function PlacesAutocomplete({ form }  : { form: any }) {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const {
-    ready,
-    value,
-    suggestions: { status, data },
-    setValue,
-    clearSuggestions,
-  } = usePlacesAutocomplete({
-    debounce: 300,
-    defaultValue: form.getValues('location'),
-  });
-
-  const handleSelect = async (address: string) => {
-    setValue(address, false);
-    clearSuggestions();
-    setIsOpen(false);
-
-    form.setValue('location', address);
-  };
-
-  return (
-    <FormField
-      control={form.control}
-      name="location"
-      render={({ field }) => (
-        <FormItem className="w-full">
-          <FormLabel>Location</FormLabel>
-          <div className="relative">
-            <Input
-              {...field}
-              value={value}
-              onChange={(e) => {
-                setValue(e.target.value);
-                field.onChange(e.target.value);
-                setIsOpen(true);
-              }}
-              disabled={!ready}
-              placeholder="Search for a location..."
-              className="w-full"
-            />
-            {isOpen && status === "OK" && (
-              <ul className="absolute z-10 w-full bg-white border border-gray-300 mt-1 max-h-60 overflow-auto rounded-md shadow-lg">
-                {data.map(({ place_id, description }) => (
-                  <li
-                    key={place_id}
-                    onClick={() => handleSelect(description)}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-                  >
-                    {description}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <FormMessage />
-        </FormItem>
-      )}
-    />
   );
 }

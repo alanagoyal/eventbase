@@ -113,7 +113,7 @@ export default function Registration({
                 <DialogHeader>
                   <DialogTitle>Register for the Event</DialogTitle>
                   <DialogDescription>
-                    Please fill out the form below to register for the event.
+                    Please fill out the form below to register for the event
                   </DialogDescription>
                 </DialogHeader>
                 <RsvpForm guest={guest} event={event} formattedDate={formattedDate} formattedTime={formattedTime} />
