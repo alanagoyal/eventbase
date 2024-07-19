@@ -16,7 +16,7 @@ export default function Events({
       
       <div className="flex flex-col gap-4 w-full max-w-6xl">
         {allRsvps.map((event) => (
-          <EventCard key={event.id} event={event}  />
+          <EventCard key={event.id} event={event} />
         ))}
         {allHostings.map((event) => (
           <EventCard key={event.id} event={event} />
