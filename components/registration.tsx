@@ -57,7 +57,7 @@ export default function Registration({
     if (guest.id === event.created_by) {
       return (
         <div className="ml-4 flex-grow flex flex-col">
-          <h3 className="text-base font-semibold text-white">
+          <h3 className="text-base">
             <strong>You are the host of this event</strong>
           </h3>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -91,7 +91,7 @@ export default function Registration({
       if (guestRsvpStatus === "attending") {
         return (
           <div className="ml-4 flex-grow flex flex-col">
-            <h3 className="text-base font-semibold text-white">
+            <h3 className="text-base">
               <strong>You&apos;re in!</strong> Let us know if you can&apos;t make it anymore
             </h3>
             <Button className="mt-3 bg-white text-black hover:bg-gray-100" onClick={() => removeGuest(guest.email!)}>
@@ -102,7 +102,7 @@ export default function Registration({
       } else {
         return (
           <div className="ml-4 flex-grow flex flex-col">
-            <h3 className="text-base font-semibold text-white">
+            <h3 className="text-base">
               <strong>Welcome!</strong> To join the event, please register below
             </h3>
             <Dialog>
@@ -125,7 +125,7 @@ export default function Registration({
     } else if (guestRsvpStatus === "attending") {
       return (
         <div className="ml-4 flex-grow flex flex-col">
-          <h3 className="text-base font-semibold text-white">
+          <h3 className="text-base">
             <strong>Thank You for Joining</strong> We hope you enjoyed the event!
           </h3>
         </div>
@@ -135,9 +135,9 @@ export default function Registration({
   };
 
   return (
-    <div className="bg-gray-800 p-4 mt-6 rounded-lg flex items-center shadow-md">
+    <div className="bg-pink-200 p-4 rounded-lg flex items-center shadow-md">
       <Avatar>
-        <AvatarFallback className="bg-pink-300 text-white">
+        <AvatarFallback className="bg-pink-300">
           {guest.email?.charAt(0).toUpperCase()}
         </AvatarFallback>
       </Avatar>
