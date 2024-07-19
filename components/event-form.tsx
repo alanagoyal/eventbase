@@ -25,37 +25,41 @@ import { Textarea } from "./ui/textarea";
 import { useLoadScript } from "@react-google-maps/api";
 import type { Libraries } from "@react-google-maps/api";
 import { PlacesAutocomplete } from "./places-autocomplete";
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
+import { v4 as uuidv4 } from 'uuid';
+import { Spinner } from "./spinner";
 
 const libraries: Libraries = ["places"];
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
-const eventFormSchema = z.object({
-  event_name: z.string().min(1, "Event name is required"),
-  description: z.string().optional(),
-  location: z.string().min(1, "Location is required"),
-  start_time: z.date().min(new Date(), "Start time must be in the future"),
-  end_time: z.date().min(new Date(), "End time must be in the future"),
-}).refine(data => data.end_time > data.start_time, {
-  message: "End time must be after start time",
-  path: ["end_time"],
-});
+const eventFormSchema = z
+  .object({
+    event_name: z.string().min(1, "Event name is required"),
+    description: z.string().optional(),
+    location: z.string().min(1, "Location is required"),
+    start_time: z.date().min(new Date(), "Start time must be in the future"),
+    end_time: z.date().min(new Date(), "End time must be in the future"),
+  })
+  .refine((data) => data.end_time > data.start_time, {
+    message: "End time must be after start time",
+    path: ["end_time"],
+  });
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
 type Event = Database["public"]["Tables"]["events"]["Row"];
 
-export default function EventForm({ 
-  guest, 
-  existingEvent, 
-  onEventSaved 
-}: { 
-  guest: Guests; 
+export default function EventForm({
+  guest,
+  existingEvent,
+  onEventSaved,
+}: {
+  guest: Guests;
   existingEvent?: Event;
   onEventSaved?: () => void;
 }) {
@@ -63,6 +67,7 @@ export default function EventForm({
   const supabase = createClient();
   const [startCalendarOpen, setStartCalendarOpen] = useState(false);
   const [endCalendarOpen, setEndCalendarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -94,9 +99,47 @@ export default function EventForm({
     return date;
   }
 
+  async function generateLogo(description: string) {
+    console.log(`in generateLogo: ${description}`);
+    const response = await fetch("/generate-image", {
+      method: "POST",
+      body: JSON.stringify({ description }),
+    });
+    const data = await response.json();
+    console.log(`imageUrl: ${data.imageUrl}`);
+    return data.imageUrl;
+  }
+
+  async function generateUniqueEventUrl(eventName: string): Promise<string> {
+    let eventUrl = slugify(eventName, { lower: true, strict: true });
+
+    // Check if the event URL already exists
+    const { data: existingEvents, error: fetchError } = await supabase
+      .from("events")
+      .select("event_url")
+      .eq("event_url", eventUrl);
+
+    if (fetchError) throw fetchError;
+
+    // If the URL already exists, append a random UUID
+    if (existingEvents && existingEvents.length > 0) {
+      eventUrl = `${eventUrl}-${uuidv4().slice(0, 8)}`;
+    }
+
+    return eventUrl;
+  }
+
   async function saveEvent(data: EventFormValues) {
+    setIsLoading(true);
     try {
-      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.location)}`;
+      const fallback =
+        "create a square image to be used for an event invitation. make it a cartoon style with pink and showcase san francisco. remove the padding so the full image extends to the edge";
+      const logo = await generateLogo(data.description || fallback);
+      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        data.location
+      )}`;
+
+      const eventUrl = await generateUniqueEventUrl(data.event_name);
 
       const updates = {
         event_name: data.event_name,
@@ -104,16 +147,28 @@ export default function EventForm({
         location: data.location,
         start_timestampz: data.start_time.toISOString(),
         end_timestampz: data.end_time.toISOString(),
-        event_url: slugify(data.event_name, { lower: true, strict: true }),
+        event_url: eventUrl,
         location_url: googleMapsUrl,
+        og_image: logo,
       };
 
       let { error } = existingEvent
-        ? await supabase.from("events").update(updates).eq("id", existingEvent.id)
-        : await supabase.from("events").insert({ ...updates, created_at: new Date().toISOString(), created_by: guest.id });
+        ? await supabase
+            .from("events")
+            .update(updates)
+            .eq("id", existingEvent.id)
+        : await supabase
+            .from("events")
+            .insert({
+              ...updates,
+              created_at: new Date().toISOString(),
+              created_by: guest.id,
+            });
 
       if (error) throw error;
-      toast({ description: existingEvent ? "Event updated!" : "Event created!" });
+      toast({
+        description: existingEvent ? "Event updated!" : "Event created!",
+      });
       if (onEventSaved) {
         onEventSaved();
       }
@@ -122,20 +177,32 @@ export default function EventForm({
       }, 500);
     } catch (error) {
       console.error(error);
+      toast({
+        variant: "destructive",
+        description: "Failed to save event. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
     }
   }
 
   if (!isLoaded) return null;
 
   return (
-    <div className={`flex flex-col ${existingEvent ? 'items-start p-6' : 'items-start mih-h-dvh p-12 md:p-6 w-full md:w-1/2'}`}>
-      {!existingEvent && (
-        <h2 className="text-2xl font-bold py-4">New Event</h2>
-      )}
+    <div
+      className={`flex flex-col ${
+        existingEvent
+          ? "items-start p-6"
+          : "items-start mih-h-dvh p-12 md:p-6 w-full md:w-1/2"
+      }`}
+    >
+      {!existingEvent && <h2 className="text-2xl font-bold py-4">New Event</h2>}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(saveEvent)}
-          className={`flex-col justify-between items-center ${existingEvent ? 'mx-auto' : 'w-full md:max-w-md'} pb-2 space-y-4`}
+          className={`flex-col justify-between items-center ${
+            existingEvent ? "mx-auto" : "w-full md:max-w-md"
+          } pb-2 space-y-4`}
           autoComplete="off"
         >
           <FormField
@@ -206,9 +273,7 @@ export default function EventForm({
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date("1900-01-01")
-                      }
+                      disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
                     <Input
@@ -276,9 +341,7 @@ export default function EventForm({
                       mode="single"
                       selected={field.value}
                       onSelect={field.onChange}
-                      disabled={(date) =>
-                        date < new Date("1900-01-01")
-                      }
+                      disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
                     <Input
@@ -306,8 +369,15 @@ export default function EventForm({
             )}
           />
           <div className="w-full">
-            <Button type="submit" className="w-full">
-              {existingEvent ? "Update event" : "Create event"}
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  {existingEvent ? "Updating..." : "Creating..."}
+                </>
+              ) : (
+                existingEvent ? "Update event" : "Create event"
+              )}
             </Button>
           </div>
         </form>
