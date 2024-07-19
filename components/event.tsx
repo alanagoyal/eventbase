@@ -3,7 +3,6 @@
  * @see https://v0.dev/t/BRPLPRZdkJi
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import { Button } from "@/components/ui/button";
 import { Database } from "@/types/supabase";
 import Registration from "./registration";
 import { formatEventDates } from "@/utils/dates";
@@ -12,7 +11,6 @@ import {
   Card,
   CardHeader,
   CardContent,
-  CardFooter,
 } from "@/components/ui/card";
 import Link from "next/link";
 
@@ -39,6 +37,12 @@ export default function Event({
 
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+  const gradientColors = ['#FF9A8B', '#FF6A88', '#FF99AC', '#cd80ff'];
+
+  const getGradientColor = (index: number) => {
+    return gradientColors[index % gradientColors.length];
+  };
+
   return (
     <div className="mih-h-dvh text-white p-6 w-full">
       <div className="flex flex-col md:flex-row gap-6">
@@ -55,7 +59,7 @@ export default function Event({
               <div>
                 <h2 className="text-lg font-semibold">Hosted By</h2>
                 <div className="flex items-center mt-2">
-                  <UserIcon className="w-6 h-6 text-pink-300" />
+                  <UserIcon className="w-6 h-6" style={{ color: getGradientColor(0) }} />
                   <a
                     href={`mailto:${host.email}`}
                     className="ml-2 hover:underline"
@@ -67,9 +71,9 @@ export default function Event({
               {guest.id === host.id && (
                 <div className="mt-4">
                   <h2 className="text-lg font-semibold">Confirmed Guests</h2>
-                  {allRsvps.map((rsvp: any) => (
+                  {allRsvps.map((rsvp: any, index: number) => (
                     <div key={rsvp.id} className="flex items-center mt-2">
-                      <UserIcon className="w-6 h-6 text-pink-300" />
+                      <UserIcon className="w-6 h-6" style={{ color: getGradientColor(index + 1) }} />
                       <span className="ml-2">
                         {rsvp.guest.full_name}
                       </span>
