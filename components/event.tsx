@@ -68,7 +68,7 @@ export default function Event({
                   </a>
                 </div>
               </div>
-              {guest.id === host.id && (
+              {guest.id === host.id && allRsvps.length > 0 && (
                 <div className="mt-4">
                   <h2 className="text-lg font-semibold">Confirmed Guests</h2>
                   {allRsvps.map((rsvp: any, index: number) => (
