@@ -30,9 +30,8 @@ type Guests = Database["public"]["Tables"]["guests"]["Row"];
 const eventFormSchema = z.object({
   event_name: z.string().min(1, "Event name is required"),
   description: z.string().optional(),
-  street_address: z.string().optional(),
-  city_state_zip: z.string().optional(),
-  location_url: z.string().optional(),
+  street_address: z.string().min(1, "Street address is required"),
+  city_state_zip: z.string().min(1, "City, state, zip is required"),
   start_time: z.date().min(new Date(), "Start time must be in the future"),
   end_time: z.date().min(new Date(), "End time must be in the future"),
 }).refine(data => data.end_time > data.start_time, {
@@ -54,7 +53,6 @@ export default function EventForm({ guest }: { guest: Guests }) {
       description: "",
       street_address: "",
       city_state_zip: "",
-      location_url: "",
       start_time: setDefaultTime(18), 
       end_time: setDefaultTime(21),   
     },
