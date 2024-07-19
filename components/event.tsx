@@ -52,16 +52,31 @@ export default function Event({
               />
             </CardHeader>
             <CardContent>
-              <h2 className="text-lg font-semibold">Hosted By</h2>
-              <div className="flex items-center mt-2">
-                <UserIcon className="w-6 h-6 text-pink-300" />
-                <a
-                  href={`mailto:${host.email}`}
-                  className="ml-2 hover:underline"
-                >
-                  {host.full_name}
-                </a>
+              <div>
+                <h2 className="text-lg font-semibold">Hosted By</h2>
+                <div className="flex items-center mt-2">
+                  <UserIcon className="w-6 h-6 text-pink-300" />
+                  <a
+                    href={`mailto:${host.email}`}
+                    className="ml-2 hover:underline"
+                  >
+                    {host.full_name}
+                  </a>
+                </div>
               </div>
+              {guest.id === host.id && (
+                <div className="mt-4">
+                  <h2 className="text-lg font-semibold">Confirmed Guests</h2>
+                  {allRsvps.map((rsvp: any) => (
+                    <div key={rsvp.id} className="flex items-center mt-2">
+                      <UserIcon className="w-6 h-6 text-pink-300" />
+                      <span className="ml-2">
+                        {rsvp.guest.full_name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
