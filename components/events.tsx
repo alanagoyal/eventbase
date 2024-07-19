@@ -11,7 +11,7 @@ export default function Events({
   allHostings: EventWithHostAndType[];
 }) {
   return (
-    <div className="flex flex-col items-start min-h-screen p-10 w-full md:w-4/5">
+    <div className="flex flex-col items-start mih-h-dvh p-12 w-full md:w-4/5">
       <h1 className="text-2xl font-bold py-4">Events</h1>
       <div className="flex flex-col gap-4 w-full">
         {allRsvps.map((event) => (

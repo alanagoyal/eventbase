@@ -4,7 +4,7 @@ import { Github } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col mih-h-dvh">
       <main className="container mx-auto my-48 flex-grow">
         <section className="text-center">
           <h1 className="text-5xl font-bold">

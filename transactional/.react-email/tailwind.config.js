@@ -7,7 +7,7 @@ const iOsHeight = plugin(function ({ addUtilities }) {
   const webkitFillAvailable = '-webkit-fill-available';
 
   const utilities = {
-    '.min-h-screen-ios': {
+    '.mih-h-dvh-ios': {
       [supportsTouchRule]: {
         minHeight: webkitFillAvailable,
       },

@@ -21,7 +21,7 @@ export default async function NewEvent() {
     .single();
 
   return (
-    <div className="flex w-full justify-center min-h-screen">
+    <div className="flex w-full justify-center mih-h-dvh">
       <EventForm guest={guest} />
     </div>
   );

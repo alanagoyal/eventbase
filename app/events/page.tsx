@@ -46,7 +46,7 @@ export default async function EventsPage() {
 
   if (rsvps && rsvps.length === 0 && hostings && hostings.length === 0) {
     return (
-      <div className="w-full px-4 flex justify-center items-center flex-col min-h-screen">
+      <div className="w-full px-4 flex justify-center items-center flex-col mih-h-dvh">
         <h1 className="text-2xl text-center font-bold mb-4">
             You haven&apos;t created or <br /> joined any events yet
         </h1>
@@ -57,7 +57,7 @@ export default async function EventsPage() {
     );
   }
   return (
-    <div className="flex w-full justify-center min-h-screen">
+    <div className="flex w-full justify-center mih-h-dvh">
       <Events 
         allRsvps={rsvps?.map(r => ({ ...r.event, type: 'attending' })) ?? []} 
         allHostings={hostings?.map(h => ({ ...h, type: 'hosting' })) ?? []} 

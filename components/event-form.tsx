@@ -128,9 +128,9 @@ export default function EventForm({
   if (!isLoaded) return null;
 
   return (
-    <div className={`flex flex-col ${existingEvent ? 'items-start p-6' : 'items-start min-h-screen p-6 w-full md:w-1/2'}`}>
+    <div className={`flex flex-col ${existingEvent ? 'items-start p-6' : 'items-start mih-h-dvh p-12 md:p-6 w-full md:w-1/2'}`}>
       {!existingEvent && (
-        <h2 className="text-2xl font-bold py-4">Create a New Event</h2>
+        <h2 className="text-2xl font-bold py-4">New Event</h2>
       )}
       <Form {...form}>
         <form

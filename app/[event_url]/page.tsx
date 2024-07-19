@@ -62,7 +62,7 @@ export default async function EventPage({
     : "not responded";
 
   return (
-    <div className="flex w-full justify-center min-h-screen">
+    <div className="flex w-full justify-center mih-h-dvh">
       <Event
         event={event}
         guest={guest}

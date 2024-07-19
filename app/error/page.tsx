@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function ErrorPage() {
   return (
     <div
-      className="w-full px-4 flex justify-center items-center flex-col min-h-screen"
+      className="w-full px-4 flex justify-center items-center flex-col mih-h-dvh"
       style={{ marginTop: "-100px" }}
     >
       <AlertCircle
