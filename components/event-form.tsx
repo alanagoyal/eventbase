@@ -128,14 +128,14 @@ export default function EventForm({
   if (!isLoaded) return null;
 
   return (
-    <div className={`flex flex-col ${existingEvent ? 'items-start p-6' : 'items-start min-h-screen p-6 w-1/2'}`}>
+    <div className={`flex flex-col ${existingEvent ? 'items-start p-6' : 'items-start min-h-screen p-6 w-full md:w-1/2'}`}>
       {!existingEvent && (
         <h2 className="text-2xl font-bold py-4">Create a New Event</h2>
       )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(saveEvent)}
-          className={`flex-col justify-between items-center ${existingEvent ? 'mx-auto' : 'max-w-md'} w-full pb-2 space-y-4`}
+          className={`flex-col justify-between items-center ${existingEvent ? 'mx-auto' : 'w-full md:max-w-md'} pb-2 space-y-4`}
           autoComplete="off"
         >
           <FormField

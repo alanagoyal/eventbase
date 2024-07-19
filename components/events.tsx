@@ -11,10 +11,9 @@ export default function Events({
   allHostings: EventWithHostAndType[];
 }) {
   return (
-    <div className="flex flex-col items-start min-h-screen p-10 w-4/5">
+    <div className="flex flex-col items-start min-h-screen p-10 w-full md:w-4/5">
       <h1 className="text-2xl font-bold py-4">Events</h1>
-      
-      <div className="flex flex-col gap-4 w-full max-w-6xl">
+      <div className="flex flex-col gap-4 w-full">
         {allRsvps.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}

@@ -76,7 +76,7 @@ export default function Account({ user }: { user: Guests }) {
   }
 
   return (
-    <div className="flex flex-col items-start min-h-screen p-6 w-1/2">
+    <div className="flex flex-col items-start min-h-screen p-6 w-full md:w-1/2">
       <h1 className="text-2xl font-bold py-4">Account</h1>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex-col justify-between items-center mx-auto w-full pb-2 space-y-2">
