@@ -135,7 +135,9 @@ export default function Registration({
   };
 
   return (
-    <div className="bg-pink-200 p-4 rounded-lg flex items-center shadow-md">
+    <div className="p-4 rounded-lg flex items-center shadow-md" style={{
+      background: "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)"
+    }}>
       <Avatar>
         <AvatarFallback className="bg-pink-300">
           {guest.email?.charAt(0).toUpperCase()}
