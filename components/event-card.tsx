@@ -58,7 +58,7 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
               <Badge>{event.type === 'attending' ? 'Attending' : 'Hosting'}</Badge>
             </CardFooter>
           </div>
-          <div className="w-1/3 p-4 flex items-center justify-center">
+          <div className="hidden md:flex w-1/3 p-4 items-center justify-center">
             <img
               src={event.og_image || '/sf.jpg'}
               alt={event.event_name || 'Event Image'}
