@@ -18,20 +18,28 @@ import {
 } from "@/components/ui/form";
 import { createClient } from "@/utils/supabase/client";
 import { toast } from "./ui/use-toast";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { cn } from "@/lib/utils";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, ExternalLink } from "lucide-react";
 import { Calendar } from "./ui/calendar";
 import { useState } from "react";
 import { Textarea } from "./ui/textarea";
+import { useLoadScript } from "@react-google-maps/api";
+import type { Libraries } from "@react-google-maps/api";
+import usePlacesAutocomplete, { getGeocode, getLatLng } from "use-places-autocomplete";
+import { cn } from "@/lib/utils"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+const libraries: Libraries = ["places"];
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 const eventFormSchema = z.object({
   event_name: z.string().min(1, "Event name is required"),
   description: z.string().optional(),
-  street_address: z.string().min(1, "Street address is required"),
-  city_state_zip: z.string().min(1, "City, state, zip is required"),
+  location: z.string().min(1, "Location is required"),
   start_time: z.date().min(new Date(), "Start time must be in the future"),
   end_time: z.date().min(new Date(), "End time must be in the future"),
 }).refine(data => data.end_time > data.start_time, {
@@ -56,22 +64,25 @@ export default function EventForm({
   const [startCalendarOpen, setStartCalendarOpen] = useState(false);
   const [endCalendarOpen, setEndCalendarOpen] = useState(false);
 
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
+    libraries,
+  });
+
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: existingEvent
       ? {
           event_name: existingEvent.event_name || "",
           description: existingEvent.description || "",
-          street_address: existingEvent.location?.split(", ")[0] || "",
-          city_state_zip: existingEvent.location?.split(", ").slice(1).join(", ") || "",
+          location: existingEvent.location || "",
           start_time: new Date(existingEvent.start_timestampz!),
           end_time: new Date(existingEvent.end_timestampz!),
         }
       : {
           event_name: "",
           description: "",
-          street_address: "",
-          city_state_zip: "",
+          location: "",
           start_time: setDefaultTime(18),
           end_time: setDefaultTime(21),
         },
@@ -79,13 +90,16 @@ export default function EventForm({
 
   async function saveEvent(data: EventFormValues) {
     try {
+      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(data.location)}`;
+
       const updates = {
         event_name: data.event_name,
         description: data.description,
-        location: `${data.street_address}, ${data.city_state_zip}`,
+        location: data.location,
         start_timestampz: data.start_time.toISOString(),
         end_timestampz: data.end_time.toISOString(),
         event_url: slugify(data.event_name, { lower: true, strict: true }),
+        location_url: googleMapsUrl,
       };
 
       let { error } = existingEvent
@@ -104,6 +118,8 @@ export default function EventForm({
       console.error(error);
     }
   }
+
+  if (!isLoaded) return null;
 
   return (
     <div className={`flex flex-col ${existingEvent ? 'items-start p-6' : 'items-start min-h-screen p-6 w-1/2'}`}>
@@ -142,32 +158,7 @@ export default function EventForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="street_address"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>Street Address</FormLabel>
-                <FormControl>
-                  <Input {...field} className="w-full" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="city_state_zip"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>City, State, Zip</FormLabel>
-                <FormControl>
-                  <Input {...field} className="w-full" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <PlacesAutocomplete form={form} />
           <FormField
             control={form.control}
             name="start_time"
@@ -319,6 +310,69 @@ export default function EventForm({
 
 function setDefaultTime(hours: number): Date {
   const date = new Date();
-  date.setHours(hours, 0, 0, 0); // Set minutes, seconds, and milliseconds to 0
+  date.setHours(hours, 0, 0, 0);
   return date;
+}
+
+function PlacesAutocomplete({ form }  : { form: any }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const {
+    ready,
+    value,
+    suggestions: { status, data },
+    setValue,
+    clearSuggestions,
+  } = usePlacesAutocomplete({
+    debounce: 300,
+    defaultValue: form.getValues('location'),
+  });
+
+  const handleSelect = async (address: string) => {
+    setValue(address, false);
+    clearSuggestions();
+    setIsOpen(false);
+
+    form.setValue('location', address);
+  };
+
+  return (
+    <FormField
+      control={form.control}
+      name="location"
+      render={({ field }) => (
+        <FormItem className="w-full">
+          <FormLabel>Location</FormLabel>
+          <div className="relative">
+            <Input
+              {...field}
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+                field.onChange(e.target.value);
+                setIsOpen(true);
+              }}
+              disabled={!ready}
+              placeholder="Search for a location..."
+              className="w-full"
+            />
+            {isOpen && status === "OK" && (
+              <ul className="absolute z-10 w-full bg-white border border-gray-300 mt-1 max-h-60 overflow-auto rounded-md shadow-lg">
+                {data.map(({ place_id, description }) => (
+                  <li
+                    key={place_id}
+                    onClick={() => handleSelect(description)}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                  >
+                    {description}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <FormMessage />
+        </FormItem>
+      )}
+    />
+  );
 }
