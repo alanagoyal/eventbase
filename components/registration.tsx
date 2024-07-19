@@ -135,7 +135,7 @@ export default function Registration({
   };
 
   return (
-    <div className="bg-black p-4 mt-6 rounded-lg flex items-center shadow-md">
+    <div className="bg-gray-800 p-4 mt-6 rounded-lg flex items-center shadow-md">
       <Avatar>
         <AvatarFallback className="bg-pink-300 text-white">
           {guest.email?.charAt(0).toUpperCase()}
