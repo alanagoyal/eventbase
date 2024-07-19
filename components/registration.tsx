@@ -1,4 +1,5 @@
 "use client";
+
 import { createClient } from "@/utils/supabase/client";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Database } from "@/types/supabase";
@@ -75,7 +76,10 @@ export default function Registration({
               <EventForm 
                 guest={guest} 
                 existingEvent={event} 
-                onEventSaved={() => setIsDialogOpen(false)} 
+                onEventSaved={() => {
+                  setIsDialogOpen(false);
+                  router.refresh();
+                }} 
               />
             </DialogContent>
           </Dialog>

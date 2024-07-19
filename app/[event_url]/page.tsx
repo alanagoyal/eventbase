@@ -2,6 +2,8 @@ import { createClient } from "@/utils/supabase/server";
 import MagicLink from "@/components/magic-link";
 import Event from "@/components/event";
 
+export const dynamic = 'force-dynamic';
+
 export default async function EventPage({
   params,
 }: {

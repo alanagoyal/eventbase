@@ -106,21 +106,24 @@ export default function EventForm({
   }
 
   return (
-    <div className="flex flex-col items-start p-6 w-full">
+    <div className={`flex flex-col ${existingEvent ? 'items-start p-6' : 'items-start min-h-screen p-6 w-1/2'}`}>
+      {!existingEvent && (
+        <h2 className="text-2xl font-bold py-4">Create a New Event</h2>
+      )}
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(saveEvent)}
-          className="flex-col justify-between items-center mx-auto w-full pb-2 space-y-2"
+          className={`flex-col justify-between items-center ${existingEvent ? 'mx-auto' : 'max-w-md'} w-full pb-2 space-y-4`}
           autoComplete="off"
         >
           <FormField
             control={form.control}
             name="event_name"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-full">
                 <FormLabel>Event Name</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -130,10 +133,10 @@ export default function EventForm({
             control={form.control}
             name="description"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-full">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
-                  <Textarea {...field} className="h-10 p-1" />
+                  <Textarea {...field} className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -143,10 +146,10 @@ export default function EventForm({
             control={form.control}
             name="street_address"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-full">
                 <FormLabel>Street Address</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -156,10 +159,10 @@ export default function EventForm({
             control={form.control}
             name="city_state_zip"
             render={({ field }) => (
-              <FormItem>
+              <FormItem className="w-full">
                 <FormLabel>City, State, Zip</FormLabel>
                 <FormControl>
-                  <Input {...field} className="h-10 p-1" />
+                  <Input {...field} className="w-full" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -303,7 +306,7 @@ export default function EventForm({
               </FormItem>
             )}
           />
-          <div className="py-2 w-full">
+          <div className="w-full">
             <Button type="submit" className="w-full">
               {existingEvent ? "Update event" : "Create event"}
             </Button>

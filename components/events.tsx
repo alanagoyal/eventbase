@@ -10,28 +10,15 @@ export default function Events({
   allRsvps: EventWithHostAndType[];
   allHostings: EventWithHostAndType[];
 }) {
-
   return (
     <div className="flex flex-col items-start min-h-screen p-10 w-4/5">
       <h1 className="text-2xl font-bold py-4">Events</h1>
       
-      {allRsvps.length > 0 && (
-        <EventSection title="Attending" events={allRsvps} />
-      )}
-      
-      {allHostings.length > 0 && (
-        <EventSection title="Hosting" events={allHostings} />
-      )}
-    </div>
-  );
-}
-
-function EventSection({ title, events }: { title: string; events: EventWithHostAndType[] }) {
-  return (
-    <div className="flex flex-col w-full max-w-6xl py-2">
-      <h2 className="text-xl max-w-2xl font-bold">{title}</h2>
-      <div className="flex flex-col gap-2 pt-2 w-full">
-        {events.map((event) => (
+      <div className="flex flex-col gap-4 w-full max-w-6xl">
+        {allRsvps.map((event) => (
+          <EventCard key={event.id} event={event}  />
+        ))}
+        {allHostings.map((event) => (
           <EventCard key={event.id} event={event} />
         ))}
       </div>
