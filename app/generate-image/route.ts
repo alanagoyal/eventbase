@@ -13,8 +13,6 @@ export async function POST(req: Request, res: NextResponse) {
     const body = await req.json();
     const { description } = body;
 
-    console.log(description);
-
     const image = await openai.images.generate({
       model: "dall-e-3",
       prompt: `Generate an image for an event digital invitation based on the following description: ${description}`,
@@ -25,8 +23,6 @@ export async function POST(req: Request, res: NextResponse) {
     });
 
     const imageUrl = image.data[0].url;
-
-    console.log(imageUrl);
 
     return new Response(JSON.stringify({ imageUrl }), {
       status: 200,

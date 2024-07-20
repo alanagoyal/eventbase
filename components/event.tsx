@@ -13,6 +13,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -87,7 +88,9 @@ export default function Event({
         <div className="md:w-2/3">
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
-              <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
+              <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
+              </div>
               <div className="flex items-center mt-4">
                 <div className="flex flex-col items-center">
                   <span className="text-base font-semibold">{month}</span>

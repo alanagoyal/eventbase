@@ -57,11 +57,9 @@ type Event = Database["public"]["Tables"]["events"]["Row"];
 export default function EventForm({
   guest,
   existingEvent,
-  onEventSaved,
 }: {
   guest: Guests;
   existingEvent?: Event;
-  onEventSaved?: () => void;
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -99,17 +97,6 @@ export default function EventForm({
     return date;
   }
 
-  async function generateLogo(description: string) {
-    console.log(`in generateLogo: ${description}`);
-    const response = await fetch("/generate-image", {
-      method: "POST",
-      body: JSON.stringify({ description }),
-    });
-    const data = await response.json();
-    console.log(`imageUrl: ${data.imageUrl}`);
-    return data.imageUrl;
-  }
-
   async function generateUniqueEventUrl(eventName: string): Promise<string> {
     let eventUrl = slugify(eventName, { lower: true, strict: true });
 
@@ -132,14 +119,14 @@ export default function EventForm({
   async function saveEvent(data: EventFormValues) {
     setIsLoading(true);
     try {
-      const fallback =
-        "create a square image to be used for an event invitation. make it a cartoon style with pink and showcase san francisco. remove the padding so the full image extends to the edge";
-      const logo = await generateLogo(data.description || fallback);
+      let logo = existingEvent?.og_image || 'sf.jpg';
       const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
         data.location
       )}`;
 
-      const eventUrl = await generateUniqueEventUrl(data.event_name);
+      const eventUrl = existingEvent
+        ? existingEvent.event_url
+        : await generateUniqueEventUrl(data.event_name);
 
       const updates = {
         event_name: data.event_name,
@@ -169,12 +156,8 @@ export default function EventForm({
       toast({
         description: existingEvent ? "Event updated!" : "Event created!",
       });
-      if (onEventSaved) {
-        onEventSaved();
-      }
-      setTimeout(() => {
-        router.push(`/${updates.event_url}`);
-      }, 500);
+
+      router.push(`/${updates.event_url}`);
     } catch (error) {
       console.error(error);
       toast({
@@ -190,18 +173,16 @@ export default function EventForm({
 
   return (
     <div
-      className={`flex flex-col ${
-        existingEvent
-          ? "items-start p-6"
-          : "items-start mih-h-dvh p-12 md:p-6 w-full md:w-1/2"
-      }`}
+      className="flex flex-col items-start min-h-dvh p-12 md:p-6 w-full md:w-1/2"
     >
-      {!existingEvent && <h2 className="text-2xl font-bold py-4">New Event</h2>}
+      <h2 className="text-2xl font-bold py-4">
+        {existingEvent ? "Edit Event" : "New Event"}
+      </h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(saveEvent)}
           className={`flex-col justify-between items-center ${
-            existingEvent ? "mx-auto" : "w-full md:max-w-md"
+            existingEvent ? "mx-auto w-full" : "w-full md:max-w-md"
           } pb-2 space-y-4`}
           autoComplete="off"
         >
