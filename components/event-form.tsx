@@ -26,13 +26,11 @@ import { useLoadScript } from "@react-google-maps/api";
 import type { Libraries } from "@react-google-maps/api";
 import { PlacesAutocomplete } from "./places-autocomplete";
 import { cn } from "@/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { v4 as uuidv4 } from 'uuid';
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { v4 as uuidv4 } from "uuid";
 import { Spinner } from "./spinner";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 const libraries: Libraries = ["places"];
 
@@ -119,7 +117,7 @@ export default function EventForm({
   async function saveEvent(data: EventFormValues) {
     setIsLoading(true);
     try {
-      let logo = existingEvent?.og_image || 'sf.jpg';
+      let logo = existingEvent?.og_image || "sf.jpg";
       const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
         data.location
       )}`;
@@ -144,13 +142,11 @@ export default function EventForm({
             .from("events")
             .update(updates)
             .eq("id", existingEvent.id)
-        : await supabase
-            .from("events")
-            .insert({
-              ...updates,
-              created_at: new Date().toISOString(),
-              created_by: guest.id,
-            });
+        : await supabase.from("events").insert({
+            ...updates,
+            created_at: new Date().toISOString(),
+            created_by: guest.id,
+          });
 
       if (error) throw error;
       toast({
@@ -169,12 +165,35 @@ export default function EventForm({
     }
   }
 
+  async function deleteEvent() {
+    setIsLoading(true);
+    try {
+      const { error } = await supabase
+        .from("events")
+        .delete()
+        .eq("id", existingEvent!.id);
+
+      if (error) throw error;
+      toast({
+        description: "Event deleted successfully!",
+      });
+
+      router.push("/events");
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        description: "Failed to delete event. Please try again.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   if (!isLoaded) return null;
 
   return (
-    <div
-      className="flex flex-col items-start min-h-dvh p-12 md:p-6 w-full md:w-1/2"
-    >
+    <div className="flex flex-col items-start min-h-dvh p-12 md:p-6 w-full md:w-1/2">
       <h2 className="text-2xl font-bold py-4">
         {existingEvent ? "Edit Event" : "New Event"}
       </h2>
@@ -349,17 +368,36 @@ export default function EventForm({
               </FormItem>
             )}
           />
-          <div className="w-full">
+          <div className="w-full space-y-2">
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />
                   {existingEvent ? "Updating..." : "Creating..."}
                 </>
+              ) : existingEvent ? (
+                "Update event"
               ) : (
-                existingEvent ? "Update event" : "Create event"
+                "Create event"
               )}
             </Button>
+            {existingEvent && (
+              <Button
+                variant="ghost"
+                className="w-full"
+                disabled={isLoading}
+                onClick={deleteEvent}
+              >
+                {isLoading ? (
+                  <>
+                    <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  "Delete Event"
+                )}
+              </Button>
+            )}
           </div>
         </form>
       </Form>
