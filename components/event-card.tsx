@@ -10,6 +10,7 @@ import { formatEventDates } from "@/utils/dates";
 import { Badge } from "./ui/badge";
 import { MapPinIcon, UserIcon } from "lucide-react";
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventWithHost = Event & {
@@ -26,6 +27,25 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
   );
   
   const eventUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${event.event_url}`;
+
+  const [imageUrl, setImageUrl] = useState(event.og_image || '/sf.jpg');
+
+  useEffect(() => {
+    const checkImageValidity = async () => {
+      if (event.og_image) {
+        try {
+          const response = await fetch(event.og_image, { method: 'HEAD' });
+          if (!response.ok) {
+            setImageUrl('/sf.jpg'); 
+          }
+        } catch (error) {
+          setImageUrl('/sf.jpg'); 
+        }
+      }
+    };
+
+    checkImageValidity();
+  }, [event.og_image]);
 
   return (
     <Link href={eventUrl} className="w-full block">
@@ -59,11 +79,13 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
             </CardFooter>
           </div>
           <div className="hidden md:flex w-1/3 p-4 items-center justify-center">
-            <img
-              src={event.og_image || '/sf.jpg'}
-              alt={event.event_name || 'Event Image'}
-              className="max-w-full max-h-full object-cover rounded-md"
-            />
+            <div className="w-40 h-40 overflow-hidden">
+              <img
+                src={imageUrl}
+                alt={event.event_name || 'Event Image'}
+                className="w-full h-full object-cover rounded-md"
+              />
+            </div>
           </div>
         </div>
       </Card>

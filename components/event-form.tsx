@@ -26,11 +26,11 @@ import { useLoadScript } from "@react-google-maps/api";
 import type { Libraries } from "@react-google-maps/api";
 import { PlacesAutocomplete } from "./places-autocomplete";
 import { cn } from "@/lib/utils";
-import { AlertCircle } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { v4 as uuidv4 } from "uuid";
 import { Spinner } from "./spinner";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 
 const libraries: Libraries = ["places"];
 
@@ -43,6 +43,7 @@ const eventFormSchema = z
     location: z.string().min(1, "Location is required"),
     start_time: z.date().min(new Date(), "Start time must be in the future"),
     end_time: z.date().min(new Date(), "End time must be in the future"),
+    image: z.any().optional(),
   })
   .refine((data) => data.end_time > data.start_time, {
     message: "End time must be after start time",
@@ -79,6 +80,7 @@ export default function EventForm({
           location: existingEvent.location || "",
           start_time: new Date(existingEvent.start_timestampz!),
           end_time: new Date(existingEvent.end_timestampz!),
+          image: undefined,
         }
       : {
           event_name: "",
@@ -86,6 +88,7 @@ export default function EventForm({
           location: "",
           start_time: setDefaultTime(18),
           end_time: setDefaultTime(21),
+          image: undefined,
         },
   });
 
@@ -114,28 +117,70 @@ export default function EventForm({
     return eventUrl;
   }
 
+  function getGoogleMapsUrl(location: string): string {
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+  }
+  
+  async function handleImageUpload(event_id: string, image: File | undefined, endTime: Date): Promise<string | null> {
+    if (!(image instanceof File)) return null;
+  
+    const filename = `${event_id}`;
+    const expiry = Math.floor((endTime.getTime() + 14 * 24 * 60 * 60 * 1000) / 1000);
+  
+    await supabase.storage
+      .from('images')
+      .remove([filename]);
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('images')
+      .upload(`${filename}`, image, { upsert: true });
+  
+    if (uploadError) throw uploadError;
+  
+    if (uploadData) {
+      const { data, error } = await supabase.storage
+        .from('images')
+        .createSignedUrl(uploadData.path, expiry);
+
+      if (error) throw error;
+      return data?.signedUrl;
+    }
+    return null;
+  }
+
   async function saveEvent(data: EventFormValues) {
     setIsLoading(true);
     try {
-      let logo = existingEvent?.og_image || "sf.jpg";
-      const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-        data.location
-      )}`;
-
       const eventUrl = existingEvent
         ? existingEvent.event_url
         : await generateUniqueEventUrl(data.event_name);
 
-      const updates = {
+      const event_id = existingEvent?.id || uuidv4();
+      const newImageUrl = await handleImageUpload(event_id, data.image, data.end_time);
+
+      const updates: Partial<Event> & {
+        id: string;
+        event_name: string;
+        description: string | undefined;
+        location: string;
+        start_timestampz: string;
+        end_timestampz: string;
+        event_url: string;
+        location_url: string;
+      } = {
+        id: event_id,
         event_name: data.event_name,
         description: data.description,
         location: data.location,
         start_timestampz: data.start_time.toISOString(),
         end_timestampz: data.end_time.toISOString(),
         event_url: eventUrl,
-        location_url: googleMapsUrl,
-        og_image: logo,
+        location_url: getGoogleMapsUrl(data.location),
       };
+
+      if (newImageUrl || existingEvent) {
+        updates.og_image = newImageUrl || existingEvent?.og_image;
+      }
 
       let { error } = existingEvent
         ? await supabase
@@ -189,6 +234,20 @@ export default function EventForm({
       setIsLoading(false);
     }
   }
+
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles.length > 0) {
+      form.setValue("image", acceptedFiles[0]);
+    }
+  }, [form]);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": []
+    },
+    maxFiles: 1
+  });
 
   if (!isLoaded) return null;
 
@@ -364,6 +423,33 @@ export default function EventForm({
                     />
                   </PopoverContent>
                 </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Event Image</FormLabel>
+                <FormControl>
+                  <div
+                    {...getRootProps()}
+                    className={`p-6 border-2 border-dashed rounded-md text-center cursor-pointer ${
+                      isDragActive ? "border-primary" : "border-gray-300"
+                    }`}
+                  >
+                    <input {...getInputProps()} />
+                    {field.value ? (
+                      <p className="text-sm">File selected: {(field.value as File).name}</p>
+                    ) : isDragActive ? (
+                      <p className="text-sm">Drop the image here ...</p>
+                    ) : (
+                      <p className="text-sm">Drag an image to upload</p>
+                    )}
+                  </div>
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

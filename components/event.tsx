@@ -1,8 +1,5 @@
-/**
- * v0 by Vercel.
- * @see https://v0.dev/t/BRPLPRZdkJi
- * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
- */
+"use client";
+
 import { Database } from "@/types/supabase";
 import Registration from "./registration";
 import { formatEventDates } from "@/utils/dates";
@@ -14,6 +11,7 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -44,6 +42,25 @@ export default function Event({
     return gradientColors[index % gradientColors.length];
   };
 
+  const [imageUrl, setImageUrl] = useState(event.og_image || '/sf.jpg');
+
+  useEffect(() => {
+    const checkImageValidity = async () => {
+      if (event.og_image) {
+        try {
+          const response = await fetch(event.og_image, { method: 'HEAD' });
+          if (!response.ok) {
+            setImageUrl('/sf.jpg'); // Fallback image
+          }
+        } catch (error) {
+          setImageUrl('/sf.jpg'); // Fallback image
+        }
+      }
+    };
+
+    checkImageValidity();
+  }, [event.og_image]);
+
   return (
     <div className="mih-h-dvh text-white p-6 w-full">
       <div className="flex flex-col md:flex-row gap-6">
@@ -51,7 +68,7 @@ export default function Event({
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
               <img
-                src={event.og_image || "/sf.jpg"}
+                src={imageUrl}
                 alt="Event Image"
                 className="w-full h-auto rounded-lg"
               />
