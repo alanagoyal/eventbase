@@ -64,7 +64,8 @@ export default function EventForm({
   const supabase = createClient();
   const [startCalendarOpen, setStartCalendarOpen] = useState(false);
   const [endCalendarOpen, setEndCalendarOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -149,7 +150,7 @@ export default function EventForm({
   }
 
   async function saveEvent(data: EventFormValues) {
-    setIsLoading(true);
+    setIsUpdating(true);
     try {
       const eventUrl = existingEvent
         ? existingEvent.event_url
@@ -167,6 +168,7 @@ export default function EventForm({
         end_timestampz: string;
         event_url: string;
         location_url: string;
+        og_image: string | null;
       } = {
         id: event_id,
         event_name: data.event_name,
@@ -176,11 +178,8 @@ export default function EventForm({
         end_timestampz: data.end_time.toISOString(),
         event_url: eventUrl,
         location_url: getGoogleMapsUrl(data.location),
+        og_image: newImageUrl || existingEvent?.og_image || null,
       };
-
-      if (newImageUrl || existingEvent) {
-        updates.og_image = newImageUrl || existingEvent?.og_image;
-      }
 
       let { error } = existingEvent
         ? await supabase
@@ -194,24 +193,25 @@ export default function EventForm({
           });
 
       if (error) throw error;
+
       toast({
         description: existingEvent ? "Event updated!" : "Event created!",
       });
 
       router.push(`/${updates.event_url}`);
+      router.refresh();
     } catch (error) {
-      console.error(error);
       toast({
         variant: "destructive",
         description: "Failed to save event. Please try again.",
       });
     } finally {
-      setIsLoading(false);
+      setIsUpdating(false);
     }
   }
 
   async function deleteEvent() {
-    setIsLoading(true);
+    setIsDeleting(true);
     try {
       const { error } = await supabase
         .from("events")
@@ -231,7 +231,7 @@ export default function EventForm({
         description: "Failed to delete event. Please try again.",
       });
     } finally {
-      setIsLoading(false);
+      setIsDeleting(false);
     }
   }
 
@@ -455,8 +455,8 @@ export default function EventForm({
             )}
           />
           <div className="w-full space-y-2">
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? (
+            <Button type="submit" className="w-full" disabled={isUpdating || isDeleting}>
+              {isUpdating ? (
                 <>
                   <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />
                   {existingEvent ? "Updating..." : "Creating..."}
@@ -471,10 +471,10 @@ export default function EventForm({
               <Button
                 variant="ghost"
                 className="w-full"
-                disabled={isLoading}
+                disabled={isUpdating || isDeleting}
                 onClick={deleteEvent}
               >
-                {isLoading ? (
+                {isDeleting ? (
                   <>
                     <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />
                     Deleting...

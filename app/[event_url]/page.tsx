@@ -1,6 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import MagicLink from "@/components/magic-link";
 import Event from "@/components/event";
+import { revalidatePath } from 'next/cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +11,8 @@ export default async function EventPage({
   params: { event_url: string };
 }) {
   const supabase = createClient();
+
+  revalidatePath(`/${params.event_url}`);
 
   const {
     data: { user },
