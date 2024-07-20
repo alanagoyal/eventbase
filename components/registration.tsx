@@ -59,7 +59,7 @@ export default function Registration({
             <strong>You are the host of this event</strong>
           </h3>
           <Link href={`/edit/${event.event_url}`} passHref>
-            <Button className="w-full mt-3 bg-white text-black hover:bg-gray-100">
+            <Button className="w-full mt-3">
               Edit Event
             </Button>
           </Link>
@@ -74,7 +74,7 @@ export default function Registration({
             <h3 className="text-base">
               <strong>You&apos;re in!</strong> Let us know if you can&apos;t make it anymore
             </h3>
-            <Button className="mt-3 bg-white text-black hover:bg-gray-100" onClick={() => removeGuest(guest.email!)}>
+            <Button className="mt-3" onClick={() => removeGuest(guest.email!)}>
               Can&apos;t Attend
             </Button>
           </div>
@@ -87,7 +87,7 @@ export default function Registration({
             </h3>
             <Dialog>
               <DialogTrigger asChild>
-                <Button className="mt-3 bg-white text-black hover:bg-gray-100">Register</Button>
+                <Button className="mt-3">Register</Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
