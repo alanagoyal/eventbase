@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: siteConfig.name,
   description: siteConfig.description,
+  openGraph: {
+    images: ['/api/og'],
+  },
 };
 
 export default async function RootLayout({
