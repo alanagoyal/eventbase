@@ -10,9 +10,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { useState, useEffect } from 'react';
-import { createClient } from "@/utils/supabase/client";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -49,13 +46,11 @@ export default function Event({
         <div className="md:w-1/2 lg:w-1/3 hidden md:block">
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
-              {event.og_image && (
-                <img
-                  src={event.og_image}
-                  alt="Event Image"
-                  className="w-full h-auto rounded-lg"
-                />
-              )}
+              <img
+                src={event.og_image || "/sf.jpg"}
+                alt="Event Image"
+                className="w-full h-auto rounded-lg"
+              />
             </CardHeader>
             <CardContent>
               <div>

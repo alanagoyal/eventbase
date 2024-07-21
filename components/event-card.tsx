@@ -27,25 +27,7 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
   );
   
   const eventUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${event.event_url}`;
-
-  const [imageUrl, setImageUrl] = useState(event.og_image || '/sf.jpg');
-
-  useEffect(() => {
-    const checkImageValidity = async () => {
-      if (event.og_image) {
-        try {
-          const response = await fetch(event.og_image, { method: 'HEAD' });
-          if (!response.ok) {
-            setImageUrl('/sf.jpg'); 
-          }
-        } catch (error) {
-          setImageUrl('/sf.jpg'); 
-        }
-      }
-    };
-
-    checkImageValidity();
-  }, [event.og_image]);
+  const imageUrl = event.og_image || "/sf.jpg";
 
   return (
     <Link href={eventUrl} className="w-full block">
