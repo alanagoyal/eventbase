@@ -2,8 +2,36 @@ import { createClient } from "@/utils/supabase/server";
 import MagicLink from "@/components/magic-link";
 import Event from "@/components/event";
 import { revalidatePath } from 'next/cache';
+import { Metadata } from "next";
+import { Database } from "@/types/supabase";
 
 export const dynamic = 'force-dynamic';
+type Event = Database["public"]["Tables"]["events"]["Row"];
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { event_url: string };
+}): Promise<Metadata> {
+  const supabase = createClient();
+  const event_url = params.event_url;
+
+  const { data: event } = await supabase
+    .from("events")
+    .select("*")
+    .eq("event_url", event_url)
+    .single();
+
+
+  return {
+    title: `You're invited to ${event?.event_name}`,
+    openGraph: {
+      images: [
+        `/api/og/?id=${encodeURIComponent(event_url)}`,
+      ],
+    },
+  };
+}
 
 export default async function EventPage({
   params,
