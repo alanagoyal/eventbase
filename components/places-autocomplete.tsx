@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   FormControl,
@@ -9,12 +9,16 @@ import {
 } from "@/components/ui/form";
 import usePlacesAutocomplete from "use-places-autocomplete";
 import { UseFormReturn } from "react-hook-form";
+import { Database } from "@/types/supabase";
+
+type Event = Database["public"]["Tables"]["events"]["Row"];
 
 interface PlacesAutocompleteProps {
   form: UseFormReturn<any>;
+  existingEvent?: Event;
 }
 
-export function PlacesAutocomplete({ form }: PlacesAutocompleteProps) {
+export function PlacesAutocomplete({ form, existingEvent }: PlacesAutocompleteProps) {
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -26,41 +30,29 @@ export function PlacesAutocomplete({ form }: PlacesAutocompleteProps) {
     clearSuggestions,
   } = usePlacesAutocomplete({
     debounce: 300,
+    defaultValue: existingEvent?.location || "",
   });
 
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (status !== "OK") return;
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (status !== "OK") return;
 
-      switch (e.key) {
-        case "ArrowDown":
-          e.preventDefault();
-          setSelectedIndex(prev => (prev < data.length - 1 ? prev + 1 : prev));
-          break;
-        case "ArrowUp":
-          e.preventDefault();
-          setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
-          break;
-        case "Enter":
-          e.preventDefault();
-          if (selectedIndex >= 0) {
-            handleSelect(data[selectedIndex]);
-          }
-          break;
-      }
-    };
-
-    const inputElement = inputRef.current;
-    if (inputElement) {
-      inputElement.addEventListener("keydown", handleKeyDown);
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedIndex(prev => (prev < data.length - 1 ? prev + 1 : prev));
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (selectedIndex >= 0) {
+          handleSelect(data[selectedIndex]);
+        }
+        break;
     }
-
-    return () => {
-      if (inputElement) {
-        inputElement.removeEventListener("keydown", handleKeyDown);
-      }
-    };
-  }, [status, data, selectedIndex]);
+  };
 
   const handleSelect = ({ description }: { description: string }) => {
     setValue(description, false);
@@ -87,6 +79,7 @@ export function PlacesAutocomplete({ form }: PlacesAutocompleteProps) {
                 setValue(e.target.value);
                 field.onChange(e);
               }}
+              onKeyDown={handleKeyDown}
             />
           </FormControl>
           {status === "OK" && (

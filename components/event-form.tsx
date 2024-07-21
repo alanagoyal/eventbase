@@ -319,7 +319,7 @@ export default function EventForm({
               </FormItem>
             )}
           />
-          <PlacesAutocomplete form={form} />
+          <PlacesAutocomplete form={form} existingEvent={existingEvent} />
           <FormField
             control={form.control}
             name="start_time"
