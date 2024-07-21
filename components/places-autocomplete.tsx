@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   FormControl,
@@ -15,7 +15,8 @@ interface PlacesAutocompleteProps {
 }
 
 export function PlacesAutocomplete({ form }: PlacesAutocompleteProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const {
     ready,
@@ -25,15 +26,46 @@ export function PlacesAutocomplete({ form }: PlacesAutocompleteProps) {
     clearSuggestions,
   } = usePlacesAutocomplete({
     debounce: 300,
-    defaultValue: form.getValues('location'),
   });
 
-  const handleSelect = async (address: string) => {
-    setValue(address, false);
-    clearSuggestions();
-    setIsOpen(false);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (status !== "OK") return;
 
-    form.setValue('location', address);
+      switch (e.key) {
+        case "ArrowDown":
+          e.preventDefault();
+          setSelectedIndex(prev => (prev < data.length - 1 ? prev + 1 : prev));
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          setSelectedIndex(prev => (prev > 0 ? prev - 1 : prev));
+          break;
+        case "Enter":
+          e.preventDefault();
+          if (selectedIndex >= 0) {
+            handleSelect(data[selectedIndex]);
+          }
+          break;
+      }
+    };
+
+    const inputElement = inputRef.current;
+    if (inputElement) {
+      inputElement.addEventListener("keydown", handleKeyDown);
+    }
+
+    return () => {
+      if (inputElement) {
+        inputElement.removeEventListener("keydown", handleKeyDown);
+      }
+    };
+  }, [status, data, selectedIndex]);
+
+  const handleSelect = ({ description }: { description: string }) => {
+    setValue(description, false);
+    clearSuggestions();
+    form.setValue("location", description);
   };
 
   return (
@@ -43,36 +75,35 @@ export function PlacesAutocomplete({ form }: PlacesAutocompleteProps) {
       render={({ field }) => (
         <FormItem className="w-full">
           <FormLabel htmlFor="location">Location</FormLabel>
-          <div className="relative">
-            <FormControl>
-              <Input
-                {...field}
-                id="location"
-                value={value}
-                onChange={(e) => {
-                  setValue(e.target.value);
-                  field.onChange(e.target.value);
-                  setIsOpen(true);
-                }}
-                disabled={!ready}
-                placeholder="Search for a location..."
-                className="w-full"
-              />
-            </FormControl>
-            {isOpen && status === "OK" && (
-              <ul className="absolute z-10 w-full bg-white border border-gray-300 mt-1 max-h-60 overflow-auto rounded-md shadow-lg">
-                {data.map(({ place_id, description }) => (
-                  <li
-                    key={place_id}
-                    onClick={() => handleSelect(description)}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
-                  >
-                    {description}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <FormControl>
+            <Input
+              {...field}
+              ref={inputRef}
+              id="location"
+              className="w-full text-sm"
+              disabled={!ready}
+              value={value}
+              onChange={(e) => {
+                setValue(e.target.value);
+                field.onChange(e);
+              }}
+            />
+          </FormControl>
+          {status === "OK" && (
+            <ul className="mt-2 bg-white border rounded-md shadow-lg">
+              {data.map((suggestion, index) => (
+                <li
+                  key={suggestion.place_id}
+                  className={`p-2 cursor-pointer hover:bg-gray-100 text-sm ${
+                    index === selectedIndex ? "bg-gray-100" : ""
+                  }`}
+                  onClick={() => handleSelect(suggestion)}
+                >
+                  {suggestion.description}
+                </li>
+              ))}
+            </ul>
+          )}
           <FormMessage />
         </FormItem>
       )}
