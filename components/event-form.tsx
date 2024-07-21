@@ -31,24 +31,25 @@ import { Spinner } from "./spinner";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
+import { Switch } from "./ui/switch";
+import { Label } from "./ui/label";
+import Image from 'next/image';
 
 const libraries: Libraries = ["places"];
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
-const eventFormSchema = z
-  .object({
-    event_name: z.string().min(1, "Event name is required"),
-    description: z.string().optional(),
-    location: z.string().min(1, "Location is required"),
-    start_time: z.date().min(new Date(), "Start time must be in the future"),
-    end_time: z.date().min(new Date(), "End time must be in the future"),
-    image: z.any().optional(),
-  })
-  .refine((data) => data.end_time > data.start_time, {
-    message: "End time must be after start time",
-    path: ["end_time"],
-  });
+const eventFormSchema = z.object({
+  event_name: z.string().min(1, "Event name is required"),
+  description: z.string().optional(),
+  location: z.string().min(1, "Location is required"),
+  start_time: z.date().min(new Date(), "Start time must be in the future"),
+  end_time: z.date().min(new Date(), "End time must be in the future"),
+  image: z.any().optional(),
+}).refine((data) => data.end_time > data.start_time, {
+  message: "End time must be after start time",
+  path: ["end_time"],
+});
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
 type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -66,6 +67,9 @@ export default function EventForm({
   const [endCalendarOpen, setEndCalendarOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [useAiImage, setUseAiImage] = useState(false);
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(existingEvent?.og_image || null);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -122,31 +126,58 @@ export default function EventForm({
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
   }
   
-  async function handleImageUpload(event_id: string, image: File | undefined, endTime: Date): Promise<string | null> {
-    if (!(image instanceof File)) return null;
-  
-    const filename = `${event_id}`;
-    const expiry = Math.floor((endTime.getTime() + 14 * 24 * 60 * 60 * 1000) / 1000);
-  
-    await supabase.storage
-      .from('images')
-      .remove([filename]);
-
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('images')
-      .upload(`${filename}`, image, { upsert: true });
-  
-    if (uploadError) throw uploadError;
-  
-    if (uploadData) {
-      const { data, error } = await supabase.storage
+  async function handleImageUpload(event_id: string, event_name: string, image: File | undefined, endTime: Date, description: string): Promise<string | null> {
+    if (useAiImage) {
+      setIsGeneratingImage(true);
+      try {
+        const response = await fetch("/generate-image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ event_id, event_name, description, endTime: endTime.toISOString() }),
+        });
+        
+        if (!response.ok) {
+          throw new Error("Failed to generate and upload AI image");
+        }
+        
+        const { imageUrl } = await response.json();
+        return imageUrl;
+      } catch (error) {
+        console.error("Error generating or uploading AI image:", error);
+        toast({
+          variant: "destructive",
+          description: "Failed to generate or upload AI image. Please try again.",
+        });
+        return null;
+      } finally {
+        setIsGeneratingImage(false);
+      }
+    } else {
+      if (!(image instanceof File)) return null;
+    
+      const filename = `${event_id}`;
+      const expiry = Math.floor((endTime.getTime() + 14 * 24 * 60 * 60 * 1000) / 1000);
+    
+      await supabase.storage
         .from('images')
-        .createSignedUrl(uploadData.path, expiry);
+        .remove([filename]);
 
-      if (error) throw error;
-      return data?.signedUrl;
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('images')
+        .upload(`${filename}`, image, { upsert: true });
+    
+      if (uploadError) throw uploadError;
+    
+      if (uploadData) {
+        const { data, error } = await supabase.storage
+          .from('images')
+          .createSignedUrl(uploadData.path, expiry);
+
+        if (error) throw error;
+        return data?.signedUrl;
+      }
+      return null;
     }
-    return null;
   }
 
   async function saveEvent(data: EventFormValues) {
@@ -157,7 +188,7 @@ export default function EventForm({
         : await generateUniqueEventUrl(data.event_name);
 
       const event_id = existingEvent?.id || uuidv4();
-      const newImageUrl = await handleImageUpload(event_id, data.image, data.end_time);
+      const newImageUrl = await handleImageUpload(event_id, data.event_name, data.image, data.end_time, data.description || '');
 
       const updates: Partial<Event> & {
         id: string;
@@ -433,23 +464,54 @@ export default function EventForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Event Image</FormLabel>
-                <FormControl>
-                  <div
-                    {...getRootProps()}
-                    className={`p-6 border-2 border-dashed rounded-md text-center cursor-pointer ${
-                      isDragActive ? "border-primary" : "border-gray-300"
-                    }`}
-                  >
-                    <input {...getInputProps()} />
-                    {field.value ? (
-                      <p className="text-sm">File selected: {(field.value as File).name}</p>
-                    ) : isDragActive ? (
-                      <p className="text-sm">Drop the image here ...</p>
-                    ) : (
-                      <p className="text-sm">Drag an image to upload</p>
-                    )}
+                <div className="space-y-4">
+                  {currentImage && (
+                    <div className="relative w-full h-48">
+                      <Image
+                        src={currentImage}
+                        alt="Current event image"
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-md"
+                      />
+                    </div>
+                  )}
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Switch
+                      checked={useAiImage}
+                      onCheckedChange={setUseAiImage}
+                      id="use-ai-image"
+                    />
+                    <Label htmlFor="use-ai-image">Generate with AI</Label>
                   </div>
-                </FormControl>
+                  <FormControl>
+                    {useAiImage ? (
+                      <div className="text-sm text-muted-foreground">
+                        {isGeneratingImage ? (
+                          "Generating image... This may take a few moments."
+                        ) : (
+                          "AI will generate an image based on your event description."
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        {...getRootProps()}
+                        className={`p-6 border-2 border-dashed rounded-md text-center cursor-pointer ${
+                          isDragActive ? "border-primary" : "border-gray-300"
+                        }`}
+                      >
+                        <input {...getInputProps()} />
+                        {field.value ? (
+                          <p className="text-sm">File selected: {(field.value as File).name}</p>
+                        ) : isDragActive ? (
+                          <p className="text-sm">Drop the image here ...</p>
+                        ) : (
+                          <p className="text-sm">Drag and drop or click to upload</p>
+                        )}
+                      </div>
+                    )}
+                  </FormControl>
+                </div>
                 <FormMessage />
               </FormItem>
             )}
@@ -469,7 +531,7 @@ export default function EventForm({
             </Button>
             {existingEvent && (
               <Button
-                variant="ghost"
+                variant="secondary"
                 className="w-full"
                 disabled={isUpdating || isDeleting}
                 onClick={deleteEvent}
