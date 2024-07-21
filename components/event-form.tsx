@@ -69,7 +69,6 @@ export default function EventForm({
   const [isDeleting, setIsDeleting] = useState(false);
   const [useAiImage, setUseAiImage] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [currentImage, setCurrentImage] = useState<string | null>(existingEvent?.og_image || null);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -284,16 +283,14 @@ export default function EventForm({
   if (!isLoaded) return null;
 
   return (
-    <div className="flex flex-col items-start min-h-dvh p-12 md:p-6 w-full md:w-1/2">
+    <div className="flex flex-col items-center min-h-dvh p-12 md:p-6 w-full max-w-2xl">
       <h2 className="text-2xl font-bold py-4">
         {existingEvent ? "Edit Event" : "New Event"}
       </h2>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(saveEvent)}
-          className={`flex-col justify-between items-center ${
-            existingEvent ? "mx-auto w-full" : "w-full md:max-w-md"
-          } pb-2 space-y-4`}
+          className="flex-col justify-between items-center mx-auto w-full space-y-4"
           autoComplete="off"
         >
           <FormField
@@ -464,12 +461,22 @@ export default function EventForm({
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="image">Event Image</FormLabel>
+                <div className="flex justify-between items-center">
+                  <FormLabel htmlFor="image">Event Image</FormLabel>
+                  <div className="flex items-center space-x-2">
+                    <Label htmlFor="image" className="text-xs font-normal text-muted-foreground">Generate with AI</Label>
+                    <Switch
+                      checked={useAiImage}
+                      onCheckedChange={setUseAiImage}
+                      id="image"
+                    />
+                  </div>
+                </div>
                 <div className="space-y-4">
-                  {currentImage && (
+                  {existingEvent?.og_image && (
                     <div className="relative w-full h-48">
                       <Image
-                        src={currentImage}
+                        src={existingEvent?.og_image}
                         alt="Current event image"
                         layout="fill"
                         objectFit="cover"
@@ -477,14 +484,6 @@ export default function EventForm({
                       />
                     </div>
                   )}
-                  <div className="flex items-center space-x-2 mb-2">
-                    <Switch
-                      checked={useAiImage}
-                      onCheckedChange={setUseAiImage}
-                      id="image"
-                    />
-                    <Label htmlFor="image">Generate with AI</Label>
-                  </div>
                   <FormControl>
                     {useAiImage ? (
                       <div className="text-sm text-muted-foreground">
