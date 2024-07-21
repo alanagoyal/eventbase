@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // return the user to an error page with some instructions
   const errorUrl = siteUrl + "/error"
   return NextResponse.redirect(errorUrl)
 }

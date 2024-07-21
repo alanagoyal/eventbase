@@ -11,17 +11,37 @@ export async function GET(request: Request) {
         <div
           style={{
             fontSize: 100,
-            color: "white",
-            background: "black",
+            background: "white",
             width: "100%",
             height: "100%",
-            padding: "50px 200px",
-            textAlign: "center",
-            justifyContent: "center",
+            display: "flex",
             alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          Eventbase 🎉
+          <div
+            style={{
+              padding: "50px 200px",
+              textAlign: "center",
+              fontSize: "120px",
+              fontWeight: "bold",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <span
+              style={{
+                backgroundImage: "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                color: "transparent",
+              }}
+            >
+              Event
+            </span>
+            <span style={{ color: "black" }}>base</span>
+          </div>
         </div>
       ),
       {

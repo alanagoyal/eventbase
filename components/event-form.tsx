@@ -105,7 +105,6 @@ export default function EventForm({
   async function generateUniqueEventUrl(eventName: string): Promise<string> {
     let eventUrl = slugify(eventName, { lower: true, strict: true });
 
-    // Check if the event URL already exists
     const { data: existingEvents, error: fetchError } = await supabase
       .from("events")
       .select("event_url")
@@ -113,7 +112,6 @@ export default function EventForm({
 
     if (fetchError) throw fetchError;
 
-    // If the URL already exists, append a random UUID
     if (existingEvents && existingEvents.length > 0) {
       eventUrl = `${eventUrl}-${uuidv4().slice(0, 8)}`;
     }
