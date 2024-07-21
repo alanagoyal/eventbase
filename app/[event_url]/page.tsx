@@ -20,8 +20,15 @@ export default async function EventPage({
 
   if (!user) {
     return (
-      <div className="flex w-full h-screen items-center justify-center">
-        <MagicLink redirect={`/${params.event_url}`} />
+      <div className="min-h-[80vh] flex items-center justify-center pt-16 px-4 sm:px-6 md:px-8">
+        <div className="w-full max-w-md flex flex-col space-y-6 p-4">
+          <div className="flex flex-col items-center space-y-2">
+            <h1 className="text-xl md:text-2xl font-semibold tracking-tight pb-4">
+              Sign in to view event
+            </h1>
+            <MagicLink redirect={`/${params.event_url}`} />
+          </div>
+        </div>
       </div>
     );
   }
