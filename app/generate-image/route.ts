@@ -6,6 +6,9 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+export const maxDuration = 30;
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   try {
     const { event_id, event_name, description, endTime } = await req.json();
@@ -21,8 +24,6 @@ export async function POST(req: Request) {
     });
 
     const imageUrl = image.data[0]?.url;
-
-    console.log(imageUrl);
 
     if (!imageUrl) {
       throw new Error("Failed to generate image URL");
