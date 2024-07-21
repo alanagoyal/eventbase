@@ -255,6 +255,7 @@ export default function EventForm({
       });
 
       router.push("/events");
+      router.refresh();
     } catch (error) {
       console.error(error);
       toast({
@@ -463,7 +464,7 @@ export default function EventForm({
             name="image"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Event Image</FormLabel>
+                <FormLabel htmlFor="image">Event Image</FormLabel>
                 <div className="space-y-4">
                   {currentImage && (
                     <div className="relative w-full h-48">
@@ -480,9 +481,9 @@ export default function EventForm({
                     <Switch
                       checked={useAiImage}
                       onCheckedChange={setUseAiImage}
-                      id="use-ai-image"
+                      id="image"
                     />
-                    <Label htmlFor="use-ai-image">Generate with AI</Label>
+                    <Label htmlFor="image">Generate with AI</Label>
                   </div>
                   <FormControl>
                     {useAiImage ? (
