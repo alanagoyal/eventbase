@@ -3,12 +3,8 @@
 import { Database } from "@/types/supabase";
 import Registration from "./registration";
 import { formatEventDates } from "@/utils/dates";
-import { ExternalLink, MapPinIcon, UserIcon } from "lucide-react";
-import {
-  Card,
-  CardHeader,
-  CardContent,
-} from "@/components/ui/card";
+import { ExternalLink, MapPinIcon, UserIcon, Calendar } from "lucide-react";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -34,10 +30,37 @@ export default function Event({
 
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-  const gradientColors = ['#FF9A8B', '#FF6A88', '#FF99AC', '#cd80ff'];
+  const gradientColors = ["#FF9A8B", "#FF6A88", "#FF99AC", "#cd80ff"];
 
   const getGradientColor = (index: number) => {
     return gradientColors[index % gradientColors.length];
+  };
+
+  const createGoogleCalendarLink = () => {
+    if (
+      !event.start_timestampz ||
+      !event.end_timestampz ||
+      !event.event_name ||
+      !event.location
+    ) {
+      return null;
+    }
+
+    const startDate = new Date(event.start_timestampz)
+      .toISOString()
+      .replace(/-|:|\.\d\d\d/g, "");
+    const endDate = new Date(event.end_timestampz)
+      .toISOString()
+      .replace(/-|:|\.\d\d\d/g, "");
+    const encodedDetails = encodeURIComponent(
+      `${event.description || ""}\n\nLocation: ${event.location}`
+    );
+
+    return `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      event.event_name
+    )}&dates=${startDate}/${endDate}&details=${encodedDetails}&location=${encodeURIComponent(
+      event.location
+    )}`;
   };
 
   return (
@@ -56,7 +79,10 @@ export default function Event({
               <div>
                 <h2 className="text-lg font-semibold">Hosted By</h2>
                 <div className="flex items-center mt-2">
-                  <UserIcon className="w-6 h-6" style={{ color: getGradientColor(0) }} />
+                  <UserIcon
+                    className="w-6 h-6"
+                    style={{ color: getGradientColor(0) }}
+                  />
                   <a
                     href={`mailto:${host.email}`}
                     className="ml-2 hover:underline"
@@ -70,10 +96,11 @@ export default function Event({
                   <h2 className="text-lg font-semibold">Confirmed Guests</h2>
                   {allRsvps.map((rsvp: any, index: number) => (
                     <div key={rsvp.id} className="flex items-center mt-2">
-                      <UserIcon className="w-6 h-6" style={{ color: getGradientColor(index + 1) }} />
-                      <span className="ml-2">
-                        {rsvp.guest.full_name}
-                      </span>
+                      <UserIcon
+                        className="w-6 h-6"
+                        style={{ color: getGradientColor(index + 1) }}
+                      />
+                      <span className="ml-2">{rsvp.guest.full_name}</span>
                     </div>
                   ))}
                 </div>
@@ -86,15 +113,27 @@ export default function Event({
             <CardHeader>
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
+            
+                  
               </div>
               <div className="flex items-center mt-4">
                 <div className="flex flex-col items-center">
                   <span className="text-base font-semibold">{month}</span>
                   <span className="text-base font-bold">{day}</span>
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 flex-grow">
+                {createGoogleCalendarLink() && (
+                  <Link
+                    href={createGoogleCalendarLink()!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:underline"
+                    title="Add to Google Calendar"
+                  >
                   <p className="font-medium">{formattedDate}</p>
                   <p className="text-muted-foreground">{formattedTime}</p>
+                  </Link>
+                )}
                 </div>
               </div>
               <div className="flex items-center mt-4">
@@ -107,7 +146,6 @@ export default function Event({
                     className="flex items-center hover:underline ml-4"
                   >
                     {event.location}
-                    <ExternalLink className="w-4 h-4 ml-1" />
                   </Link>
                 ) : (
                   <p>{event.location}</p>
@@ -150,7 +188,6 @@ export default function Event({
                     className="flex items-center hover:underline"
                   >
                     {event.location}
-                    <ExternalLink className="w-4 h-4 ml-1" />
                   </Link>
                 ) : (
                   <p>{event.location}</p>
