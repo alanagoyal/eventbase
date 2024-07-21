@@ -353,7 +353,7 @@ export default function EventForm({
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent>
+                  <PopoverContent className="w-auto" align="end" side="top">
                     <Calendar
                       className="p-0"
                       mode="single"
@@ -421,7 +421,7 @@ export default function EventForm({
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent>
+                  <PopoverContent className="w-auto" align="end"side="top">
                     <Calendar
                       className="p-0"
                       mode="single"
