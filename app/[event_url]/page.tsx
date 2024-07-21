@@ -27,7 +27,7 @@ export async function generateMetadata({
     title: `You're invited to ${event?.event_name}`,
     openGraph: {
       images: [
-        `/api/og/?id=${encodeURIComponent(event_url)}`,
+        `/api/og/?event_url=${encodeURIComponent(event_url)}`,
       ],
     },
   };
