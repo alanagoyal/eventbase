@@ -4,19 +4,17 @@ import Link from "next/link";
 
 export default function ErrorPage() {
   return (
-    <div
-      className="w-full px-4 flex justify-center items-center flex-col mih-h-dvh"
-      style={{ marginTop: "-100px" }}
-    >
-      <AlertCircle
-        style={{ width: "20px", height: "20px", marginBottom: "16px" }}
-      />
-      <h1 className="text-2xl text-center font-bold mb-4">
-        Uh oh! An error occurred
-      </h1>
-      <Link className="flex justify-center pt-2" href="/">
-        <Button variant="outline">Back Home</Button>
-      </Link>
+    <div className="min-h-[80vh] flex items-center justify-center pt-16">
+    <div className="w-full max-w-md flex flex-col space-y-6 p-4">
+      <div className="flex flex-col items-center space-y-2">
+        <h1 className="text-xl md:text-2xl font-semibold tracking-tight">
+          Uh oh! An error occurred
+        </h1>
+        <Link href="/">
+          <Button variant="outline">Back Home</Button>
+        </Link>
+      </div>
     </div>
+  </div>
   );
 }

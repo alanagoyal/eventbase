@@ -18,7 +18,6 @@ export default async function EditEventPage({ params }: { params: { event_url: s
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
-    // Handle unauthenticated user - redirect to login or show error
     redirect("/login");
   }
 
@@ -33,7 +32,6 @@ export default async function EditEventPage({ params }: { params: { event_url: s
   }
 
   if (guest.id !== event.created_by) {
-    // Handle unauthorized access - only the event creator can edit
     redirect("/error");
   }
 
