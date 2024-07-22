@@ -109,56 +109,68 @@ export default function Event({
           </Card>
         </div>
         <div className="md:w-2/3">
+          <div className="md:hidden pt-2">
+            <img
+              src={event.og_image || "/sf.jpg"}
+              alt="Event Image"
+              className="w-full h-auto rounded-lg"
+            />
+          </div>
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
-            
-                  
               </div>
               <div className="flex items-center mt-4">
-                <div className="flex flex-col items-center">
-                  <span className="text-base font-semibold">{month}</span>
-                  <span className="text-base font-bold">{day}</span>
+                <div className="w-6 flex-shrink-0 flex flex-col items-center text-center">
+                  <span className="text-sm font-semibold">{month}</span>
+                  <span className="text-sm font-bold">{day}</span>
                 </div>
-                <div className="ml-4 flex-grow">
-                {createGoogleCalendarLink() && (
+                <div className="ml-6 flex-grow">
+                  {createGoogleCalendarLink() && (
+                    <Link
+                      href={createGoogleCalendarLink()!}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                      title="Add to Google Calendar"
+                    >
+                      <p className="font-medium">{formattedDate}</p>
+                      <p className="text-muted-foreground">{formattedTime}</p>
+                    </Link>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center mt-4">
+                <MapPinIcon className="w-6 h-6 flex-shrink-0" />
+                <div className="ml-6 flex-grow">
+                  {event.location_url ? (
+                    <Link
+                      href={event.location_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:underline"
+                    >
+                      {event.location}
+                    </Link>
+                  ) : (
+                    <p>{event.location}</p>
+                  )}
+                </div>
+              </div>
+              <div className="flex items-center mt-4 md:hidden">
+                <UserIcon className="w-6 h-6 text-pink-300 flex-shrink-0" />
+                <div className="ml-6 flex-grow">
                   <Link
-                    href={createGoogleCalendarLink()!}
+                    href={`mailto:${host.email}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:underline"
-                    title="Add to Google Calendar"
+                    title="Email Host"
                   >
-                  <p className="font-medium">{formattedDate}</p>
-                  <p className="text-muted-foreground">{formattedTime}</p>
+                    Hosted by {host.full_name}
                   </Link>
-                )}
                 </div>
-              </div>
-              <div className="flex items-center mt-4">
-                <MapPinIcon className="w-6 h-6 ml-1" />
-                {event.location_url ? (
-                  <Link
-                    href={event.location_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center hover:underline ml-4"
-                  >
-                    {event.location}
-                  </Link>
-                ) : (
-                  <p>{event.location}</p>
-                )}
-              </div>
-              <div className="flex items-center mt-2 md:hidden">
-                <UserIcon className="w-6 h-6 text-pink-300" />
-                <a
-                  href={`mailto:${host.email}`}
-                  className="ml-2 hover:underline"
-                >
-                  {host.full_name}
-                </a>
               </div>
             </CardHeader>
             <CardContent>
