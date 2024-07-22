@@ -6,6 +6,7 @@ import "@/styles/globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { createClient } from "@/utils/supabase/server";
 import { Header } from "@/components/header";
+import { CommandMenu } from "@/components/command-menu";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -62,6 +63,7 @@ export default async function RootLayout({
       >
         <Header guest={guest} />
         {children}
+        <CommandMenu />
         <Toaster />
       </body>
     </html>

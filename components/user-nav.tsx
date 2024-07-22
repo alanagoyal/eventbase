@@ -24,7 +24,7 @@ export default function UserNav({ guest }: { guest: any }) {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "u" && (e.metaKey || e.ctrlKey)) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "u") {
         e.preventDefault();
         setOpen((open) => !open);
       }
@@ -54,7 +54,9 @@ export default function UserNav({ guest }: { guest: any }) {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{guest.full_name}</p>
+            <p className="text-sm font-medium leading-none">
+              {guest.full_name}
+            </p>
             <p className="text-xs leading-none text-muted-foreground">
               {guest.email}
             </p>
@@ -66,24 +68,27 @@ export default function UserNav({ guest }: { guest: any }) {
             <DropdownMenuItem className="cursor-pointer justify-between">
               <div className="flex items-center">
                 <Plus className="mr-2 h-4 w-4" />
-                <span>New Event</span>
+                <span>New</span>
               </div>
+              <p className="text-xs text-muted-foreground">N</p>
             </DropdownMenuItem>
           </Link>
           <Link href="/events">
             <DropdownMenuItem className="cursor-pointer justify-between">
               <div className="flex items-center">
                 <Calendar className="mr-2 h-4 w-4" />
-                <span>All Events</span>
+                <span>Events</span>
               </div>
+              <p className="text-xs text-muted-foreground">E</p>
             </DropdownMenuItem>
           </Link>
           <Link href="/account">
             <DropdownMenuItem className="cursor-pointer justify-between">
               <div className="flex items-center">
                 <User className="mr-2 h-4 w-4" />
-                <span>Your Account</span>
+                <span>Account</span>
               </div>
+              <p className="text-xs text-muted-foreground">A</p>
             </DropdownMenuItem>
           </Link>
         </DropdownMenuGroup>
@@ -96,6 +101,7 @@ export default function UserNav({ guest }: { guest: any }) {
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </div>
+          <p className="text-xs text-muted-foreground">O</p>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
