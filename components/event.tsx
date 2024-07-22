@@ -6,6 +6,7 @@ import { formatEventDates } from "@/utils/dates";
 import { ExternalLink, MapPinIcon, UserIcon, Calendar } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import { Share } from "./share";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -109,17 +110,11 @@ export default function Event({
           </Card>
         </div>
         <div className="md:w-2/3">
-          <div className="md:hidden pt-2">
-            <img
-              src={event.og_image || "/sf.jpg"}
-              alt="Event Image"
-              className="w-full h-auto rounded-lg"
-            />
-          </div>
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
               <div className="flex justify-between items-center">
                 <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
+                {guest.id === host.id && <Share event={event} />}
               </div>
               <div className="flex items-center mt-4">
                 <div className="w-6 flex-shrink-0 flex flex-col items-center text-center">

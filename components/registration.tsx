@@ -116,7 +116,7 @@ export default function Registration({
 
   return (
     <div className="p-4 rounded-lg flex items-center shadow-md" style={{
-      background: "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)"
+      background: "linear-gradient(45deg, rgba(255, 154, 139, 0.7) 12%, rgba(255, 106, 136, 0.7) 24%, rgba(255, 153, 172, 0.7) 31%, rgba(205, 128, 255, 0.7) 100%)"
     }}>
       <Avatar>
         <AvatarFallback className="bg-pink-300">
