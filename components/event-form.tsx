@@ -162,9 +162,8 @@ export default function EventForm({
       } catch (error) {
         console.error("Error generating or uploading AI image:", error);
         toast({
-          variant: "destructive",
           description:
-            "Failed to generate or upload AI image. Please try again.",
+            "Sorry, there was an issue generating your image",
         });
         return null;
       } finally {
@@ -259,8 +258,7 @@ export default function EventForm({
       router.refresh();
     } catch (error) {
       toast({
-        variant: "destructive",
-        description: "Failed to save event. Please try again.",
+        description: "Sorry, there was an issue saving your event",
       });
     } finally {
       setIsUpdating(false);
@@ -285,8 +283,7 @@ export default function EventForm({
     } catch (error) {
       console.error(error);
       toast({
-        variant: "destructive",
-        description: "Failed to delete event. Please try again.",
+        description: "Sorry, there was an issue deleting your event",
       });
     } finally {
       setIsDeleting(false);
@@ -523,8 +520,8 @@ export default function EventForm({
                     {useAiImage ? (
                       <div className="text-sm text-muted-foreground">
                         {isGeneratingImage
-                          ? "Generating image... This may take a few moments."
-                          : "AI will generate an image based on your event description."}
+                          ? "Generating image... this may take a few moments"
+                          : "AI will generate an image based on your event description"}
                       </div>
                     ) : (
                       <div
@@ -570,7 +567,7 @@ export default function EventForm({
                     <FormLabel>Discussion Topics</FormLabel>
                     <FormDescription>
                       If checked, guests will be asked for discussion topics in
-                      their RSVP.
+                      their RSVP
                     </FormDescription>
                   </div>
                 </div>
