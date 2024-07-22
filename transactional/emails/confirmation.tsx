@@ -18,7 +18,7 @@ interface EmailProps {
   formattedTime: string;
 }
 
-const baseUrl = process.env.NEXT_PUBLIC_APP_URL ? `${process.env.NEXT_PUBLIC_APP_URL}` : "";
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ? `${process.env.NEXT_PUBLIC_SITE_URL}` : "";
 
 export default function EmailTemplate({
   eventInfo,
@@ -34,7 +34,7 @@ export default function EmailTemplate({
         <Body className="bg-white my-auto mx-auto font-sans">
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] w-[465px] flex flex-col items-center">
             <Img
-              src={`${eventInfo.og_image}`}
+              src={eventInfo.og_image || `${baseUrl}/sf.jpg`}
               width="400"
               className="max-w-full"
             />
@@ -59,12 +59,12 @@ export default function EmailTemplate({
             <Text className="text-black text-[12px] font-normal text-center p-0 my-5px] mx-0">
               Can't make it anymore?{" "}
               <Link
-                href={`${baseUrl}`}
+                href={`${baseUrl}/${eventInfo.event_url}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-600 no-underline  mx-auto"
               >
-                Please let us know.
+                Please let us know
               </Link>
             </Text>
           </Container>

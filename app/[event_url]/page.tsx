@@ -4,6 +4,7 @@ import Event from "@/components/event";
 import { revalidatePath } from 'next/cache';
 import { Metadata } from "next";
 import { Database } from "@/types/supabase";
+import { redirect } from "next/navigation";
 
 export const dynamic = 'force-dynamic';
 type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -73,10 +74,14 @@ export default async function EventPage({
     .eq("event_url", params.event_url)
     .single();
 
+  if (!event) {
+    redirect("/error");
+  }
+
   const { data: host } = await supabase
     .from("guests")
     .select("*")
-    .eq("id", event?.created_by)
+    .eq("id", event.created_by)
     .single();
 
   const { data: allRsvps } = await supabase

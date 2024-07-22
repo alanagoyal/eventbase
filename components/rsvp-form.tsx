@@ -119,8 +119,7 @@ export default function RsvpForm({
     } catch (error) {
       console.error(error);
       toast({
-        title: "Whoops! Something went wrong...",
-        variant: "destructive",
+        description: "Whoops! Something went wrong...",
       });
     } finally {
       setIsSubmitting(false);
@@ -143,11 +142,6 @@ export default function RsvpForm({
       let { error } = await supabase
         .from("rsvps")
         .upsert(rsvpInfo, { onConflict: "email, event_id" });
-      if (error) throw error;
-
-      if (!rsvpInfo.created_at) {
-        sendMail(rsvpInfo.email, event, formattedDate, formattedTime);
-      }
     } catch (error) {
       throw error;
     } finally {
@@ -155,6 +149,7 @@ export default function RsvpForm({
         description: "Your response has been saved!",
       });
       router.refresh();
+      sendMail(rsvpInfo.email, event, formattedDate, formattedTime);
     }
   }
 
