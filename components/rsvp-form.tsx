@@ -33,7 +33,9 @@ const rsvpFormSchema = z.object({
   dietary_restrictions: z.string().optional(),
   discussion_topics: z.string().optional(),
   comments: z.string().optional(),
-  rsvp_type: z.enum(["yes", "no", "maybe"]),
+  rsvp_type: z.enum(["yes", "no", "maybe"], {
+    required_error: "Please select an RSVP option",
+  }),
 });
 
 export type RsvpFormValues = z.infer<typeof rsvpFormSchema>;
@@ -243,25 +245,27 @@ export default function RsvpForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="discussion_topics"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel htmlFor="discussion_topics">Topics</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    id="discussion_topics"
-                    name="discussion_topics"
-                    className="h-10 p-1"
-                    autoComplete="off"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {event.show_discussion_topics && (
+            <FormField
+              control={form.control}
+              name="discussion_topics"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel htmlFor="discussion_topics">Topics</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      id="discussion_topics"
+                      name="discussion_topics"
+                      className="h-10 p-1"
+                      autoComplete="off"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
           <FormField
             control={form.control}
             name="comments"
@@ -308,7 +312,12 @@ export default function RsvpForm({
           />
           <div className="py-2 w-full">
             <DialogClose asChild>
-              <Button id="submit" type="submit" className="w-full" disabled={isSubmitting}>
+              <Button 
+                id="submit" 
+                type="submit" 
+                className="w-full" 
+                disabled={isSubmitting || !form.formState.isValid}
+              >
                 {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             </DialogClose>

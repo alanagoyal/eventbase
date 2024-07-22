@@ -11,6 +11,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,23 +34,27 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
-import Image from 'next/image';
+import Image from "next/image";
+import { Checkbox } from "./ui/checkbox";
 
 const libraries: Libraries = ["places"];
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
-const eventFormSchema = z.object({
-  event_name: z.string().min(1, "Event name is required"),
-  description: z.string().optional(),
-  location: z.string().min(1, "Location is required"),
-  start_time: z.date().min(new Date(), "Start time must be in the future"),
-  end_time: z.date().min(new Date(), "End time must be in the future"),
-  image: z.any().optional(),
-}).refine((data) => data.end_time > data.start_time, {
-  message: "End time must be after start time",
-  path: ["end_time"],
-});
+const eventFormSchema = z
+  .object({
+    event_name: z.string().min(1, "Event name is required"),
+    description: z.string().optional(),
+    location: z.string().min(1, "Location is required"),
+    start_time: z.date().min(new Date(), "Start time must be in the future"),
+    end_time: z.date().min(new Date(), "End time must be in the future"),
+    image: z.any().optional(),
+    show_discussion_topics: z.boolean().default(false),
+  })
+  .refine((data) => data.end_time > data.start_time, {
+    message: "End time must be after start time",
+    path: ["end_time"],
+  });
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
 type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -85,6 +90,7 @@ export default function EventForm({
           start_time: new Date(existingEvent.start_timestampz!),
           end_time: new Date(existingEvent.end_timestampz!),
           image: undefined,
+          show_discussion_topics: existingEvent.show_discussion_topics || false,
         }
       : {
           event_name: "",
@@ -93,6 +99,7 @@ export default function EventForm({
           start_time: setDefaultTime(18),
           end_time: setDefaultTime(21),
           image: undefined,
+          show_discussion_topics: false,
         },
   });
 
@@ -120,30 +127,44 @@ export default function EventForm({
   }
 
   function getGoogleMapsUrl(location: string): string {
-    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+    return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      location
+    )}`;
   }
-  
-  async function handleImageUpload(event_id: string, event_name: string, image: File | undefined, endTime: Date, description: string): Promise<string | null> {
+
+  async function handleImageUpload(
+    event_id: string,
+    event_name: string,
+    image: File | undefined,
+    endTime: Date,
+    description: string
+  ): Promise<string | null> {
     if (useAiImage) {
       setIsGeneratingImage(true);
       try {
         const response = await fetch("/generate-image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ event_id, event_name, description, endTime: endTime.toISOString() }),
+          body: JSON.stringify({
+            event_id,
+            event_name,
+            description,
+            endTime: endTime.toISOString(),
+          }),
         });
-        
+
         if (!response.ok) {
           throw new Error("Failed to generate and upload AI image");
         }
-        
+
         const { imageUrl } = await response.json();
         return imageUrl;
       } catch (error) {
         console.error("Error generating or uploading AI image:", error);
         toast({
           variant: "destructive",
-          description: "Failed to generate or upload AI image. Please try again.",
+          description:
+            "Failed to generate or upload AI image. Please try again.",
         });
         return null;
       } finally {
@@ -151,23 +172,23 @@ export default function EventForm({
       }
     } else {
       if (!(image instanceof File)) return null;
-    
+
       const filename = `${event_id}`;
-      const expiry = Math.floor((endTime.getTime() + 14 * 24 * 60 * 60 * 1000) / 1000);
-    
-      await supabase.storage
-        .from('images')
-        .remove([filename]);
+      const expiry = Math.floor(
+        (endTime.getTime() + 14 * 24 * 60 * 60 * 1000) / 1000
+      );
+
+      await supabase.storage.from("images").remove([filename]);
 
       const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('images')
+        .from("images")
         .upload(`${filename}`, image, { upsert: true });
-    
+
       if (uploadError) throw uploadError;
-    
+
       if (uploadData) {
         const { data, error } = await supabase.storage
-          .from('images')
+          .from("images")
           .createSignedUrl(uploadData.path, expiry);
 
         if (error) throw error;
@@ -185,7 +206,13 @@ export default function EventForm({
         : await generateUniqueEventUrl(data.event_name);
 
       const event_id = existingEvent?.id || uuidv4();
-      const newImageUrl = await handleImageUpload(event_id, data.event_name, data.image, data.end_time, data.description || '');
+      const newImageUrl = await handleImageUpload(
+        event_id,
+        data.event_name,
+        data.image,
+        data.end_time,
+        data.description || ""
+      );
 
       const updates: Partial<Event> & {
         id: string;
@@ -197,6 +224,7 @@ export default function EventForm({
         event_url: string;
         location_url: string;
         og_image: string | null;
+        show_discussion_topics: boolean;
       } = {
         id: event_id,
         event_name: data.event_name,
@@ -207,6 +235,7 @@ export default function EventForm({
         event_url: eventUrl,
         location_url: getGoogleMapsUrl(data.location),
         og_image: newImageUrl || existingEvent?.og_image || null,
+        show_discussion_topics: data.show_discussion_topics,
       };
 
       let { error } = existingEvent
@@ -264,18 +293,21 @@ export default function EventForm({
     }
   }
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    if (acceptedFiles.length > 0) {
-      form.setValue("image", acceptedFiles[0]);
-    }
-  }, [form]);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      if (acceptedFiles.length > 0) {
+        form.setValue("image", acceptedFiles[0]);
+      }
+    },
+    [form]
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "image/*": []
+      "image/*": [],
     },
-    maxFiles: 1
+    maxFiles: 1,
   });
 
   if (!isLoaded) return null;
@@ -421,7 +453,7 @@ export default function EventForm({
                       </Button>
                     </FormControl>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto" align="end"side="top">
+                  <PopoverContent className="w-auto" align="end" side="top">
                     <Calendar
                       className="p-0"
                       mode="single"
@@ -462,7 +494,12 @@ export default function EventForm({
                 <div className="flex justify-between items-center">
                   <FormLabel htmlFor="image">Event Image</FormLabel>
                   <div className="flex items-center space-x-2">
-                    <Label htmlFor="image" className="text-xs font-normal text-muted-foreground">Generate with AI</Label>
+                    <Label
+                      htmlFor="image"
+                      className="text-xs font-normal text-muted-foreground"
+                    >
+                      Generate with AI
+                    </Label>
                     <Switch
                       checked={useAiImage}
                       onCheckedChange={setUseAiImage}
@@ -485,11 +522,9 @@ export default function EventForm({
                   <FormControl>
                     {useAiImage ? (
                       <div className="text-sm text-muted-foreground">
-                        {isGeneratingImage ? (
-                          "Generating image... This may take a few moments."
-                        ) : (
-                          "AI will generate an image based on your event description."
-                        )}
+                        {isGeneratingImage
+                          ? "Generating image... This may take a few moments."
+                          : "AI will generate an image based on your event description."}
                       </div>
                     ) : (
                       <div
@@ -500,11 +535,15 @@ export default function EventForm({
                       >
                         <input {...getInputProps()} />
                         {field.value ? (
-                          <p className="text-sm">File selected: {(field.value as File).name}</p>
+                          <p className="text-sm">
+                            File selected: {(field.value as File).name}
+                          </p>
                         ) : isDragActive ? (
                           <p className="text-sm">Drop the image here ...</p>
                         ) : (
-                          <p className="text-sm">Drag and drop or click to upload</p>
+                          <p className="text-sm">
+                            Drag and drop or click to upload
+                          </p>
                         )}
                       </div>
                     )}
@@ -514,8 +553,36 @@ export default function EventForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="show_discussion_topics"
+            render={({ field }) => (
+              <FormItem>
+                <Label>Collect Additional Information</Label>
+                <div className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
+                    <FormLabel>Discussion Topics</FormLabel>
+                    <FormDescription>
+                      If checked, guests will be asked for discussion topics in
+                      their RSVP.
+                    </FormDescription>
+                  </div>
+                </div>
+              </FormItem>
+            )}
+          />
           <div className="w-full space-y-2">
-            <Button type="submit" className="w-full" disabled={isUpdating || isDeleting}>
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isUpdating || isDeleting}
+            >
               {isUpdating ? (
                 <>
                   <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />

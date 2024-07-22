@@ -9,7 +9,8 @@ create table "public"."events" (
     "event_url" text not null,
     "location_url" text,
     "start_timestampz" timestamp with time zone,
-    "end_timestampz" timestamp with time zone
+    "end_timestampz" timestamp with time zone,
+    "show_discussion_topics" boolean
 );
 
 
@@ -463,7 +464,7 @@ END
 $function$
 ;
 
-create policy "authenticated users can select, insert, delete 1ffg0oo_0"
+create policy "anyone can view 1ffg0oo_0"
 on "storage"."objects"
 as permissive
 for select
@@ -471,7 +472,15 @@ to public
 using ((bucket_id = 'images'::text));
 
 
-create policy "authenticated users can select, insert, delete 1ffg0oo_1"
+create policy "authenticated users can delete"
+on "storage"."objects"
+as permissive
+for delete
+to public
+using ((bucket_id = 'images'::text));
+
+
+create policy "authenticated users can insert"
 on "storage"."objects"
 as permissive
 for insert
@@ -479,11 +488,11 @@ to public
 with check ((bucket_id = 'images'::text));
 
 
-create policy "authenticated users can select, insert, delete 1ffg0oo_2"
+create policy "authenticated users can update"
 on "storage"."objects"
 as permissive
-for delete
-to public
+for update
+to authenticated
 using ((bucket_id = 'images'::text));
 
 
