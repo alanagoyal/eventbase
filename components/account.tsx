@@ -1,8 +1,6 @@
 "use client";
 
 import { Database } from "@/types/supabase";
-import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AccountTabContent from "./account-form";
 import PasswordTabContent from "./password-form";
@@ -10,14 +8,6 @@ import PasswordTabContent from "./password-form";
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
 export default function Account({ user }: { user: Guests }) {
-  const supabase = createClient();
-  const router = useRouter();
-
-  async function SignOut() {
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  }
 
   return (
     <div className="flex flex-col items-center min-h-dvh p-12 md:p-6 w-full max-w-2xl">
@@ -28,10 +18,10 @@ export default function Account({ user }: { user: Guests }) {
           <TabsTrigger value="password">Password</TabsTrigger>
         </TabsList>
         <TabsContent value="profile">
-          <AccountTabContent user={user} supabase={supabase} />
+          <AccountTabContent user={user} />
         </TabsContent>
         <TabsContent value="password">
-          <PasswordTabContent supabase={supabase} />
+          <PasswordTabContent />
         </TabsContent>
       </Tabs>
     </div>

@@ -23,8 +23,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { createClient } from "@/utils/supabase/client";
 
 type PasswordFormValues = {
   password: string;
@@ -32,7 +30,6 @@ type PasswordFormValues = {
 };
 
 export default function PasswordTabContent() {
-  const supabase = createClient();
   const [isSettingPassword, setIsSettingPassword] = useState(false);
 
   const passwordForm = useForm<PasswordFormValues>({
@@ -56,14 +53,23 @@ export default function PasswordTabContent() {
   const onSetPassword: SubmitHandler<PasswordFormValues> = async (data) => {
     setIsSettingPassword(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: data.password,
+      const response = await fetch('/api/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ password: data.password }),
       });
-      if (error) throw error;
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to set password');
+      }
+
       toast({ description: "Password saved!" });
     } catch (error) {
       console.error(error);
-      toast({ description: "Failed to set password" });
+      toast({ description: error instanceof Error ? error.message : "Failed to set password" });
     } finally {
       setIsSettingPassword(false);
     }
