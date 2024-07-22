@@ -39,7 +39,7 @@ import { Checkbox } from "./ui/checkbox";
 
 const libraries: Libraries = ["places"];
 
-type Guests = Database["public"]["Tables"]["guests"]["Row"];
+type Guest = Database["public"]["Tables"]["guests"]["Row"];
 
 const eventFormSchema = z
   .object({
@@ -63,7 +63,7 @@ export default function EventForm({
   guest,
   existingEvent,
 }: {
-  guest: Guests;
+  guest: Guest;
   existingEvent?: Event;
 }) {
   const router = useRouter();
