@@ -4,6 +4,16 @@ import { getPlaiceholder } from "plaiceholder";
 import { formatInTimeZone } from "date-fns-tz";
 import { format } from "date-fns";
 
+// Add this helper function at the end of the file
+function getComplementaryColor(hex: string): string {
+  const rgb = parseInt(hex.slice(1), 16);
+  const r = (rgb >> 16) & 0xff;
+  const g = (rgb >> 8) & 0xff;
+  const b = rgb & 0xff;
+  const comp = 0xffffff ^ rgb;
+  return `#${comp.toString(16).padStart(6, '0')}`;
+}
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const event_url = searchParams.get("event_url");
@@ -110,6 +120,7 @@ export async function GET(request: Request) {
   const imageUrl = event.og_image || "/sf.jpg";
   let backgroundColor = "#1a1a1a";
   let textColor = "#ffffff";
+  let gradientColor1, gradientColor2;
 
   try {
     const buffer = await fetch(new URL(imageUrl, request.url)).then(
@@ -118,16 +129,25 @@ export async function GET(request: Request) {
     const { color } = await getPlaiceholder(buffer);
     backgroundColor = color.hex;
     
+    // Use the dominant color as gradientColor1
+    gradientColor1 = backgroundColor;
+    
+    // Use a complementary color for gradientColor2
+    gradientColor2 = getComplementaryColor(backgroundColor);
+
     // Calculate the relative luminance of the background color
-    const r = parseInt(backgroundColor.slice(1, 3), 16) / 255;
-    const g = parseInt(backgroundColor.slice(3, 5), 16) / 255;
-    const b = parseInt(backgroundColor.slice(5, 7), 16) / 255;
+    const r = color.r / 255;
+    const g = color.g / 255;
+    const b = color.b / 255;
     const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
 
     // Choose text color based on background luminance
     textColor = luminance > 0.5 ? "#000000" : "#ffffff";
   } catch (error) {
-    console.error("Error extracting dominant color:", error);
+    console.error("Error extracting colors:", error);
+    // Fallback gradient colors
+    gradientColor1 = "#1a1a1a";
+    gradientColor2 = "#000000";
   }
 
   return new ImageResponse(
@@ -137,7 +157,7 @@ export async function GET(request: Request) {
           width: "100%",
           height: "100%",
           display: "flex",
-          backgroundColor: backgroundColor,
+          background: `linear-gradient(135deg, ${gradientColor1}, ${gradientColor2})`,
           fontFamily: "Arial, sans-serif",
           padding: "40px",
         }}
@@ -208,4 +228,15 @@ export async function GET(request: Request) {
       height: 630,
     }
   );
+}
+
+// Helper function to adjust color brightness
+function adjustColor(color: string, amount: number): string {
+  const clamp = (val: number) => Math.min(Math.max(val, 0), 255);
+  const hex = color.replace(/^#/, '');
+  const num = parseInt(hex, 16);
+  const r = clamp((num >> 16) + amount);
+  const g = clamp(((num >> 8) & 0x00FF) + amount);
+  const b = clamp((num & 0x0000FF) + amount);
+  return `#${(1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1)}`;
 }
