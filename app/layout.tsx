@@ -45,6 +45,7 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <title>{siteConfig.name}</title>
+        <link rel="apple-touch-icon" href="/favicon.ico" />
         <meta property="twitter:card" content="summary_large_image"></meta>
         <meta property="twitter:title" content={siteConfig.name}></meta>
         <meta
