@@ -165,8 +165,7 @@ export default function EventForm({
       } catch (error) {
         console.error("Error generating or uploading AI image:", error);
         toast({
-          description:
-            "Sorry, there was an issue generating your image",
+          description: "Sorry, there was an issue generating your image",
         });
         return null;
       } finally {
@@ -200,7 +199,9 @@ export default function EventForm({
     }
   }
 
-  async function generateAiDescription(eventData: Partial<EventFormValues>): Promise<string> {
+  async function generateAiDescription(
+    eventData: Partial<EventFormValues>
+  ): Promise<string> {
     setIsGeneratingDescription(true);
     try {
       const { formattedDate, formattedTime } = formatEventDates(
@@ -454,7 +455,15 @@ export default function EventForm({
                       className="p-0"
                       mode="single"
                       selected={field.value}
-                      onSelect={field.onChange}
+                      onSelect={(newDate) => {
+                        if (newDate) {
+                          const updatedDate = new Date(newDate);
+                          updatedDate.setHours(field.value.getHours());
+                          updatedDate.setMinutes(field.value.getMinutes());
+                          updatedDate.setSeconds(field.value.getSeconds());
+                          field.onChange(updatedDate);
+                        }
+                      }}
                       disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
