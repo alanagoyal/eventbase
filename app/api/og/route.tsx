@@ -110,6 +110,7 @@ export async function GET(request: Request) {
   const eventName = event.event_name;
   const imageUrl = event.og_image || "/sf.jpg";
   let backgroundColor = "#1a1a1a";
+  let textColor = "#ffffff";
 
   try {
     const buffer = await fetch(new URL(imageUrl, request.url)).then(
@@ -117,6 +118,15 @@ export async function GET(request: Request) {
     );
     const { color } = await getPlaiceholder(buffer);
     backgroundColor = color.hex;
+    
+    // Calculate the relative luminance of the background color
+    const r = parseInt(backgroundColor.slice(1, 3), 16) / 255;
+    const g = parseInt(backgroundColor.slice(3, 5), 16) / 255;
+    const b = parseInt(backgroundColor.slice(5, 7), 16) / 255;
+    const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+
+    // Choose text color based on background luminance
+    textColor = luminance > 0.5 ? "#000000" : "#ffffff";
   } catch (error) {
     console.error("Error extracting dominant color:", error);
   }
@@ -128,7 +138,7 @@ export async function GET(request: Request) {
           width: "100%",
           height: "100%",
           display: "flex",
-          backgroundColor: "#f3f4f6",
+          backgroundColor: backgroundColor,
           fontFamily: "Arial, sans-serif",
           padding: "40px",
         }}
@@ -153,19 +163,19 @@ export async function GET(request: Request) {
             >
               Event
             </span>
-            <span style={{ color: "#4b5563" }}>base</span>
+            <span style={{ color: textColor }}>base</span>
           </div>
           <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom: "20px" }}>
-            <div style={{ fontSize: "64px", fontWeight: "bold", color: "#111827", marginBottom: "40px", display: "flex" }}>
+            <div style={{ fontSize: "64px", fontWeight: "bold", color: textColor, marginBottom: "40px", display: "flex" }}>
               {eventName}
             </div>
-            <div style={{ fontSize: "32px", color: "#4b5563", marginBottom: "10px", display: "flex" }}>
+            <div style={{ fontSize: "32px", color: textColor, marginBottom: "10px", display: "flex" }}>
               {formattedDate}
             </div>
-            <div style={{ fontSize: "32px", color: "#4b5563", marginBottom: "30px", display: "flex" }}>
+            <div style={{ fontSize: "32px", color: textColor, marginBottom: "30px", display: "flex" }}>
               {formattedTime} {formattedTimezone}
             </div>
-            <div style={{ fontSize: "32px", color: "#4b5563", display: "flex" }}>
+            <div style={{ fontSize: "32px", color: textColor, display: "flex" }}>
               Hosted by {hostName}
             </div>
           </div>
