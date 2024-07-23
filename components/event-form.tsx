@@ -36,6 +36,7 @@ import { Switch } from "./ui/switch";
 import { Label } from "./ui/label";
 import Image from "next/image";
 import { Checkbox } from "./ui/checkbox";
+import { formatEventDates } from "@/utils/dates";
 
 const libraries: Libraries = ["places"];
 
@@ -148,8 +149,8 @@ export default function EventForm({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            event_id,
-            event_name,
+            eventId: event_id,
+            name: event_name,
             description,
             endTime: endTime.toISOString(),
           }),
@@ -202,12 +203,19 @@ export default function EventForm({
   async function generateAiDescription(eventData: Partial<EventFormValues>): Promise<string> {
     setIsGeneratingDescription(true);
     try {
+      const { formattedDate, formattedTime } = formatEventDates(
+        eventData.start_time!.toISOString(),
+        eventData.end_time!.toISOString()
+      );
+
       const response = await fetch("/generate-description", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          event_name: eventData.event_name,
+          eventName: eventData.event_name,
           location: eventData.location,
+          formattedDate,
+          formattedTime,
         }),
       });
 

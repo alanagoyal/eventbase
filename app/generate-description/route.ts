@@ -8,11 +8,11 @@ initLogger({
 
 export async function POST(req: Request) {
   try {
-    const { event_name, location } = await req.json();
+    const { eventName, location, formattedDate, formattedTime } = await req.json();
     const description = await invoke({
       project_name: "eventbase",
       slug: "generate-description",
-      input: { event_name, location },
+      input: { eventName, location, formattedDate, formattedTime },
       schema: z.string(),
     });
     return new Response(JSON.stringify({ description }), { status: 200 });
