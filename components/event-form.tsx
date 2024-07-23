@@ -531,7 +531,15 @@ export default function EventForm({
                       className="p-0"
                       mode="single"
                       selected={field.value}
-                      onSelect={field.onChange}
+                      onSelect={(newDate) => {
+                        if (newDate) {
+                          const updatedDate = new Date(newDate);
+                          updatedDate.setHours(field.value.getHours());
+                          updatedDate.setMinutes(field.value.getMinutes());
+                          updatedDate.setSeconds(field.value.getSeconds());
+                          field.onChange(updatedDate);
+                        }
+                      }}
                       disabled={(date) => date < new Date("1900-01-01")}
                       initialFocus
                     />
