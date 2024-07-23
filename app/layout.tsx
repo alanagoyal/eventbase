@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   title: siteConfig.name,
   description: siteConfig.description,
   openGraph: {
-    images: ['/api/og'],
+    images: ["/api/og"],
   },
 };
 
@@ -45,7 +45,8 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <title>{siteConfig.name}</title>
-        <link rel="apple-touch-icon" href="/favicon.ico" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta property="twitter:card" content="summary_large_image"></meta>
         <meta property="twitter:title" content={siteConfig.name}></meta>
         <meta
@@ -63,7 +64,11 @@ export default async function RootLayout({
           fontSans.variable
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem={false}
+        >
           <Header guest={guest} />
           {children}
           <CommandMenu />
