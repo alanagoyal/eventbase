@@ -32,8 +32,8 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
   return (
     <Link href={eventUrl} className="w-full block">
       <Card className="w-full hover:shadow-lg transition-shadow duration-300">
-        <div className="flex">
-          <div className="flex-grow">
+        <div className="flex items-stretch">
+          <div className="flex-grow pr-4">
             <CardHeader>
               <p className="text-sm text-muted-foreground">{formattedDate}</p>
               <p className="text-sm text-muted-foreground">{formattedTime}</p>
@@ -60,12 +60,12 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
               <Badge>{event.type === 'attending' ? 'Attending' : 'Hosting'}</Badge>
             </CardFooter>
           </div>
-          <div className="hidden md:flex w-1/3 p-4 items-center justify-center">
-            <div className="w-40 h-40 overflow-hidden">
+          <div className="hidden md:block w-64 flex-shrink-0">
+            <div className="w-full h-full overflow-hidden">
               <img
                 src={imageUrl}
                 alt={event.event_name || 'Event Image'}
-                className="w-full h-full object-cover rounded-md"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>

@@ -215,7 +215,7 @@ export default function EventForm({
         formValues.end_time.toISOString()
       );
       const prompt = `Generate a short 1-2 sentence description for an event named "${formValues.event_name}" at ${formValues.location} on ${formattedDate} at ${formattedTime}.`;
-      
+
       const result = await complete(prompt);
 
       if (result) {
@@ -249,6 +249,8 @@ export default function EventForm({
         data.description || ""
       );
 
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
       const updates: Partial<Event> & {
         id: string;
         event_name: string;
@@ -260,6 +262,7 @@ export default function EventForm({
         location_url: string;
         og_image: string | null;
         show_discussion_topics: boolean;
+        timezone: string;
       } = {
         id: event_id,
         event_name: data.event_name,
@@ -271,6 +274,7 @@ export default function EventForm({
         location_url: getGoogleMapsUrl(data.location),
         og_image: newImageUrl || existingEvent?.og_image || null,
         show_discussion_topics: data.show_discussion_topics,
+        timezone: userTimezone,
       };
 
       let { error } = existingEvent
