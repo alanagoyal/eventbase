@@ -10,7 +10,8 @@ create table "public"."events" (
     "location_url" text,
     "start_timestampz" timestamp with time zone,
     "end_timestampz" timestamp with time zone,
-    "show_discussion_topics" boolean
+    "show_discussion_topics" boolean,
+    "timezone" text
 );
 
 
