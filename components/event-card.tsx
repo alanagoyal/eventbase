@@ -26,7 +26,7 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
     event.end_timestampz!
   );
   
-  const eventUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${event.event_url}`;
+  const eventUrl = `/${event.event_url}`;
   const imageUrl = event.og_image || "/sf.jpg";
 
   return (
