@@ -1,12 +1,13 @@
-import { createClient } from "@/utils/supabase/server";
 import MagicLink from "@/components/magic-link";
 import Event from "@/components/event";
-import { revalidatePath } from 'next/cache';
+import { createClient } from "@/utils/supabase/server";
+import { revalidatePath } from "next/cache";
 import { Metadata } from "next";
 import { Database } from "@/types/supabase";
 import { redirect } from "next/navigation";
+import { getImageColors } from "@/utils/og";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 type Event = Database["public"]["Tables"]["events"]["Row"];
 
 export async function generateMetadata({
@@ -23,13 +24,10 @@ export async function generateMetadata({
     .eq("event_url", event_url)
     .single();
 
-
   return {
     title: `You're invited to ${event?.event_name}`,
     openGraph: {
-      images: [
-        `/api/og/?event_url=${encodeURIComponent(event_url)}`,
-      ],
+      images: [`/api/og/?event_url=${encodeURIComponent(event_url)}`],
     },
   };
 }
@@ -94,15 +92,15 @@ export default async function EventPage({
     )
     .eq("event_id", event.id);
 
-  const guestRsvp = allRsvps?.find(
-    (rsvp) => rsvp.guest.email === guest.email
-  );
+  const guestRsvp = allRsvps?.find((rsvp) => rsvp.guest.email === guest.email);
 
   const guestRsvpStatus = guestRsvp
-    ? guestRsvp.rsvp_type === 'yes'
+    ? guestRsvp.rsvp_type === "yes"
       ? "attending"
       : "not attending"
     : "not responded";
+    
+  const { textColor, gradientColor1, gradientColor2 } = await getImageColors(event.og_image);
 
   return (
     <div className="flex w-full justify-center mih-h-dvh">
@@ -112,6 +110,9 @@ export default async function EventPage({
         host={host}
         allRsvps={allRsvps}
         guestRsvpStatus={guestRsvpStatus}
+        textColor={textColor}
+        gradientColor1={gradientColor1}
+        gradientColor2={gradientColor2}
       />
     </div>
   );

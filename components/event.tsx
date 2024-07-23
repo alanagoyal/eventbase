@@ -1,11 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { Database } from "@/types/supabase";
 import Registration from "./registration";
 import { formatEventDates } from "@/utils/dates";
-import { ExternalLink, MapPinIcon, UserIcon, Calendar } from "lucide-react";
+import { MapPinIcon, UserIcon } from "lucide-react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import Link from "next/link";
 import { Share } from "./share";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -17,12 +17,18 @@ export default function Event({
   host,
   allRsvps,
   guestRsvpStatus,
+  textColor,
+  gradientColor1,
+  gradientColor2,
 }: {
   event: Event;
   guest: Guest;
   host: Guest;
   allRsvps: any;
   guestRsvpStatus: string;
+  textColor: string;
+  gradientColor1: string;
+  gradientColor2: string;
 }) {
   const { month, day, formattedDate, formattedTime } = formatEventDates(
     event.start_timestampz!,
@@ -113,7 +119,9 @@ export default function Event({
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
               <div className="flex justify-between items-center">
-                <h1 className="text-2xl sm:text-3xl font-bold py-2">{event.event_name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold py-2">
+                  {event.event_name}
+                </h1>
                 {guest.id === host.id && <Share event={event} />}
               </div>
               <div className="flex items-center mt-4">
@@ -176,6 +184,9 @@ export default function Event({
                   guestRsvpStatus={guestRsvpStatus}
                   formattedDate={formattedDate}
                   formattedTime={formattedTime}
+                  textColor={textColor}
+                  gradientColor1={gradientColor1}
+                  gradientColor2={gradientColor2}
                 />
               </div>
               <div className="mt-4">

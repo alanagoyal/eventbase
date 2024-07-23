@@ -10,7 +10,6 @@ import { formatEventDates } from "@/utils/dates";
 import { Badge } from "./ui/badge";
 import { MapPinIcon, UserIcon } from "lucide-react";
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventWithHost = Event & {
@@ -44,14 +43,14 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
                 <div className="pb-4">
                   <p>{event.description}</p>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col space-y-2">
                   <div className="flex items-center">
-                    <UserIcon className="w-6 h-6 text-pink-300" />
-                    <span className="ml-2">{event.host?.full_name}</span>
+                    <UserIcon className="w-5 h-5 text-pink-300 flex-shrink-0" />
+                    <span className="ml-2 text-sm">{event.host?.full_name}</span>
                   </div>
-                  <div className="flex items-center mt-2">
-                    <MapPinIcon className="w-6 h-6 text-pink-300" />
-                    <span className="ml-2">{event.location}</span>
+                  <div className="flex items-center">
+                    <MapPinIcon className="w-5 h-5 text-pink-300 flex-shrink-0" />
+                    <span className="ml-2 text-sm">{event.location}</span>
                   </div>
                 </div>
               </div>
