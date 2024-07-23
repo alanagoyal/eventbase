@@ -43,20 +43,23 @@ const libraries: Libraries = ["places"];
 
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
 
-const eventFormSchema = z.object({
-  event_name: z.string().min(1, "Event name is required"),
-  description: z.string().optional(),
-  location: z.string().min(1, "Location is required"),
-  start_time: z.date().min(new Date(), "Start time must be in the future"),
-  end_time: z.date().min(new Date(), "End time must be in the future"),
-  image: z.any().optional(),
-  show_discussion_topics: z.boolean().default(false),
-});
+const eventFormSchema = z
+  .object({
+    event_name: z.string().min(1, "Event name is required"),
+    description: z.string().optional(),
+    location: z.string().min(1, "Location is required"),
+    start_time: z.date().min(new Date(), "Start time must be in the future"),
+    end_time: z.date().min(new Date(), "End time must be in the future"),
+    image: z.any().optional(),
+    show_discussion_topics: z.boolean().default(false),
+  })
+  .refine((data) => data.end_time > data.start_time, {
+    message: "End time must be after start time",
+    path: ["end_time"],
+  });
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
-type Event = Database["public"]["Tables"]["events"]["Row"] & {
-  timezone: string;
-};
+type Event = Database["public"]["Tables"]["events"]["Row"];
 
 export default function EventForm({
   guest,
@@ -212,7 +215,7 @@ export default function EventForm({
         formValues.end_time.toISOString()
       );
       const prompt = `Generate a short 1-2 sentence description for an event named "${formValues.event_name}" at ${formValues.location} on ${formattedDate} at ${formattedTime}.`;
-      
+
       const result = await complete(prompt);
 
       if (result) {

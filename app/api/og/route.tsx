@@ -85,7 +85,6 @@ export async function GET(request: Request) {
       "America/Denver": "MST",
       "Europe/London": "GMT",
       "Europe/Paris": "CET",
-      // Add more mappings as needed
     };
     return abbreviations[timezone] || timezone;
   }
