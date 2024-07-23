@@ -43,23 +43,20 @@ const libraries: Libraries = ["places"];
 
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
 
-const eventFormSchema = z
-  .object({
-    event_name: z.string().min(1, "Event name is required"),
-    description: z.string().optional(),
-    location: z.string().min(1, "Location is required"),
-    start_time: z.date().min(new Date(), "Start time must be in the future"),
-    end_time: z.date().min(new Date(), "End time must be in the future"),
-    image: z.any().optional(),
-    show_discussion_topics: z.boolean().default(false),
-  })
-  .refine((data) => data.end_time > data.start_time, {
-    message: "End time must be after start time",
-    path: ["end_time"],
-  });
+const eventFormSchema = z.object({
+  event_name: z.string().min(1, "Event name is required"),
+  description: z.string().optional(),
+  location: z.string().min(1, "Location is required"),
+  start_time: z.date().min(new Date(), "Start time must be in the future"),
+  end_time: z.date().min(new Date(), "End time must be in the future"),
+  image: z.any().optional(),
+  show_discussion_topics: z.boolean().default(false),
+});
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
-type Event = Database["public"]["Tables"]["events"]["Row"];
+type Event = Database["public"]["Tables"]["events"]["Row"] & {
+  timezone: string;
+};
 
 export default function EventForm({
   guest,
@@ -249,6 +246,8 @@ export default function EventForm({
         data.description || ""
       );
 
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
       const updates: Partial<Event> & {
         id: string;
         event_name: string;
@@ -260,6 +259,7 @@ export default function EventForm({
         location_url: string;
         og_image: string | null;
         show_discussion_topics: boolean;
+        timezone: string;
       } = {
         id: event_id,
         event_name: data.event_name,
@@ -271,6 +271,7 @@ export default function EventForm({
         location_url: getGoogleMapsUrl(data.location),
         og_image: newImageUrl || existingEvent?.og_image || null,
         show_discussion_topics: data.show_discussion_topics,
+        timezone: userTimezone,
       };
 
       let { error } = existingEvent

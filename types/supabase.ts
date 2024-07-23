@@ -48,6 +48,7 @@ export type Database = {
           og_image: string | null
           show_discussion_topics: boolean | null
           start_timestampz: string | null
+          timezone: string | null
         }
         Insert: {
           created_at?: string | null
@@ -62,6 +63,7 @@ export type Database = {
           og_image?: string | null
           show_discussion_topics?: boolean | null
           start_timestampz?: string | null
+          timezone?: string | null
         }
         Update: {
           created_at?: string | null
@@ -76,6 +78,7 @@ export type Database = {
           og_image?: string | null
           show_discussion_topics?: boolean | null
           start_timestampz?: string | null
+          timezone?: string | null
         }
         Relationships: [
           {

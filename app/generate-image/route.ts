@@ -16,10 +16,10 @@ export async function POST(req: Request) {
     // Generate image using DALL-E
     const image = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `Generate an image for an event digital invitation for an event with the title ${name} and based on the following description: ${description}. There should be no humans in the image. The style should be fun and colorful.`,
+      prompt: `Generate an image for an event digital invitation for an event with the title ${name} and based on the following description: ${description}. There should be no humans and no text in the image. The style should be fun and colorful.`,
       n: 1,
       quality: "hd",
-      size: "1792x1024",
+      size: "1024x1024",
       style: "vivid",
     });
 
