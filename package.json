@@ -10,6 +10,7 @@
     "update-types": "npx supabase gen types typescript --project-id \"oshvfhumskqhuasntjvy\" > types/supabase.ts"
   },
   "dependencies": {
+    "@braintrust/vercel-ai-sdk": "^0.0.4",
     "@clerk/nextjs": "^4.11.9",
     "@defer/client": "^1.1.0",
     "@frigade/react": "^1.27.48",
@@ -43,6 +44,7 @@
     "abort-controller": "^3.0.0",
     "add-to-calendar-button": "^2.2.3",
     "add-to-calendar-button-react": "^2.2.1",
+    "ai": "^3.2.34",
     "braintrust": "^0.0.145",
     "class-variance-authority": "^0.4.0",
     "clsx": "^1.2.1",
