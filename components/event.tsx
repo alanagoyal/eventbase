@@ -113,7 +113,7 @@ export default function Event({
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
               <div className="flex justify-between items-center">
-                <h1 className="text-3xl font-bold py-2">{event.event_name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold py-2">{event.event_name}</h1>
                 {guest.id === host.id && <Share event={event} />}
               </div>
               <div className="flex items-center mt-4">

@@ -48,9 +48,9 @@ export function Share({ event }: { event: Event }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost">
-          <span className="text-sm">Share</span>
-          <ShareIcon className="ml-2 h-4 w-4" />
+        <Button variant="ghost" className="p-2">
+          <span className="hidden sm:inline text-sm mr-2">Share</span>
+          <ShareIcon className="h-4 w-4" />
         </Button>
       </DialogTrigger>
       <DialogContent>
