@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Calendar, LogOut, Plus, User } from "lucide-react";
+import { Calendar, LogOut, Moon, Plus, Sun, User } from "lucide-react";
 
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -17,10 +17,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { useTheme } from "next-themes";
 
 export default function UserNav({ guest }: { guest: any }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -91,6 +93,21 @@ export default function UserNav({ guest }: { guest: any }) {
               <p className="text-xs text-muted-foreground">A</p>
             </DropdownMenuItem>
           </Link>
+          <DropdownMenuItem
+            className="cursor-pointer justify-between"
+            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+            aria-label="Toggle theme"
+          >
+            <div className="flex items-center">
+              {theme === "dark" ? (
+                <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Moon className="mr-2 h-4 w-4" aria-hidden="true" />
+              )}
+              <span>Switch Theme</span>
+            </div>
+            <p className="text-xs text-muted-foreground">D</p>
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem
