@@ -179,7 +179,7 @@ export default function Event({
                 />
               </div>
               <div className="mt-4">
-                <h2 className="text-xl font-semibold">About Event</h2>
+                <h2 className="text-xl font-semibold">About</h2>
                 <p className="mt-4">{event.description}</p>
                 <p className="mt-4">
                   If you have questions, please email {host.email}
