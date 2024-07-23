@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import { ImageResponse } from "next/og";
+import { getPlaiceholder } from "plaiceholder";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -63,6 +64,19 @@ export async function GET(request: Request) {
     return new Response("Not found", { status: 404 });
   }
 
+  const imageUrl = data.og_image || "/sf.jpg";
+  let dominantColor = "#f0f0f0"; // Default fallback color
+
+  try {
+    const buffer = await fetch(imageUrl).then(async (res) =>
+      Buffer.from(await res.arrayBuffer())
+    );
+    const { color } = await getPlaiceholder(buffer);
+    dominantColor = color.hex;
+  } catch (error) {
+    console.error("Error extracting dominant color:", error);
+  }
+
   return new ImageResponse(
     (
       <div
@@ -72,12 +86,17 @@ export async function GET(request: Request) {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          backgroundColor: dominantColor,
         }}
       >
         <img
-          src={data.og_image || "/sf.jpg"}
+          src={imageUrl}
           alt="Event image"
-          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+          style={{
+            maxWidth: "90%",
+            maxHeight: "90%",
+            objectFit: "contain",
+          }}
         />
       </div>
     ),
