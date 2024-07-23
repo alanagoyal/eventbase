@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { createClient } from "@/utils/supabase/server";
 import { Header } from "@/components/header";
 import { CommandMenu } from "@/components/command-menu";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -41,7 +42,7 @@ export default async function RootLayout({
     .single();
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>{siteConfig.name}</title>
         <meta property="twitter:card" content="summary_large_image"></meta>
@@ -61,10 +62,12 @@ export default async function RootLayout({
           fontSans.variable
         )}
       >
-        <Header guest={guest} />
-        {children}
-        <CommandMenu />
-        <Toaster />
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          <Header guest={guest} />
+          {children}
+          <CommandMenu />
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   );

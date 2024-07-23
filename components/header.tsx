@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { Database } from "../types/supabase";
 import UserNav from "./user-nav";
+import { ThemeToggle } from "./theme-toggle";
 
 type Guests = Database["public"]["Tables"]["guests"]["Row"];
 
@@ -26,7 +27,8 @@ export function Header({ guest }: { guest: Guests }) {
           </span>base
           </Link>
         </div>
-        <div className="flex ml-auto">
+        <div className="flex ml-auto items-center">
+          <ThemeToggle />
           {!guest ? (
             <Link href="/login">
               <Button variant="ghost">Sign In</Button>
