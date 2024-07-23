@@ -74,6 +74,8 @@ export default function EventForm({
   const [isDeleting, setIsDeleting] = useState(false);
   const [useAiImage, setUseAiImage] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [useAiDescription, setUseAiDescription] = useState(false);
+  const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
 
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
@@ -197,9 +199,43 @@ export default function EventForm({
     }
   }
 
+  async function generateAiDescription(eventData: Partial<EventFormValues>): Promise<string> {
+    setIsGeneratingDescription(true);
+    try {
+      const response = await fetch("/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event_name: eventData.event_name,
+          location: eventData.location,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate AI description");
+      }
+
+      const { description } = await response.json();
+      return description;
+    } catch (error) {
+      console.error("Error generating AI description:", error);
+      toast({
+        description: "Sorry, there was an issue generating the description",
+      });
+      return "";
+    } finally {
+      setIsGeneratingDescription(false);
+    }
+  }
+
   async function saveEvent(data: EventFormValues) {
     setIsUpdating(true);
     try {
+      if (useAiDescription) {
+        const aiDescription = await generateAiDescription(data);
+        data.description = aiDescription;
+      }
+
       const eventUrl = existingEvent
         ? existingEvent.event_url
         : await generateUniqueEventUrl(data.event_name);
@@ -338,9 +374,32 @@ export default function EventForm({
             name="description"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel htmlFor="description">Description</FormLabel>
+                <div className="flex justify-between items-center">
+                  <FormLabel htmlFor="description">Description</FormLabel>
+                  <div className="flex items-center space-x-2">
+                    <Label
+                      htmlFor="ai-description"
+                      className="text-xs font-normal text-muted-foreground"
+                    >
+                      Generate with AI
+                    </Label>
+                    <Switch
+                      checked={useAiDescription}
+                      onCheckedChange={setUseAiDescription}
+                      id="ai-description"
+                    />
+                  </div>
+                </div>
                 <FormControl>
-                  <Textarea {...field} id="description" className="w-full" />
+                  {useAiDescription ? (
+                    <div className="text-sm text-muted-foreground">
+                      {isGeneratingDescription
+                        ? "Generating description... this may take a few moments"
+                        : "AI will generate a description based on your event details"}
+                    </div>
+                  ) : (
+                    <Textarea {...field} id="description" className="w-full" />
+                  )}
                 </FormControl>
                 <FormMessage />
               </FormItem>
