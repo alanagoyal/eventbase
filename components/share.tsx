@@ -3,16 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "./ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import {
   Dialog,
   DialogContent,
-  DialogTrigger,
   DialogTitle,
   DialogDescription,
 } from "./ui/dialog";
@@ -60,7 +52,6 @@ export function Share({ event }: { event: Event }) {
     if (isMobile && navigator.share) {
       navigator.share({
         title: 'Share Event',
-        text: 'Check out this event!',
         url: url,
       }).catch(console.error);
     } else {
