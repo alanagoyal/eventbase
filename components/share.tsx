@@ -45,6 +45,7 @@ export function Share({ event }: { event: Event }) {
         toast({
           description: "Copied to clipboard",
         });
+        setIsOpen(false);
       })
       .catch((err) => {
         toast({
@@ -69,9 +70,9 @@ export function Share({ event }: { event: Event }) {
 
   return (
     <>
-      <Button variant="ghost" className="p-2" onClick={handleShare}>
+      <Button variant="ghost" className="m-1" onClick={handleShare}>
         <span className="hidden sm:inline text-sm mr-2">Share</span>
-        <ShareIcon className="h-4 w-4" />
+        <ShareIcon className="h-5 w-5 md:h-4 md:w-4" />
       </Button>
 
       {!isMobile && (
