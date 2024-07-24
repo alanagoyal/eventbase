@@ -7,28 +7,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const event_url = searchParams.get("event_url");
 
-  const supabase = createClient();
-  const { data: event } = await supabase
-    .from("events")
-    .select("*")
-    .eq("event_url", event_url)
-    .single();
-
-  if (!event) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  const { data: host } = await supabase
-    .from("guests")
-    .select("*")
-    .eq("id", event.created_by)
-    .single();
-
-  if (!host) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  if (!event.og_image) {
+  if (!event_url) {
     return new ImageResponse(
       (
         <div
@@ -76,6 +55,19 @@ export async function GET(request: Request) {
     );
   }
 
+  const supabase = createClient();
+  const { data: event } = await supabase
+    .from("events")
+    .select("*")
+    .eq("event_url", event_url)
+    .single();
+
+  const { data: host } = await supabase
+    .from("guests")
+    .select("*")
+    .eq("id", event.created_by)
+    .single();
+    
   const startDate = new Date(event.start_timestampz);
   const endDate = new Date(event.end_timestampz);
   const timezone = event.timezone || "America/Los_Angeles";
