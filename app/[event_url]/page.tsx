@@ -6,6 +6,7 @@ import { Metadata } from "next";
 import { Database } from "@/types/supabase";
 import { redirect } from "next/navigation";
 import { getImageColors } from "@/utils/og";
+import { getFallbackImageUrl } from "@/utils/fallback";
 
 export const dynamic = "force-dynamic";
 type Event = Database["public"]["Tables"]["events"]["Row"];
@@ -99,8 +100,9 @@ export default async function EventPage({
       ? "attending"
       : "not attending"
     : "not responded";
-    
-  const { textColor, gradientColor1, gradientColor2 } = await getImageColors(event.og_image);
+
+  const imageUrl = event.og_image || process.env.NEXT_PUBLIC_FALLBACK_IMAGE_URL;
+  const { textColor, gradientColor1, gradientColor2 } = await getImageColors(imageUrl);
 
   return (
     <div className="flex w-full justify-center mih-h-dvh">

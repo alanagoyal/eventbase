@@ -4,6 +4,7 @@ import Events from "@/components/events";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Database } from "@/types/supabase";
+import { getFallbackImageUrl } from "@/utils/fallback";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type EventWithHost = Event & {
@@ -21,7 +22,7 @@ export default async function EventsPage() {
     redirect("/login");
   }
 
-  const { data: rsvps } = await supabase
+  const { data: rsvps } = (await supabase
     .from("rsvps")
     .select(
       `
@@ -32,9 +33,11 @@ export default async function EventsPage() {
       )
     `
     )
-    .eq("email", user.email) as { data: Array<{ event: EventWithHost }> | null };
+    .eq("email", user.email)) as {
+    data: Array<{ event: EventWithHost }> | null;
+  };
 
-  const { data: hostings } = await supabase
+  const { data: hostings } = (await supabase
     .from("events")
     .select(
       `
@@ -42,7 +45,10 @@ export default async function EventsPage() {
       host:guests!events_created_by_fkey(full_name)
     `
     )
-    .eq("created_by", user.id) as { data: EventWithHost[] | null };
+    .eq("created_by", user.id)) as { data: EventWithHost[] | null };
+
+  const fallbackImageUrl = await getFallbackImageUrl(supabase);
+  console.log(fallbackImageUrl);
 
   if (rsvps && rsvps.length === 0 && hostings && hostings.length === 0) {
     return (
@@ -62,9 +68,9 @@ export default async function EventsPage() {
   }
   return (
     <div className="flex w-full justify-center mih-h-dvh">
-      <Events 
-        allRsvps={rsvps?.map(r => ({ ...r.event, type: 'attending' })) ?? []} 
-        allHostings={hostings?.map(h => ({ ...h, type: 'hosting' })) ?? []} 
+      <Events
+        allRsvps={rsvps?.map((r) => ({ ...r.event, type: "attending" })) ?? []}
+        allHostings={hostings?.map((h) => ({ ...h, type: "hosting" })) ?? []}
       />
     </div>
   );

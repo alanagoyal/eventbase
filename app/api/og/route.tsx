@@ -2,33 +2,13 @@ import { createClient } from "@/utils/supabase/server";
 import { ImageResponse } from "next/og";
 import { formatInTimeZone } from "date-fns-tz";
 import { formatTimezone, formatTime, getImageColors } from "@/utils/og";
+import { getFallbackImageUrl } from "@/utils/fallback";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const event_url = searchParams.get("event_url");
 
-  const supabase = createClient();
-  const { data: event } = await supabase
-    .from("events")
-    .select("*")
-    .eq("event_url", event_url)
-    .single();
-
-  if (!event) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  const { data: host } = await supabase
-    .from("guests")
-    .select("*")
-    .eq("id", event.created_by)
-    .single();
-
-  if (!host) {
-    return new Response("Not found", { status: 404 });
-  }
-
-  if (!event.og_image) {
+  if (!event_url) {
     return new ImageResponse(
       (
         <div
@@ -75,6 +55,18 @@ export async function GET(request: Request) {
       }
     );
   }
+  const supabase = createClient();
+  const { data: event } = await supabase
+    .from("events")
+    .select("*")
+    .eq("event_url", event_url)
+    .single();
+
+  const { data: host } = await supabase
+    .from("guests")
+    .select("*")
+    .eq("id", event.created_by)
+    .single();
 
   const startDate = new Date(event.start_timestampz);
   const endDate = new Date(event.end_timestampz);
@@ -90,7 +82,7 @@ export async function GET(request: Request) {
   const formattedTime = `${formatTime(startDate, timezone)} - ${formatTime(endDate, timezone)}`;
 
   const eventName = event.event_name;
-  const imageUrl = event.og_image || "/sf.jpg";
+  const imageUrl = event.og_image || process.env.NEXT_PUBLIC_FALLBACK_IMAGE_URL;
   
   const { textColor, gradientColor1, gradientColor2 } = await getImageColors(imageUrl);
 
@@ -166,11 +158,13 @@ export async function GET(request: Request) {
               src={imageUrl}
               alt="Event image"
               style={{
-                width: "100%",
-                height: "100%",
+                width: "512px", 
+                height: "512px",
                 display: "flex",
                 objectFit: "cover",
                 objectPosition: "center",
+                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.3)", 
+
               }}
             />
           </div>

@@ -26,7 +26,7 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
   );
   
   const eventUrl = `/${event.event_url}`;
-  const imageUrl = event.og_image || "/sf.jpg";
+  const imageUrl = event.og_image || process.env.NEXT_PUBLIC_FALLBACK_IMAGE_URL;
 
   return (
     <Link href={eventUrl} className="w-full block">

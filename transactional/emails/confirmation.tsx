@@ -34,7 +34,7 @@ export default function EmailTemplate({
         <Body className="bg-white my-auto mx-auto font-sans">
           <Container className="border border-solid border-[#eaeaea] rounded my-[40px] mx-auto p-[20px] w-[465px] flex flex-col items-center">
             <Img
-              src={eventInfo.og_image || `${baseUrl}/sf.jpg`}
+              src={eventInfo.og_image || process.env.NEXT_PUBLIC_FALLBACK_IMAGE_URL}
               width="400"
               className="max-w-full"
             />

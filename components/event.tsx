@@ -77,7 +77,7 @@ export default function Event({
           <Card className="border-0 md:border shadow-none md:shadow">
             <CardHeader>
               <img
-                src={event.og_image || "/sf.jpg"}
+                src={event.og_image || process.env.NEXT_PUBLIC_FALLBACK_IMAGE_URL}
                 alt="Event Image"
                 className="w-full h-auto rounded-lg"
               />
