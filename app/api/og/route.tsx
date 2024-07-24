@@ -84,8 +84,6 @@ export async function GET(request: Request) {
   const eventName = event.event_name;
   const imageUrl = event.og_image || "/sf.jpg";
   
-  const { textColor, gradientColor1, gradientColor2 } = await getImageColors(imageUrl);
-
   return new ImageResponse(
     (
       <div
@@ -93,7 +91,7 @@ export async function GET(request: Request) {
           width: "100%",
           height: "100%",
           display: "flex",
-          background: `linear-gradient(135deg, ${gradientColor1}, ${gradientColor2})`,
+          background: "linear-gradient(135deg, #000000, #333333)",
           fontFamily: "Arial, sans-serif",
           padding: "40px",
         }}
@@ -118,19 +116,19 @@ export async function GET(request: Request) {
             >
               Event
             </span>
-            <span style={{ color: textColor }}>base</span>
+            <span style={{ color: "white" }}>base</span>
           </div>
           <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "flex-end", marginBottom: "20px" }}>
-            <div style={{ fontSize: "64px", fontWeight: "bold", color: textColor, marginBottom: "40px", display: "flex" }}>
+            <div style={{ fontSize: "64px", fontWeight: "bold", color: "white", marginBottom: "40px", display: "flex" }}>
               {eventName}
             </div>
-            <div style={{ fontSize: "32px", color: textColor, marginBottom: "10px", display: "flex" }}>
+            <div style={{ fontSize: "32px", color: "white", marginBottom: "10px", display: "flex" }}>
               {formattedDate}
             </div>
-            <div style={{ fontSize: "32px", color: textColor, marginBottom: "30px", display: "flex" }}>
+            <div style={{ fontSize: "32px", color: "white", marginBottom: "30px", display: "flex" }}>
               {formattedTime} {formattedTimezone}
             </div>
-            <div style={{ fontSize: "32px", color: textColor, display: "flex" }}>
+            <div style={{ fontSize: "32px", color: "white", display: "flex" }}>
               Hosted by {hostName}
             </div>
           </div>
