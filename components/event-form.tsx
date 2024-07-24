@@ -160,6 +160,7 @@ export default function EventForm({
             eventId: event_id,
             name: event_name,
             description,
+            location,
             endTime: endTime.toISOString(),
           }),
         });

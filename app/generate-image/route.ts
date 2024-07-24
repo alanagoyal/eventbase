@@ -11,12 +11,12 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   try {
-    const { eventId, name, description, endTime } = await req.json();
+    const { eventId, name, description, location, endTime } = await req.json();
 
     // Generate image using DALL-E
     const image = await openai.images.generate({
       model: "dall-e-3",
-      prompt: `Generate an image for an event digital invitation for an event with the title ${name} and based on the following description: ${description}. There should be no humans and no text in the image. The style should be fun and colorful.`,
+      prompt: `Generate an image for an event digital invitation for an event with the title ${name} held at the location ${location} and based on the following description: ${description}. There should be no humans and no text in the image. The style should be fun and colorful.`,
       n: 1,
       quality: "hd",
       size: "1024x1024",
