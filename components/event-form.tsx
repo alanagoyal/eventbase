@@ -76,10 +76,10 @@ export default function EventForm({
   const [isDeleting, setIsDeleting] = useState(false);
   const [useAiImage, setUseAiImage] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
-  const [useAiDescription, setUseAiDescription] = useState(false);
+  const [isAiGenerated, setIsAiGenerated] = useState(false);
+  const [hasEditedAiDescription, setHasEditedAiDescription] = useState(false);
 
   const {
-    completion,
     complete,
     isLoading: isGeneratingDescription,
   } = useCompletion({
@@ -214,12 +214,20 @@ export default function EventForm({
         formValues.start_time.toISOString(),
         formValues.end_time.toISOString()
       );
-      const prompt = `Generate a short 1-2 sentence description for an event named "${formValues.event_name}" at ${formValues.location} on ${formattedDate} at ${formattedTime}.`;
 
-      const result = await complete(prompt);
+      const result = await complete("", {
+        body: {
+          eventName: formValues.event_name,
+          location: formValues.location,
+          formattedDate,
+          formattedTime,
+        },
+      });
 
       if (result) {
         form.setValue("description", result);
+        setIsAiGenerated(true);
+        setHasEditedAiDescription(false);
       } else {
         toast({
           description: "Unable to generate a description. Please try again.",
@@ -541,11 +549,13 @@ export default function EventForm({
                       Generate with AI
                     </Label>
                     <Switch
-                      checked={useAiDescription}
+                      checked={isAiGenerated}
                       onCheckedChange={(checked) => {
-                        setUseAiDescription(checked);
+                        setIsAiGenerated(checked);
                         if (checked) {
                           generateAiDescription();
+                        } else {
+                          setHasEditedAiDescription(false);
                         }
                       }}
                       id="ai-description"
@@ -557,11 +567,10 @@ export default function EventForm({
                     {...field}
                     id="description"
                     className="w-full"
-                    value={useAiDescription ? completion : field.value}
                     onChange={(e) => {
                       field.onChange(e);
-                      if (useAiDescription) {
-                        setUseAiDescription(false);
+                      if (isAiGenerated && !hasEditedAiDescription) {
+                        setHasEditedAiDescription(true);
                       }
                     }}
                   />

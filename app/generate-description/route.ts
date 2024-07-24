@@ -8,17 +8,21 @@ initLogger({
 });
 
 export async function POST(req: Request) {
-  const { prompt } = await req.json();
-  const description = await handleRequest(prompt);
+
+  const { eventName, location, formattedDate, formattedTime } = await req.json();
+  const description = await handleRequest(eventName, location, formattedDate, formattedTime );
   return BraintrustAdapter.toAIStreamResponse(description);
 }
 
-const handleRequest = wrapTraced(async function handleRequest(prompt: string) {
+const handleRequest = wrapTraced(async function handleRequest(eventName, location, formattedDate, formattedTime ) {
   return await invoke({
     project_name: "eventbase",
     slug: "generate-description",
     input: {
-      prompt,
+      eventName,
+      location,
+      formattedDate,
+      formattedTime
     },
     stream: true,
   });
