@@ -1,7 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { ImageResponse } from "next/og";
 import { formatInTimeZone } from "date-fns-tz";
-import { formatTimezone, formatTime, getImageColors } from "@/utils/og";
+import { formatTimezone, formatTime } from "@/utils/og";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
