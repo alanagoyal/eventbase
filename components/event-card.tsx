@@ -34,9 +34,14 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
         <div className="flex items-stretch">
           <div className="flex-grow pr-4">
             <CardHeader>
-              <p className="text-sm text-muted-foreground">{formattedDate}</p>
-              <p className="text-sm text-muted-foreground">{formattedTime}</p>
-              <CardTitle>{event.event_name}</CardTitle>
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-sm text-muted-foreground">{formattedDate}</p>
+                  <p className="text-sm text-muted-foreground">{formattedTime}</p>
+                </div>
+                <Badge>{event.type === 'attending' ? 'Attending' : 'Hosting'}</Badge>
+              </div>
+              <CardTitle className="pt-2">{event.event_name}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col">
@@ -55,9 +60,6 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
                 </div>
               </div>
             </CardContent>
-            <CardFooter>
-              <Badge>{event.type === 'attending' ? 'Attending' : 'Hosting'}</Badge>
-            </CardFooter>
           </div>
           <div className="hidden md:block w-64 flex-shrink-0">
             <div className="w-full h-full overflow-hidden">
