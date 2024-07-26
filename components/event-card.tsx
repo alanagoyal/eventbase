@@ -28,6 +28,8 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
   const eventUrl = `/${event.event_url}`;
   const imageUrl = event.og_image || "/sf.jpg";
 
+  const badgeColor = event.type === 'attending' ? "#FF6A88" : "#FF99AC";
+
   return (
     <Link href={eventUrl} className="w-full block">
       <Card className="w-full hover:shadow-lg transition-shadow duration-300">
@@ -39,7 +41,9 @@ export default function EventCard({ event }: { event: EventWithHostAndType }) {
                   <p className="text-sm text-muted-foreground">{formattedDate}</p>
                   <p className="text-sm text-muted-foreground">{formattedTime}</p>
                 </div>
-                <Badge>{event.type === 'attending' ? 'Attending' : 'Hosting'}</Badge>
+                <Badge style={{ backgroundColor: badgeColor, color: 'white' }}>
+                  {event.type === 'attending' ? 'Attending' : 'Hosting'}
+                </Badge>
               </div>
               <CardTitle className="pt-2">{event.event_name}</CardTitle>
             </CardHeader>
