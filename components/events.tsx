@@ -44,7 +44,8 @@ export default function Events({
         </h1>
         <Link href="/new">
           <Button variant="ghost" className="w-[150px]">
-            <Plus className="w-4 h-4 mr-2" /> New event
+            <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline-block ml-2">New event</span>
           </Button>
         </Link>
       </div>
