@@ -567,20 +567,20 @@ export default function EventForm({
                   <Textarea
                     {...field}
                     id="description"
-                    className="w-full"
+                    className={cn(
+                      "w-full",
+                      isGeneratingDescription && "text-muted-foreground"
+                    )}
                     onChange={(e) => {
                       field.onChange(e);
                       if (isAiGenerated && !hasEditedAiDescription) {
                         setHasEditedAiDescription(true);
                       }
                     }}
+                    value={isGeneratingDescription ? "Generating description... this may take a few moments" : field.value}
+                    disabled={isGeneratingDescription}
                   />
                 </FormControl>
-                {isGeneratingDescription && (
-                  <div className="text-sm text-muted-foreground">
-                    Generating description... this may take a few moments
-                  </div>
-                )}
                 <FormMessage />
               </FormItem>
             )}
@@ -608,7 +608,7 @@ export default function EventForm({
                 </div>
                 <div className="space-y-4">
                   {existingEvent?.og_image && (
-                    <div className="relative w-full h-48">
+                    <div className="relative w-full aspect-square">
                       <Image
                         src={existingEvent?.og_image}
                         alt="Current event image"
@@ -641,7 +641,9 @@ export default function EventForm({
                           <p className="text-sm">Drop the image here ...</p>
                         ) : (
                           <p className="text-sm">
-                            Drag and drop or click to upload
+                            {existingEvent?.og_image
+                              ? "Drag and drop or click to replace"
+                              : "Drag and drop or click to upload"}
                           </p>
                         )}
                       </div>
