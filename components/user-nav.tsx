@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { Calendar, LogOut, Moon, Plus, Sun, User } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
+import { menuItems, MenuItem } from "@/utils/menu";
 
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -66,60 +67,42 @@ export default function UserNav({ guest }: { guest: any }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <Link href="/new">
-            <DropdownMenuItem className="cursor-pointer justify-between">
-              <div className="flex items-center">
-                <Plus className="mr-2 h-4 w-4" />
-                <span>New</span>
-              </div>
-              <p className="text-xs text-muted-foreground">N</p>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/events">
-            <DropdownMenuItem className="cursor-pointer justify-between">
-              <div className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" />
-                <span>Events</span>
-              </div>
-              <p className="text-xs text-muted-foreground">E</p>
-            </DropdownMenuItem>
-          </Link>
-          <Link href="/account">
-            <DropdownMenuItem className="cursor-pointer justify-between">
-              <div className="flex items-center">
-                <User className="mr-2 h-4 w-4" />
-                <span>Account</span>
-              </div>
-              <p className="text-xs text-muted-foreground">A</p>
-            </DropdownMenuItem>
-          </Link>
-          <DropdownMenuItem
-            className="cursor-pointer justify-between"
-            onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-            aria-label="Toggle theme"
-          >
-            <div className="flex items-center">
-              {theme === "dark" ? (
-                <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
-              ) : (
-                <Moon className="mr-2 h-4 w-4" aria-hidden="true" />
-              )}
-              <span>Switch Theme</span>
-            </div>
-            <p className="text-xs text-muted-foreground">D</p>
-          </DropdownMenuItem>
+          {menuItems.map((item: MenuItem) => (
+            item.href ? (
+              <Link href={item.href} key={item.label}>
+                <DropdownMenuItem className="cursor-pointer justify-between">
+                  <div className="flex items-center">
+                    <item.icon className="mr-2 h-4 w-4" />
+                    <span>{item.label}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{item.shortcut}</p>
+                </DropdownMenuItem>
+              </Link>
+            ) : (
+              <DropdownMenuItem
+                key={item.label}
+                className="cursor-pointer justify-between"
+                onClick={item.action === "theme" 
+                  ? () => setTheme(theme === "light" ? "dark" : "light")
+                  : item.action === "logout" ? handleSignOut : undefined}
+              >
+                <div className="flex items-center">
+                  {item.action === "theme" ? (
+                    theme === "light" ? (
+                      <Moon className="mr-2 h-4 w-4" aria-hidden="true" />
+                    ) : (
+                      <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
+                    )
+                  ) : (
+                    <item.icon className="mr-2 h-4 w-4" aria-hidden="true" />
+                  )}
+                  <span>{item.label}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">{item.shortcut}</p>
+              </DropdownMenuItem>
+            )
+          ))}
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          className="cursor-pointer justify-between"
-          onClick={handleSignOut}
-        >
-          <div className="flex items-center">
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-          </div>
-          <p className="text-xs text-muted-foreground">O</p>
-        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

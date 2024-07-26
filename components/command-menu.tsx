@@ -7,15 +7,15 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
   CommandShortcut,
 } from "./ui/command";
-import { Calendar, LogOut, Moon, Plus, Sun, User } from "lucide-react";
+import { menuItems, MenuItem } from "@/utils/menu";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { DialogTitle, DialogDescription } from "./ui/dialog";
 import { VisuallyHidden } from "./ui/visually-hidden";
 import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
 
 const isTyping = () => {
   const activeElement = document.activeElement;
@@ -86,23 +86,18 @@ export function CommandMenu() {
   };
 
   const handleSelect = useCallback((value: string) => {
-    switch (value) {
-      case 'new':
-        navigateAndCloseDialog('/new');
-        break;
-      case 'events':
-        navigateAndCloseDialog('/events');
-        break;
-      case 'account':
-        navigateAndCloseDialog('/account');
-        break;
-      case 'theme':
+    const selectedItem = menuItems.find(item => 
+      item.href === `/${value}` || item.action === value
+    );
+    if (selectedItem) {
+      if (selectedItem.href) {
+        navigateAndCloseDialog(selectedItem.href);
+      } else if (selectedItem.action === 'theme') {
         setTheme(theme === 'light' ? 'dark' : 'light');
         setOpen(false);
-        break;
-      case 'logout':
+      } else if (selectedItem.action === 'logout') {
         handleSignOut();
-        break;
+      }
     }
   }, [navigateAndCloseDialog, setTheme, theme, handleSignOut]);
 
@@ -113,43 +108,31 @@ export function CommandMenu() {
       </DialogTitle>
       <DialogDescription asChild>
         <VisuallyHidden>
-          Use this menu to quickly access various features of the application.
+          Use this menu to quickly access various features of the application
         </VisuallyHidden>
       </DialogDescription>
       <CommandInput placeholder="Type a command or search..." />
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
-          <CommandItem onSelect={() => handleSelect('new')}>
-            <Plus className="mr-2 h-4 w-4" />
-            <span>New</span>
-            <CommandShortcut>N</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={() => handleSelect('events')}>
-            <Calendar className="mr-2 h-4 w-4" />
-            <span>Events</span>
-            <CommandShortcut>E</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={() => handleSelect('account')}>
-            <User className="mr-2 h-4 w-4" />
-            <span>Account</span>
-            <CommandShortcut>A</CommandShortcut>
-          </CommandItem>
-          <CommandItem onSelect={() => handleSelect('theme')}>
-            {theme === "dark" ? (
-              <Sun className="mr-2 h-4 w-4" />
-            ) : (
-              <Moon className="mr-2 h-4 w-4" />
-            )}
-            <span>Theme</span>
-            <CommandShortcut>D</CommandShortcut>
-          </CommandItem>
-          <CommandSeparator />
-          <CommandItem onSelect={() => handleSelect('logout')}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-            <CommandShortcut>O</CommandShortcut>
-          </CommandItem>
+          {menuItems.map((item: MenuItem) => (
+            <CommandItem 
+              key={item.label}
+              onSelect={() => handleSelect(item.href?.slice(1) || item.action || '')}
+            >
+              {item.action === "theme" ? (
+                theme === "light" ? (
+                  <Moon className="mr-2 h-4 w-4" />
+                ) : (
+                  <Sun className="mr-2 h-4 w-4" />
+                )
+              ) : (
+                <item.icon className="mr-2 h-4 w-4" />
+              )}
+              <span>{item.label}</span>
+              <CommandShortcut>{item.shortcut}</CommandShortcut>
+            </CommandItem>
+          ))}
         </CommandGroup>
       </CommandList>
     </CommandDialog>
