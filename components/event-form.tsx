@@ -73,7 +73,6 @@ export default function EventForm({
   const [startCalendarOpen, setStartCalendarOpen] = useState(false);
   const [endCalendarOpen, setEndCalendarOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [useAiImage, setUseAiImage] = useState(false);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
   const [isAiGenerated, setIsAiGenerated] = useState(false);
@@ -311,31 +310,6 @@ export default function EventForm({
       });
     } finally {
       setIsUpdating(false);
-    }
-  }
-
-  async function deleteEvent() {
-    setIsDeleting(true);
-    try {
-      const { error } = await supabase
-        .from("events")
-        .delete()
-        .eq("id", existingEvent!.id);
-
-      if (error) throw error;
-      toast({
-        description: "Event deleted successfully!",
-      });
-
-      router.push("/events");
-      router.refresh();
-    } catch (error) {
-      console.error(error);
-      toast({
-        description: "Sorry, there was an issue deleting your event",
-      });
-    } finally {
-      setIsDeleting(false);
     }
   }
 
@@ -682,7 +656,7 @@ export default function EventForm({
             <Button
               type="submit"
               className="w-full"
-              disabled={isUpdating || isDeleting}
+              disabled={isUpdating}
             >
               {isUpdating ? (
                 <>
@@ -695,23 +669,6 @@ export default function EventForm({
                 "Create event"
               )}
             </Button>
-            {existingEvent && (
-              <Button
-                variant="secondary"
-                className="w-full"
-                disabled={isUpdating || isDeleting}
-                onClick={deleteEvent}
-              >
-                {isDeleting ? (
-                  <>
-                    <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Deleting...
-                  </>
-                ) : (
-                  "Delete Event"
-                )}
-              </Button>
-            )}
           </div>
         </form>
       </Form>

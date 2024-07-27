@@ -16,6 +16,8 @@ import {
 } from "./ui/dialog";
 import RsvpForm from "./rsvp-form";
 import Link from "next/link";
+import { useState } from "react";
+import { Spinner } from "./spinner";
 
 type Event = Database["public"]["Tables"]["events"]["Row"];
 type Guest = Database["public"]["Tables"]["guests"]["Row"];
@@ -42,6 +44,7 @@ export default function Registration({
   const supabase = createClient();
   const router = useRouter();
   const isEventInFuture = new Date(event.end_timestampz!) > new Date();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function removeGuest(email: string) {
     try {
@@ -64,6 +67,31 @@ export default function Registration({
     }
   }
 
+  async function deleteEvent() {
+    setIsDeleting(true);
+    try {
+      const { error } = await supabase
+        .from("events")
+        .delete()
+        .eq("id", event.id);
+
+      if (error) throw error;
+      toast({
+        description: "Event deleted successfully!",
+      });
+
+      router.push("/events");
+      router.refresh();
+    } catch (error) {
+      console.error(error);
+      toast({
+        description: "Sorry, there was an issue deleting your event",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   const renderContent = () => {
     if (guest.id === event.created_by) {
       return (
@@ -76,6 +104,20 @@ export default function Registration({
               Edit Event
             </Button>
           </Link>
+          <Button
+            className="w-full mt-2 bg-black text-white"
+            disabled={isDeleting}
+            onClick={deleteEvent}
+          >
+            {isDeleting ? (
+              <>
+                <Spinner.spinner className="mr-2 h-4 w-4 animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              "Delete Event"
+            )}
+          </Button>
         </div>
       );
     }
