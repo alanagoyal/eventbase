@@ -8,9 +8,9 @@ export default function Head() {
       <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       <meta property="twitter:card" content="summary_large_image" />
       <meta property="twitter:title" content={siteConfig.name} />
-      <meta property="twitter:description" content={siteConfig.description} />
+      <meta property="twitter:description" content={siteConfig.tagline} />
       <meta property="og:site_name" content={siteConfig.name} />
-      <meta property="og:description" content={siteConfig.description} />
+      <meta property="og:description" content={siteConfig.tagline} />
       <meta property="og:title" content={siteConfig.name} />
       <meta property="og:url" content={siteConfig.url} />
     </>

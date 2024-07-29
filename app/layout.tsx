@@ -19,7 +19,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: siteConfig.name,
-  description: siteConfig.description,
+  description: siteConfig.tagline,
   openGraph: {
     images: ["/api/og"],
   },
