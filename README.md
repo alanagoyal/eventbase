@@ -47,3 +47,7 @@ Run the application in the command line and it will be available at http://local
 ### Deploy
 
 Deploy using [Vercel](https://vercel.com)
+
+## License
+
+Licensed under the [MIT license](https://github.com/alanagoyal/eventbase/blob/main/LICENSE.md).
