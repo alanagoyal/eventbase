@@ -67,47 +67,52 @@ export default function UserNav({ guest }: { guest: any }) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {menuItems.map((item: MenuItem) =>
-            item.href ? (
-              <Link href={item.href} key={item.label}>
-                <DropdownMenuItem className="cursor-pointer justify-between">
+          {menuItems.map((item: MenuItem, index: number) => (
+            <>
+              {item.action === "logout" && <DropdownMenuSeparator />}
+              {item.href ? (
+                <Link href={item.href} key={item.label}>
+                  <DropdownMenuItem className="cursor-pointer justify-between">
+                    <div className="flex items-center">
+                      <item.icon className="mr-2 h-4 w-4" />
+                      <span>{item.label}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {item.shortcut}
+                    </p>
+                  </DropdownMenuItem>
+                </Link>
+              ) : (
+                <DropdownMenuItem
+                  key={item.label}
+                  className="cursor-pointer justify-between"
+                  onClick={
+                    item.action === "theme"
+                      ? () => setTheme(theme === "light" ? "dark" : "light")
+                      : item.action === "logout"
+                      ? handleSignOut
+                      : undefined
+                  }
+                >
                   <div className="flex items-center">
-                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.action === "theme" ? (
+                      theme === "light" ? (
+                        <Moon className="mr-2 h-4 w-4" aria-hidden="true" />
+                      ) : (
+                        <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
+                      )
+                    ) : (
+                      <item.icon className="mr-2 h-4 w-4" aria-hidden="true" />
+                    )}
                     <span>{item.label}</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
                     {item.shortcut}
                   </p>
                 </DropdownMenuItem>
-              </Link>
-            ) : (
-              <DropdownMenuItem
-                key={item.label}
-                className="cursor-pointer justify-between"
-                onClick={
-                  item.action === "theme"
-                    ? () => setTheme(theme === "light" ? "dark" : "light")
-                    : item.action === "logout"
-                    ? handleSignOut
-                    : undefined
-                }
-              >
-                <div className="flex items-center">
-                  {item.action === "theme" ? (
-                    theme === "light" ? (
-                      <Moon className="mr-2 h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
-                    )
-                  ) : (
-                    <item.icon className="mr-2 h-4 w-4" aria-hidden="true" />
-                  )}
-                  <span>{item.label}</span>
-                </div>
-                <p className="text-xs text-muted-foreground">{item.shortcut}</p>
-              </DropdownMenuItem>
-            )
-          )}
+              )}
+            </>
+          ))}
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
