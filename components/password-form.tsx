@@ -1,20 +1,11 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { toast } from "@/components/ui/use-toast";
+import { useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { SubmitHandler, useForm } from "react-hook-form"
+import { z } from "zod"
+
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -22,15 +13,25 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/card"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { toast } from "@/components/ui/use-toast"
 
 type PasswordFormValues = {
-  password: string;
-  confirmPassword: string;
-};
+  password: string
+  confirmPassword: string
+}
 
 export default function PasswordTabContent() {
-  const [isSettingPassword, setIsSettingPassword] = useState(false);
+  const [isSettingPassword, setIsSettingPassword] = useState(false)
 
   const passwordForm = useForm<PasswordFormValues>({
     resolver: zodResolver(
@@ -48,32 +49,36 @@ export default function PasswordTabContent() {
       password: "",
       confirmPassword: "",
     },
-  });
+  })
 
   const onSetPassword: SubmitHandler<PasswordFormValues> = async (data) => {
-    setIsSettingPassword(true);
+    setIsSettingPassword(true)
     try {
-      const response = await fetch('/api/change-password', {
-        method: 'POST',
+      const response = await fetch("/api/change-password", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ password: data.password }),
-      });
+        credentials: 'include',
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to set password');
+        const errorData = await response.json()
+        throw new Error(errorData.error || "Failed to set password")
       }
 
-      toast({ description: "Password saved!" });
+      toast({ description: "Password saved!" })
     } catch (error) {
-      console.error(error);
-      toast({ description: error instanceof Error ? error.message : "Failed to set password" });
+      console.error(error)
+      toast({
+        description:
+          error instanceof Error ? error.message : "Failed to set password",
+      })
     } finally {
-      setIsSettingPassword(false);
+      setIsSettingPassword(false)
     }
-  };
+  }
 
   return (
     <Card>
@@ -81,9 +86,12 @@ export default function PasswordTabContent() {
         <CardTitle>Password</CardTitle>
         <CardDescription>Set or change your password here</CardDescription>
       </CardHeader>
-      <Form {...passwordForm}>
-        <form onSubmit={passwordForm.handleSubmit(onSetPassword)} className="space-y-2">
-          <CardContent>
+      <CardContent className="space-y-2">
+        <Form {...passwordForm}>
+          <form
+            onSubmit={passwordForm.handleSubmit(onSetPassword)}
+            className="space-y-4"
+          >
             <FormField
               control={passwordForm.control}
               name="password"
@@ -110,14 +118,16 @@ export default function PasswordTabContent() {
                 </FormItem>
               )}
             />
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full" type="submit" disabled={isSettingPassword}>
+            <Button
+              className="w-full"
+              type="submit"
+              disabled={isSettingPassword}
+            >
               {isSettingPassword ? "Setting Password..." : "Save"}
             </Button>
-          </CardFooter>
-        </form>
-      </Form>
+          </form>
+        </Form>
+      </CardContent>
     </Card>
-  );
+  )
 }
