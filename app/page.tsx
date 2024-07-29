@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "../components/ui/button";
 import { Github } from "lucide-react";
+import { siteConfig } from "@/config/site";
 
 export default function Home() {
   return (
@@ -25,7 +26,7 @@ export default function Home() {
                 Get Started Today
               </Button>
             </Link>
-            <Link href="https://github.com/alanagoyal/eventbase" target="_blank" rel="noopener noreferrer">
+            <Link href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
               <Button variant="ghost">
                 <Github className="mr-2 h-4 w-4" />
                 GitHub
