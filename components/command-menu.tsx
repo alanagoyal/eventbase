@@ -7,9 +7,10 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
   CommandShortcut,
 } from "./ui/command";
-import { menuItems, MenuItem } from "@/utils/menu";
+import { menuItems } from "@/utils/menu";
 import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { DialogTitle, DialogDescription } from "./ui/dialog";
@@ -39,44 +40,6 @@ export function CommandMenu() {
     [router]
   );
 
-  useEffect(() => {
-    const down = (e: KeyboardEvent) => {
-      if (!isTyping()) {
-        if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
-          e.preventDefault();
-          setOpen((open) => !open);
-        } else {
-          switch (e.key.toLowerCase()) {
-            case "n":
-              e.preventDefault();
-              navigateAndCloseDialog("/new");
-              break;
-            case "e":
-              e.preventDefault();
-              navigateAndCloseDialog("/events");
-              break;
-            case "a":
-              e.preventDefault();
-              navigateAndCloseDialog("/account");
-              break;
-            case "d":
-              e.preventDefault();
-              setTheme(theme === "light" ? "dark" : "light");
-              break;
-            case "o":
-              e.preventDefault();
-              handleSignOut();
-              break;
-            default:
-              break;
-          }
-        }
-      }
-    };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
-  }, [router, theme, setTheme]); 
-
   const handleSignOut = async () => {
     const supabase = createClient();
     const { error } = await supabase.auth.signOut();
@@ -85,21 +48,52 @@ export function CommandMenu() {
     router.refresh();
   };
 
-  const handleSelect = useCallback((value: string) => {
-    const selectedItem = menuItems.find(item => 
-      item.href === `/${value}` || item.action === value
-    );
-    if (selectedItem) {
-      if (selectedItem.href) {
-        navigateAndCloseDialog(selectedItem.href);
-      } else if (selectedItem.action === 'theme') {
-        setTheme(theme === 'light' ? 'dark' : 'light');
-        setOpen(false);
-      } else if (selectedItem.action === 'logout') {
-        handleSignOut();
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (!isTyping()) {
+        if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+          e.preventDefault();
+          setOpen((open) => !open);
+        } else {
+          const pressedKey = e.key.toLowerCase();
+          const matchedItem = menuItems.find(item => item.shortcut.toLowerCase() === pressedKey);
+          
+          if (matchedItem) {
+            e.preventDefault();
+            if (matchedItem.href) {
+              navigateAndCloseDialog(matchedItem.href);
+            } else if (matchedItem.action === 'theme') {
+              setTheme(theme === "light" ? "dark" : "light");
+            } else if (matchedItem.action === 'logout') {
+              handleSignOut();
+            }
+          }
+        }
       }
-    }
-  }, [navigateAndCloseDialog, setTheme, theme, handleSignOut]);
+    };
+    
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
+  }, [router, theme, setTheme, navigateAndCloseDialog, handleSignOut]);
+
+  const handleSelect = useCallback(
+    (value: string) => {
+      const selectedItem = menuItems.find(
+        (item) => item.href === `/${value}` || item.action === value
+      );
+      if (selectedItem) {
+        if (selectedItem.href) {
+          navigateAndCloseDialog(selectedItem.href);
+        } else if (selectedItem.action === "theme") {
+          setTheme(theme === "light" ? "dark" : "light");
+          setOpen(false);
+        } else if (selectedItem.action === "logout") {
+          handleSignOut();
+        }
+      }
+    },
+    [navigateAndCloseDialog, setTheme, theme, handleSignOut]
+  );
 
   return (
     <CommandDialog open={open} onOpenChange={setOpen}>
@@ -115,23 +109,27 @@ export function CommandMenu() {
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
-          {menuItems.map((item: MenuItem) => (
-            <CommandItem 
-              key={item.label}
-              onSelect={() => handleSelect(item.href?.slice(1) || item.action || '')}
-            >
-              {item.action === "theme" ? (
-                theme === "light" ? (
-                  <Moon className="mr-2 h-4 w-4" />
+          {menuItems.map((item, index) => (
+            <React.Fragment key={index}>
+              {item.action === "logout" && <CommandSeparator />}
+              <CommandItem
+                onSelect={() =>
+                  handleSelect(item.href?.slice(1) || item.action || "")
+                }
+              >
+                {item.action === "theme" ? (
+                  theme === "light" ? (
+                    <Moon className="mr-2 h-4 w-4" />
+                  ) : (
+                    <Sun className="mr-2 h-4 w-4" />
+                  )
                 ) : (
-                  <Sun className="mr-2 h-4 w-4" />
-                )
-              ) : (
-                <item.icon className="mr-2 h-4 w-4" />
-              )}
-              <span>{item.label}</span>
-              <CommandShortcut>{item.shortcut}</CommandShortcut>
-            </CommandItem>
+                  <item.icon className="mr-2 h-4 w-4" />
+                )}
+                <span>{item.label}</span>
+                <CommandShortcut>{item.shortcut}</CommandShortcut>
+              </CommandItem>
+            </React.Fragment>
           ))}
         </CommandGroup>
       </CommandList>
