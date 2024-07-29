@@ -1,8 +1,8 @@
 ## About
 
-Eventbase is a simple platform to create and manage in-person events. Sign up to create events, send the links to attendees, and manage their RSVPs. The platform allows attendees to RSVP for events without creating an account, but will store their preferences and remember them if they choose to create an account in the future.
+Eventbase is a simple platform to create and manage events. Sign up to create events, send the links to attendees, and manage their RSVPs. The platform allows attendees to RSVP for events without creating an account, but will store their preferences and remember them if they choose to create an account in the future.
 
-I built this project as an experiement to evaluate as many dev tool & infra companies in the YC W23 batch as I could. Read more about my takeaways here.
+I built this project as an experiement to evaluate as many dev tool & infra companies in the YC W23 batch as I could. Read more about my takeaways [here](https://basecase.vc/blog/building-with-the-batch-w23).
 
 ## Getting Started
 
@@ -10,9 +10,11 @@ I built this project as an experiement to evaluate as many dev tool & infra comp
 
 `git clone https://github.com/alanagoyal/eventbase`
 
-### Set up your database
+### Set up the database
+        
+Create a new [Supabase](https://app.supabase.com/) project, enter your project details, and wait for the database to launch. Follow the [docs](https://supabase.com/docs/guides/cli/local-development) for local development using the migration in the repo. Note that you will need to create the storage bucket locally. 
 
-[Create a new Supabase project](https://app.supabase.com/), enter your project details, and wait for the database to launch. Grab the project URL and anon key from the [API settings](https://app.supabase.com/project/_/settings/api) and put them in a new `.env.local` file in the root directory as shown:
+Grab the project URL and anon key from the API settings (or after running `supabase start`) and put them in a new .env.local file in the root directory as shown:
 
 ```
 NEXT_PUBLIC_SUPABASE_URL = "https://<project>.supabase.co"
@@ -23,14 +25,15 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY = "<your-anon-key>"
 
 You'll need API keys for the following:
 - [Resend](https://resend.com/) is a new email API for developers. I used it to send guests a beautiful confirmation email when they RSVP to an event.
+- [Braintrust](https://www.braintrust.dev/) is an AI platform for developers. I used the playground, prompts, logging, & datasets for the AI features.
+- [Google Maps](https://developers.google.com/maps) is an API for places. I used it to autocomplete the location when a user is creating an event.
 
 Previous versions of this project used:
 - [Frigade](https://frigade.com/) provides onboarding infrastructure for developers. I used it to give new users a quick tour of the product.
 - [Highlight](https://highlight.io/) is an open-source, full-stack monitoring platform. I used it to replay user sessions and debug frontend errors.
 - [Pyq](https://www.pyqai.com/) makes it easy for non-ML engineers to add ML features into their applications. I used it to generate an image based on the title of the event.
-- [Google Maps](https://developers.google.com/maps) is an API for places. I used it to autocomplete the location when a user is creating an event.
 
-Put them in a `.env` file as shown in the `.env.example`.
+Put them in a `.env` file.
 
 Install the dependencies
 `npm install`
