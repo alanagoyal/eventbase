@@ -9,12 +9,12 @@ export default function Home() {
       <main className="container mx-auto my-48 flex-grow">
         <section className="text-center">
           <h1 className="text-5xl font-bold">
-            Create and manage in-person events
+            {siteConfig.tagline}
           </h1>
           <p className="text-lg mt-4">
-            A simple platform for all of your event management needs
+            {siteConfig.description}
           </p>
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-4 flex justify-center gap-4">
             <Link href="/events">
               <Button
                 className="transition-opacity hover:opacity-70"
@@ -23,7 +23,7 @@ export default function Home() {
                     "linear-gradient(45deg, #FF9A8B 12%, #FF6A88 24%, #FF99AC 31%, #cd80ff 100%)",
                 }}
               >
-                Get Started Today
+                Get Started
               </Button>
             </Link>
             <Link href={siteConfig.links.github} target="_blank" rel="noopener noreferrer">
