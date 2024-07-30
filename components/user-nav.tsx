@@ -68,7 +68,7 @@ export default function UserNav({ guest }: { guest: any }) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           {menuItems.map((item: MenuItem, index: number) => (
-            <>
+            <div key={item.label}>
               {item.action === "logout" && <DropdownMenuSeparator />}
               {item.href ? (
                 <Link href={item.href} key={item.label}>
@@ -111,7 +111,7 @@ export default function UserNav({ guest }: { guest: any }) {
                   </p>
                 </DropdownMenuItem>
               )}
-            </>
+            </div>
           ))}
         </DropdownMenuGroup>
       </DropdownMenuContent>
