@@ -83,12 +83,12 @@ export function PlacesAutocomplete({ form, existingEvent }: PlacesAutocompletePr
             />
           </FormControl>
           {status === "OK" && (
-            <ul className="mt-2 bg-white border rounded-md shadow-lg">
+            <ul className="mt-2 bg-background border rounded-md shadow-lg">
               {data.map((suggestion, index) => (
                 <li
                   key={suggestion.place_id}
-                  className={`p-2 cursor-pointer hover:bg-gray-100 text-sm ${
-                    index === selectedIndex ? "bg-gray-100" : ""
+                  className={`p-2 cursor-pointer hover:bg-accent text-foreground text-sm ${
+                    index === selectedIndex ? "bg-accent" : ""
                   }`}
                   onClick={() => handleSelect(suggestion)}
                 >
