@@ -1,5 +1,7 @@
 ## About
 
+> **Status:** The hosted website is no longer live as of November 12, 2026. The source code remains available for reference and self-hosting.
+
 Eventbase is a simple platform to create and manage events. Sign up to create events, send the links to attendees, and manage their RSVPs. The platform allows attendees to RSVP for events without creating an account, but will store their preferences and remember them if they choose to create an account in the future.
 
 I built this project as an experiement to evaluate as many dev tool & infra companies in the YC W23 batch as I could. Read more about my takeaways [here](https://basecase.vc/blog/building-with-the-batch-w23).
